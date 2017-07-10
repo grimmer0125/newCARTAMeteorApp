@@ -2,9 +2,16 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createContainer } from 'meteor/react-meteor-data';
 
-import { Tasks } from '../api/tasks.js';
+// import ToggleIconButtonWidget from 'paraviewweb/src/React/Widgets/ToggleIconButtonWidget';
+// https://github.com/Kitware/paraviewweb/tree/437c073cdd977c01b2486996f6986f30dcf2045b/src/React/Widgets/FileBrowserWidget
 
+// import Meter from 'grommet/components/Meter';
+
+import { Tasks } from '../api/tasks.js';
 import Task from './Task.jsx';
+
+// import ParaviewSample from './ParaviewSample.jsx'
+import GrommetExample from './GrommetExample.jsx'
 
 // App component - represents the whole app
 class App extends Component {
@@ -30,6 +37,12 @@ class App extends Component {
   }
 
   render() {
+
+    return (
+      <GrommetExample></GrommetExample>
+      // <ParaviewSample></ParaviewSample>
+    );
+
     return (
       <div className="container">
         <header>
@@ -57,7 +70,10 @@ App.propTypes = {
 };
 
 export default createContainer(() => {
+  let test = Tasks.find({}, { sort: { createdAt: -1 } }).fetch();
+  console.log("task:", test);
+  console.log("task num:", test.length);
   return {
-    tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
+    tasks: test,
   };
 }, App);

@@ -1,0 +1,20 @@
+{
+  "name": "simple-todos",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Grimmer <grimmer0125@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/grimmer0125/simple-todos",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "grommet": "^1.5.0"
+  }
+}

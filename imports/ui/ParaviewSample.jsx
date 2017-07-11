@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 // import 'font-awesome/css/font-awesome.css';
 
 // var https = Npm.require('https'); ??
-// const GitTreeWidget = require('paraviewweb/src/React/Widgets/GitTreeWidget/index.js');
+import {GitTreeWidget} from 'paraviewweb/dist/ParaViewWeb.js';
 
 
 // require('font-awesome/css/font-awesome.css');
@@ -47,6 +47,11 @@ export default React.createClass({
       return (
         <div>
           <h1>Test</h1>
+          <GitTreeWidget
+        nodes={nodes}
+        onChange={onChange}
+        multiselect
+        enableDelete/>
           {/* <ToggleIconButtonWidget name="wifi" icon="fa-wifi" value onChange={ onChange } />
           <ToggleIconButtonWidget name="btooth" icon="fa-bluetooth" value={ false } onChange={ onChange } />
           <ToggleIconButtonWidget name="a" icon="fa-at" onChange={ onChange } />

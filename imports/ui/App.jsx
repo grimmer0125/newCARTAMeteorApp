@@ -10,8 +10,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { Tasks } from '../api/tasks.js';
 import Task from './Task.jsx';
 
-import ParaviewSample from './ParaviewSample.jsx'
-import GrommetExample from './GrommetExample.jsx'
+// import ParaviewSample from './ParaviewSample.jsx'
+// import GrommetExample from './GrommetExample.jsx'
 import AntExample from './AntExample.jsx'
 
 // App component - represents the whole app

@@ -8,7 +8,6 @@ client = MeteorClient('ws://127.0.0.1:3000/websocket')
 def subscribed(subscription):
     print('* SUBSCRIBED {}'.format(subscription))
 
-
 def unsubscribed(subscription):
     print('* UNSUBSCRIBED {}'.format(subscription))
 
@@ -34,20 +33,37 @@ def added(collection, id, fields):
     print('Tasks: {}'.format(all_lists))
     print('Num lists: {}'.format(len(all_lists)))
 
+def changed():
+    print('* changed')
+    all_lists = client.find('tasks', selector={})
+    print('Tasks: {}'.format(all_lists))
+    print('Num lists: {}'.format(len(all_lists)))
+    print('end changed')
 
+def on_logged_in(data):
+    print('* LOGGIN IN')
+    # conf.set('ddp', 'token', data['token'])
+    # conf.update()
 
 def connected():
     print('* CONNECTED')
-
+    all_lists = client.find('tasks', selector={})
+    print('Tasks: {}'.format(all_lists))
+    print('Num lists: {}'.format(len(all_lists)))
+    print('end connected, try login')
+    client.login('grimmer', "710123")
+    # https://github.com/hharnisc/python-meteor/pull/21
 
 def subscription_callback(error):
     if error:
         print(error)
 
+client.on('changed', changed)
 client.on('subscribed', subscribed)
 client.on('unsubscribed', unsubscribed)
 client.on('added', added)
 client.on('connected', connected)
+client.on('logged_in', on_logged_in)
 
 client.connect()
 # client.subscribe('publicLists')

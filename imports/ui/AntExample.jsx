@@ -1,20 +1,13 @@
-// import App from 'grommet/components/App';
-// import Split from 'grommet/components/Split';
-
 import React, { Component, PropTypes } from 'react';
 
-// try bower first
-// import App from 'grommet/components/App';
-// import Button from 'grommet/components/Button';
-// import Header from 'grommet/components/Header';
-// import Section from 'grommet/components/Section'
-// import FileBrowser from 'react-keyed-file-browser'
 // import { Button } from 'antd';
 import Button from 'antd/lib/button';  // for js
 import { Card } from 'antd';
 import { Meteor } from 'meteor/meteor';
 
-// import { Tasks } from '../api/tasks.js';
+import '../api/methods.js';
+
+import { Responses } from '../api/responses.js';
 
 // import 'antd/lib/button/style/css';        // for css, or /style for less
 
@@ -28,6 +21,24 @@ export default class Example extends Component {
 
   constructor(props) {
     super(props);
+
+    //TODO may feature out how to get the info in client.jsx
+    // console.log("default session:", simpleStringify(Meteor.connection)); in client.jsx
+    // http://www.danielsvane.dk/blog/getting-session-id-in-meteor-on-startup
+    Meteor.call("getSessionId", function(err, session_id) {
+      console.log("getSessionId return:", session_id);
+
+      //TODO check more, only get the data for this sub-parameter?
+      // another approach is, subscribe name is just session value, e.g. "fdasfasf"
+      //subscribe special Collection,
+      Meteor.subscribe("commandResponse", session_id); //changed???
+
+      Tracker.autorun(() => {
+        let responses = Responses.find().fetch();
+        console.log("get responses count:", responses.length, ";content:", responses);
+      });
+
+    });
 
     this.state = {
          ...this.state,
@@ -55,7 +66,9 @@ export default class Example extends Component {
   onBrowserClick = () => {
       console.log("open/close file browser")
 
-      Meteor.call('queryFileList');
+      Meteor.call('queryFileList', (error, result) => {
+        console.log("get result:", result);
+      });
 
       if (!this.state.browserOpened) {
         this.setState({browserOpened: true});
@@ -75,8 +88,15 @@ export default class Example extends Component {
   // }
 
   fileClick(){
+
+    Meteor.call('queryFileList', (error, result) => {
+      console.log("get result2:", result);
+    });
+
     console.log("choose the first file");
-    this.setState({files:[]});
+    // this.setState({files:[]});
+
+
     // if (!this.state.browserOpened) {
     //   this.setState({browserOpened: true});
     // } else {
@@ -88,7 +108,9 @@ export default class Example extends Component {
   render() {
     return (
       <div>
-        <Button type="primary" onClick={this.onBrowserClick}>Primary</Button>
+        <Button type="primary" onClick={this.onBrowserClick}>Query File list</Button>
+        {/* <Button type="primary" onClick={this.fileClick}>Primary2</Button> */}
+
         <Card style={{ width: 300 }}>
             <p>Card content</p>
             <p>Card content</p>
@@ -100,9 +122,3 @@ export default class Example extends Component {
     );
   }
 }
-
-// Task.propTypes = {
-//   // This component gets the task to display through a React prop.
-//   // We can use propTypes to indicate it is required
-//   task: PropTypes.object.isRequired,
-// };

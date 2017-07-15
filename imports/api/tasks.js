@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+// import { Meteor } from 'meteor/meteor';
+// import { Mongo } from 'meteor/mongo';
+//
+// export const Tasks = new Mongo.Collection('tasks');
 
-export const Tasks = new Mongo.Collection('tasks');
+// Meteor.methods({
 
-
-Meteor.methods({
   // 'tasks.insert'(text) {
   //   check(text, String);
   //
@@ -26,4 +26,4 @@ Meteor.methods({
   //
   //   Tasks.update(taskId, { $set: { checked: setChecked } });
   // },
-});
+// });

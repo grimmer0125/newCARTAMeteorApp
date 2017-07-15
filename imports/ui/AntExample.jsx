@@ -134,6 +134,7 @@ export default class Example extends Component {
     //NOTE antd's button seems to be a inline element
 
     //TODO somehow file.name is not unique, using it will result in react warning
+    //2nd: button has boder but filebrowser should not have. We can use material-ui's button
     let list = this.state.files.map((file, index)=>{
       if(file.type == "folder") {
         return(

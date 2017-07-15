@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import '../api/methods.js';
 
 import { Responses } from '../api/responses.js';
+import { Row, Col } from 'antd';
 
 // import 'antd/lib/button/style/css';        // for css, or /style for less
 
@@ -27,16 +28,25 @@ export default class Example extends Component {
          files:[
            {
              key: 'cat2.png',
+             type: "file",
              modified: +Moment().subtract(1, 'hours'),
              size: 1.5 * 1024 * 1024
            },
            {
              key: 'kitten.png',
+             type: "file",
              modified: +Moment().subtract(3, 'days'),
              size: 545 * 1024
            },
            {
              key: 'elephant.png',
+             type: "file",
+             modified: +Moment().subtract(3, 'days'),
+             size: 52 * 1024
+           },
+           {
+             key: 'imagefolder',
+             type: "folder",
              modified: +Moment().subtract(3, 'days'),
              size: 52 * 1024
            },
@@ -57,9 +67,19 @@ export default class Example extends Component {
       //subscribe special Collection,
       Meteor.subscribe("commandResponse", session_id); //changed???
 
+      function parseFile(res) {
+        this.setState({files: res.dir});
+      }
+
       Tracker.autorun(() => {
-        let responses = Responses.find().fetch();
+        const responses = Responses.find().fetch();
         console.log("get responses count:", responses.length, ";content:", responses);
+
+        if( responses.length>0) {
+          const res = responses[0].resp;
+          self.setState({files: res.dir});
+        }
+
         console.log(self.state.browserOpened);
       });
 
@@ -111,15 +131,39 @@ export default class Example extends Component {
 
   //large={true}
   render() {
+    //NOTE antd's button seems to be a inline element
+
+    //TODO somehow file.name is not unique, using it will result in react warning
+    let list = this.state.files.map((file, index)=>{
+      if(file.type == "folder") {
+        return(
+          <div key={index}>
+            <Button icon="folder" >
+              {file.name}
+            </Button>
+          </div>);
+      }
+
+      return(
+        <div key={index}>
+          <Button key={file.name} icon="file">
+            {file.name}
+          </Button>
+        </div>);
+    });
+
     return (
       <div>
         <Button type="primary" onClick={this.onBrowserClick}>Query File list</Button>
         {/* <Button type="primary" onClick={this.fileClick}>Primary2</Button> */}
 
-        <Card style={{ width: 300 }}>
+        <Card style={{ width: 500 }}>
+          <Col>
+            {list}
+          </Col>
+            {/* <p>Card content</p>
             <p>Card content</p>
-            <p>Card content</p>
-            <p>Card content</p>
+            <p>Card content</p> */}
         </Card>
 
       </div>

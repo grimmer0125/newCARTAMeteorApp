@@ -65,8 +65,6 @@ export default class FileBrowser extends Component {
           const res = responses[0].resp;
           self.setState({ files: res.dir });
         }
-
-        console.log(self.state.browserOpened);
       });
     });
   }
@@ -114,7 +112,7 @@ export default class FileBrowser extends Component {
         <p>File Browser</p>
         <RaisedButton style={buttonStyle} onTouchTap={this.onBrowserClick} label="Query File list" primary />
         <RaisedButton style={buttonStyle} onTouchTap={this.chooseImage} label="Test Accent color" secondary={true} />
-        { fileItems && fileItems.length > 0 &&
+        { this.state.browserOpened && fileItems && fileItems.length > 0 &&
           <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.chooseImage}>
             {fileItems}
           </SelectableList>

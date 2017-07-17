@@ -5,7 +5,8 @@ import '../imports/api/methods.js';
 import { Responses } from '../imports/api/responses.js';
 import { Mongo } from 'meteor/mongo';
 
-const WebSocket = require('ws');
+// const WebSocket = require('ws');
+const client = require('../imports/api/ws-client.js');
 
 let ws;
 
@@ -28,65 +29,74 @@ const testInsert = Meteor.bindEnvironment((resp) => {
   });
 });
 
-Meteor.startup(() => {
-  // code to run on server at startup
-  const address = 'ws:' + '//localhost' + ':3003';
+const handleNodeServerMessage = function (data) {
+  console.log('get message from WebSocket Server:');
+  // console.log(data);
+
+  let dataJSON;
   try {
-    ws = new WebSocket(address);
-
-    console.log('meteor server, is server');
-    ws.on('open', () => {
-      ws.send('connected to WebSocket Server');
-    });
-
-    ws.on('error', () => {
-      console.log('npm ws error');
-    });
-
-    ws.on('message', (data) => {
-      console.log('get message from WebSocket Server:');
-      console.log(data);
-
-      let dataJSON;
-      try {
-        dataJSON = JSON.parse(data);
-        console.log('the response from cpp -> js is json');
-      } catch (e) {
-        console.log('message is not a json, invalid');
-        return;
-      }
-
-      if (dataJSON.cmd == REQUEST_FILE_LIST) {
-        console.log('response is REQUEST_FILE_LIST:');
-        console.log(dataJSON);
-        // TODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb?
-        // insert to responses
-
-        // Meteor.call('insertResponse', dataJSON, (error, result) => {
-        //   console.log("get insert response result:", result);
-        // });
-        // Responses.insert({
-        //   resp: dataJSON,
-        //   // createdAt: new Date(),
-        //   // owner: Meteor.userId(),
-        //   // username: Meteor.user().username,
-        // });
-        testInsert(dataJSON);
-      }
-
-
-      // {
-      //   cmd:// XXX:
-      //   payload:{
-      //
-      //   }
-      // }
-    });
+    dataJSON = JSON.parse(data);
+    console.log('the response from cpp -> js is json');
   } catch (e) {
-
-  } finally {
-
+    console.log('the response from cpp -> js is not a json, invalid');
+    return;
   }
+
+  if (dataJSON.cmd == REQUEST_FILE_LIST) {
+    console.log('response is REQUEST_FILE_LIST:');
+    console.log(dataJSON);
+    // TODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb?
+    // insert to responses
+
+    // Meteor.call('insertResponse', dataJSON, (error, result) => {
+    //   console.log("get insert response result:", result);
+    // });
+    // Responses.insert({
+    //   resp: dataJSON,
+    //   // createdAt: new Date(),
+    //   // owner: Meteor.userId(),
+    //   // username: Meteor.user().username,
+    // });
+    testInsert(dataJSON);
+  }
+
+
+  // {
+  //   cmd:// XXX:
+  //   payload:{
+  //
+  //   }
+  // }
+};
+
+
+Meteor.startup(() => {
+  client.createSocket();
+  client.registerReceiveHandler(handleNodeServerMessage);
+
+  // code to run on server at startup
+  // const address = 'ws:' + '//localhost' + ':3003';
+  // try {
+  //   ws = new WebSocket(address);
+  //
+  //   console.log('meteor server, is server');
+  //   ws.on('open', () => {
+  //     ws.send('connected to WebSocket Server');
+  //   });
+  //
+  //   ws.on('error', () => {
+  //     console.log('npm ws error');
+  //   });
+
+  // ws.on('message', (data) => {
+  //
+  //
+  // });
+  // } catch (e) {
+  //
+  // } finally {
+  //
+  // }
 });
 
 
@@ -110,7 +120,7 @@ Meteor.methods({
 
       console.log('session:', this.connection.id);
       // send to cpp server
-      ws.send(REQUEST_FILE_LIST);
+      client.sendData(REQUEST_FILE_LIST);
 
       return 'dummy';
     }
@@ -120,7 +130,7 @@ Meteor.methods({
   selectFileToOpen(fileName) {
     if (Meteor.isServer) {
       // TODO unicode file name case? 3 means opcode field = 3
-      ws.send(`SELECT_FILE_TO_OPEN;${fileName};`);
+      client.sendData(`SELECT_FILE_TO_OPEN;${fileName};`);
 
       // uWS::OpCode opCode, uWS::OpCode::TEXT
       console.log('select a file to open:', fileName); // { name: 'aJ2.fits', type: 'fits' }

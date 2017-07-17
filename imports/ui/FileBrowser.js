@@ -7,8 +7,10 @@ import { List, ListItem, makeSelectable } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import ActionGrade from 'material-ui/svg-icons/action/grade';
 import ContentSend from 'material-ui/svg-icons/content/send';
+
+// import folder from 'material-ui/svg-icons/file/folder';
+// import attachment from 'material-ui/svg-icons/file/attachment';
 
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -38,6 +40,8 @@ export default class FileBrowser extends Component {
       ...this.state,
       files: [],
       browserOpened: false,
+      // selectedFile: "",
+      selectedIndex: -1,
     };
 
     const self = this;
@@ -69,27 +73,52 @@ export default class FileBrowser extends Component {
     });
   }
 
-  onBrowserClick = () => {
-    console.log("open/close file browser")
-
-    Meteor.call('queryFileList', (error, result) => {
-      console.log("get open file browser result:", result);
-    });
-
+  openBrowser = () => {
+    console.log("open file browser")
     if (!this.state.browserOpened) {
+      Meteor.call('queryFileList', (error, result) => {
+        console.log("get open file browser result:", result);
+      });
       this.setState({browserOpened: true});
-    } else {
-      this.setState({browserOpened: false});
     }
   }
 
-  chooseImage = (e, index) => {
-    const file = this.state.files[index];
-    console.log("choolse file to open, index:", index, ";name:", file.name);
+  closeBrowser = () => {
+    console.log("close file browser")
+    if (this.state.browserOpened) {
+      this.setState({browserOpened: false});
+      // this.setState({selectedFile: ""});
+      this.setState({selectedIndex: -1});
+    }
+  }
 
-    Meteor.call('selectFileToOpen', file.name, (error, result) => {
-      console.log("get select file result:", result);
-    });
+  selectImage = (e, index) => {
+
+    // this.state.selectedIndex = index;
+    // const file = this.state.files[index];
+    // console.log("choolse file to open, index:", index, ";name:", file.name);
+    //
+    // // this.setState({selectedFile: file.name});
+    this.setState({selectedIndex: index});
+
+
+    // Meteor.call('selectFileToOpen', file.name, (error, result) => {
+    //   console.log("get select file result:", result);
+    // });
+  }
+
+  readImage = () => {
+    if (this.state.selectedIndex>=0) {
+      const file = this.state.files[this.state.selectedIndex];
+      console.log("choolse file to read, index:", this.state.selectedIndex, ";name:", file.name);
+
+      // this.setState({selectedFile: file.name});
+      Meteor.call('selectFileToOpen', file.name, (error, result) => {
+        console.log("get select file result:", result);
+      });
+
+      this.setState({browserOpened: false});
+    }
   }
 
   render() {
@@ -109,13 +138,16 @@ export default class FileBrowser extends Component {
 
     return (
       <Paper style={browserStyle} zDepth={1} >
-        <p>File Browser</p>
-        <RaisedButton style={buttonStyle} onTouchTap={this.onBrowserClick} label="Query File list" primary />
-        <RaisedButton style={buttonStyle} onTouchTap={this.chooseImage} label="Test Accent color" secondary={true} />
+        <p>File Browser, open file browser, then choose a file to read</p>
+        <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
+        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary={true} />
         { this.state.browserOpened && fileItems && fileItems.length > 0 &&
-          <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.chooseImage}>
-            {fileItems}
-          </SelectableList>
+          <div>
+            <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
+              {fileItems}
+            </SelectableList>
+            <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary={true} />
+          </div>
         }
       </Paper>
     );

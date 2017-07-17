@@ -55,7 +55,9 @@ module.exports = {
 
   destorySocket() {
     console.log('try to destory socket');
-    this.socket.terminate(); // <- the only difference between node's ws and browser which uses .close
+    if (this.socket) {
+      this.socket.terminate(); // <- the only difference between node's ws and browser which uses .close
+    }
     this.socket = null;
   },
 

@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 
-import { List, ListItem } from 'material-ui/List';
+import { List, ListItem, makeSelectable } from 'material-ui/List';
 
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
@@ -22,6 +22,8 @@ import { Responses } from '../api/responses.js';
 //   textAlign: 'center',
 //   // display: 'inline-block',
 // };
+
+let SelectableList = makeSelectable(List);
 
 export default class MyAwesomeReactComponent extends Component {
   constructor(props) {
@@ -65,48 +67,52 @@ export default class MyAwesomeReactComponent extends Component {
   }
 
   onBrowserClick = () => {
-      console.log("open/close file browser")
+    console.log("open/close file browser")
 
-      Meteor.call('queryFileList', (error, result) => {
-        console.log("get result:", result);
-      });
+    Meteor.call('queryFileList', (error, result) => {
+      console.log("get open file browser result:", result);
+    });
 
-      if (!this.state.browserOpened) {
-        this.setState({browserOpened: true});
-      } else {
-        this.setState({browserOpened: false});
-      }
+    if (!this.state.browserOpened) {
+      this.setState({browserOpened: true});
+    } else {
+      this.setState({browserOpened: false});
     }
+  }
+
+  chooseImage = (e, index) => {
+    const file = this.state.files[index];
+    console.log("choolse file to open, index:", index, ";name:", file.name);
+
+    Meteor.call('selectFileToOpen', fileName, (error, result) => {
+      console.log("get select file result:", result);
+    });
+  }
 
   render() {
     const fileItems = this.state.files.map((file, index) => {
       if (file.type === 'fits') {
         return (
-          <ListItem style={{ fontSize: '12px', height: 40 }} key={index} primaryText={file.name} leftIcon={<ContentSend />} />
+          // key is needed for ui array operation react, value is for selectableList of material-ui
+          <ListItem style={{ fontSize: '14px', height: 40 }} value={index}  key={index} primaryText={file.name} leftIcon={<ContentSend />} />
 
         );
       }
 
       return (
-        <ListItem style={{ fontSize: '12px', height: 40 }} key={index} primaryText={file.name} leftIcon={<ContentInbox />} />
-
-        // <div key={index}>
-        //   <Button key={file.name} icon="file">
-        //     {file.name}
-        //   </Button>
-        // </div>);
+        <ListItem style={{ fontSize: '14px', height: 40 }}  value={index} key={index} primaryText={file.name} leftIcon={<ContentInbox />} />
       );
     });
 
     return (
-      <div>
+      <div >
         <p>Test Font</p>
         <RaisedButton onTouchTap={this.onBrowserClick} label="Query File list" primary />
-        <FlatButton label="Test Secondary/accent color" secondary />
+        <FlatButton onTouchTap={this.chooseImage} label="Test Secondary/accent color" secondary />
         { fileItems && fileItems.length > 0 &&
-          <List >
+          <SelectableList onChange={this.chooseImage}>
             {fileItems}
-          </List>
+          </SelectableList>
         }
       </div>
     );

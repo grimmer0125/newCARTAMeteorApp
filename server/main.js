@@ -39,6 +39,10 @@ Meteor.startup(() => {
       ws.send('connected to WebSocket Server');
     });
 
+    ws.on('error', () => {
+      console.log('npm ws error');
+    });
+
     ws.on('message', (data) => {
       console.log('get message from WebSocket Server:');
       console.log(data);
@@ -115,6 +119,10 @@ Meteor.methods({
 
   selectFileToOpen(fileName) {
     if (Meteor.isServer) {
+      // TODO unicode file name case? 3 means opcode field = 3
+      ws.send(`SELECT_FILE_TO_OPEN;${fileName};`);
+
+      // uWS::OpCode opCode, uWS::OpCode::TEXT
       console.log('select a file to open:', fileName); // { name: 'aJ2.fits', type: 'fits' }
     }
   },

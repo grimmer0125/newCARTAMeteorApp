@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 
 import { List, ListItem, makeSelectable } from 'material-ui/List';
+import Paper from 'material-ui/Paper';
 
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
@@ -15,13 +16,17 @@ import { Tracker } from 'meteor/tracker';
 import '../api/methods.js';
 import { Responses } from '../api/responses.js';
 
-// const style = {
-//   height: 100,
-//   width: 100,
-//   margin: 20,
-//   textAlign: 'center',
-//   // display: 'inline-block',
-// };
+const browserStyle = {
+  width: 600,
+  margin: 20,
+  // textAlign: 'center',
+  // display: 'inline-block',
+};
+
+const buttonStyle = {
+  margin: 12,
+};
+
 
 let SelectableList = makeSelectable(List);
 
@@ -84,7 +89,7 @@ export default class MyAwesomeReactComponent extends Component {
     const file = this.state.files[index];
     console.log("choolse file to open, index:", index, ";name:", file.name);
 
-    Meteor.call('selectFileToOpen', fileName, (error, result) => {
+    Meteor.call('selectFileToOpen', file.name, (error, result) => {
       console.log("get select file result:", result);
     });
   }
@@ -105,16 +110,16 @@ export default class MyAwesomeReactComponent extends Component {
     });
 
     return (
-      <div >
-        <p>Test Font</p>
-        <RaisedButton onTouchTap={this.onBrowserClick} label="Query File list" primary />
-        <FlatButton onTouchTap={this.chooseImage} label="Test Secondary/accent color" secondary />
+      <Paper style={browserStyle} zDepth={1} >
+        <p>File Browser</p>
+        <RaisedButton style={buttonStyle} onTouchTap={this.onBrowserClick} label="Query File list" primary />
+        <RaisedButton style={buttonStyle} onTouchTap={this.chooseImage} label="Test Accent color" secondary={true} />
         { fileItems && fileItems.length > 0 &&
-          <SelectableList onChange={this.chooseImage}>
+          <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.chooseImage}>
             {fileItems}
           </SelectableList>
         }
-      </div>
+      </Paper>
     );
   }
 }

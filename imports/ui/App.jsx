@@ -31,13 +31,13 @@ const muiTheme = getMuiTheme({
   // },
 });
 
-import MyAwesomeReactComponent from './MyAwesomeReactComponent';
+import FileBrowser from './FileBrowser';
 
 export default class App extends Component {
   render() {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <MyAwesomeReactComponent />
+        <FileBrowser />
       </MuiThemeProvider>
 
     );

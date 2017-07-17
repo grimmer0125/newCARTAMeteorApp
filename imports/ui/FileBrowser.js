@@ -30,7 +30,7 @@ const buttonStyle = {
 
 let SelectableList = makeSelectable(List);
 
-export default class MyAwesomeReactComponent extends Component {
+export default class FileBrowser extends Component {
   constructor(props) {
     super(props);
 

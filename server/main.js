@@ -20,13 +20,17 @@ const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 // }));
 
 // https://forums.meteor.com/t/meteor-code-must-always-run-within-a-fiber-error/16872/2
-const testInsert = Meteor.bindEnvironment((resp) => {
-  Responses.insert({
-    resp,
-    // createdAt: new Date(),
-    // owner: Meteor.userId(),
-    // username: Meteor.user().username,
-  });
+const insertResponse = Meteor.bindEnvironment((resp) => {
+// TODO can not only use insert, should delete first/update or even set by session id
+  if (Responses.find().fetch().length > 0) {
+    Responses.remove({});
+  }
+
+  Responses.insert({ resp });
+
+  // createdAt: new Date(),
+  // owner: Meteor.userId(),
+  // username: Meteor.user().username,
 });
 
 const handleNodeServerMessage = function (data) {
@@ -37,29 +41,10 @@ const handleNodeServerMessage = function (data) {
   try {
     dataJSON = JSON.parse(data);
     console.log('the response from cpp -> js is json');
+    insertResponse(dataJSON);
   } catch (e) {
-    console.log('the response from cpp -> js is not a json, invalid');
-    return;
+    console.log('the response from cpp -> js is not a json, invalid:', data);
   }
-
-  if (dataJSON.cmd == REQUEST_FILE_LIST) {
-    console.log('response is REQUEST_FILE_LIST:');
-    console.log(dataJSON);
-    // TODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb?
-    // insert to responses
-
-    // Meteor.call('insertResponse', dataJSON, (error, result) => {
-    //   console.log("get insert response result:", result);
-    // });
-    // Responses.insert({
-    //   resp: dataJSON,
-    //   // createdAt: new Date(),
-    //   // owner: Meteor.userId(),
-    //   // username: Meteor.user().username,
-    // });
-    testInsert(dataJSON);
-  }
-
 
   // {
   //   cmd:// XXX:

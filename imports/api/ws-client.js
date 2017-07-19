@@ -1,7 +1,7 @@
 // if browser side, no need to require
 const WebSocket = require('ws');
 
-const severPort = '3003';
+const severPort = '4314';
 
 // Note:
 // 1.    this.socket.terminate(); // <- the only difference between node's ws and browser which uses .close

@@ -18,6 +18,10 @@ import { Tracker } from 'meteor/tracker';
 import '../api/methods.js';
 import { Responses } from '../api/responses.js';
 
+//TODO move consts to a file
+const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
+const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
+
 const browserStyle = {
   width: 600,
   margin: 20,
@@ -39,9 +43,11 @@ export default class FileBrowser extends Component {
     this.state = {
       ...this.state,
       files: [],
+      rootDir:"",
       browserOpened: false,
       // selectedFile: "",
       selectedIndex: -1,
+      imageURL:"",
     };
 
     const self = this;
@@ -67,7 +73,31 @@ export default class FileBrowser extends Component {
 
         if (responses.length > 0) {
           const res = responses[0].resp;
-          self.setState({ files: res.dir });
+
+          if (res.cmd == REQUEST_FILE_LIST) {
+            console.log('response is REQUEST_FILE_LIST:');
+            console.log(res);
+            // TODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb?
+            // insert to responses
+
+            // Meteor.call('insertResponse', dataJSON, (error, result) => {
+            //   console.log("get insert response result:", result);
+            // });
+            // Responses.insert({
+            //   resp: dataJSON,
+            //   // createdAt: new Date(),
+            //   // owner: Meteor.userId(),
+            //   // username: Meteor.user().username,
+            // });
+            // insertResponse(dataJSON);
+            self.setState({ files: res.dir, rootDir:  res.name });
+          } else if (res.cmd == SELECT_FILE_TO_OPEN) {
+            console.log('response is SELECT_FILE_TO_OPEN:');
+            console.log(res);
+            const url = "data:image/jpeg;base64,"+ res.image;
+            self.setState({ imageURL: url });
+          }
+
         }
       });
     });
@@ -113,7 +143,7 @@ export default class FileBrowser extends Component {
       console.log("choolse file to read, index:", this.state.selectedIndex, ";name:", file.name);
 
       // this.setState({selectedFile: file.name});
-      Meteor.call('selectFileToOpen', file.name, (error, result) => {
+      Meteor.call('selectFileToOpen', this.state.rootDir+"/"+file.name, (error, result) => {
         console.log("get select file result:", result);
       });
 
@@ -149,6 +179,8 @@ export default class FileBrowser extends Component {
             <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary={true} />
           </div>
         }
+        <img src={this.state.imageURL}/>
+
       </Paper>
     );
   }

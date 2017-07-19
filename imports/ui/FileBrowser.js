@@ -72,7 +72,7 @@ export default class FileBrowser extends Component {
         console.log('get responses count:', responses.length, ';content:', responses);
 
         if (responses.length > 0) {
-          const res = responses[0].resp;
+          const res = responses[0];
 
           if (res.cmd == REQUEST_FILE_LIST) {
             console.log('response is REQUEST_FILE_LIST:');

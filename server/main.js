@@ -21,17 +21,42 @@ const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
 // https://forums.meteor.com/t/meteor-code-must-always-run-within-a-fiber-error/16872/2
 const insertResponse = Meteor.bindEnvironment((resp) => {
-// TODO can not only use insert, should delete first/update or even set by session id
-  if (Responses.find().fetch().length > 0) {
-    Responses.remove({});
+  console.log('insert Response start');
+  // TODO can not only use insert, should delete first/update or even set by session id
+  const responses = Responses.find().fetch();
+  if (responses.length > 0) {
+    const res_id = responses[0]._id;
+    console.log('insert Response update:', res_id);
+    // Responses.remove({});
+    Responses.update(res_id, resp);
+  } else {
+    console.log('insert Response insert');
+
+    const _id = Responses.insert(resp);
+    console.log('insert is finished:', _id);
   }
 
-  Responses.insert({ resp });
 
   // createdAt: new Date(),
   // owner: Meteor.userId(),
   // username: Meteor.user().username,
 });
+
+// TODO the sequence is wired.
+// 2nd wired things: Also FileBrowser's Tracker.autorun may receive two times call (count2+count1) or just 1 time (3 count). .remove seems like generator
+// I20170719-10:30:18.531(8)? get data !!!!
+// I20170719-10:30:18.534(8)? get message from WebSocket Server:
+// I20170719-10:30:18.536(8)? the response from cpp -> js is json
+//
+// I20170719-10:30:18.536(8)? get data !!!!
+// I20170719-10:30:18.537(8)? get message from WebSocket Server:
+// I20170719-10:30:18.537(8)? the response from cpp -> js is json
+//
+// I20170719-10:30:18.538(8)? insert Response remove
+// I20170719-10:30:18.539(8)? insert Response remove
+// I20170719-10:30:18.539(8)? insert Response insert
+// I20170719-10:30:18.541(8)? insert Response insert
+
 
 const handleNodeServerMessage = function (data) {
   console.log('get message from WebSocket Server:');

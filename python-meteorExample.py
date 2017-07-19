@@ -1,3 +1,4 @@
+# https://github.com/hharnisc/python-meteor
 import time
 
 from MeteorClient import MeteorClient
@@ -51,7 +52,7 @@ def connected():
     print('Tasks: {}'.format(all_lists))
     print('Num lists: {}'.format(len(all_lists)))
     print('end connected, try login')
-    client.login('grimmer', "710123")
+    client.login('test', "1234")
     # https://github.com/hharnisc/python-meteor/pull/21
 
 def subscription_callback(error):

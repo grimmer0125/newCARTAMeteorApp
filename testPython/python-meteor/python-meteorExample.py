@@ -5,7 +5,6 @@ from MeteorClient import MeteorClient
 
 client = MeteorClient('ws://127.0.0.1:3000/websocket')
 
-
 def subscribed(subscription):
     print('* SUBSCRIBED {}'.format(subscription))
 
@@ -52,7 +51,7 @@ def connected():
     print('Tasks: {}'.format(all_lists))
     print('Num lists: {}'.format(len(all_lists)))
     print('end connected, try login')
-    client.login('test', "1234")
+    client.login('test', "123456")
     # https://github.com/hharnisc/python-meteor/pull/21
 
 def subscription_callback(error):

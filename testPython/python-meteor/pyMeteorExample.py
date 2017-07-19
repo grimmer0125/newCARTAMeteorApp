@@ -3,7 +3,7 @@ from pyDDP import DDPClient
 c = DDPClient("ws://127.0.0.1:3000/websocket", debugPrint=True, printDDP=True, attemptReconnect=False)
 c.connectDDP()
 
-loggedIn = c.loginWithPassword('test', '1234')
+loggedIn = c.loginWithPassword('test', '123456')
 if not loggedIn:
     print('Failed login.')
     sys.exit(1)

@@ -21,6 +21,8 @@ const testFileList = {
 const serverFileList = (state = testFileList, action) => {
   console.log('server file list', action);
   switch (action.type) {
+    case Actions.RECEIVE_FILE_LIST:
+      return { ...action.payload.filelist };
     default:
       return state;
   }

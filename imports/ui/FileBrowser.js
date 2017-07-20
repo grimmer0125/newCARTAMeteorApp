@@ -59,7 +59,9 @@ class FileBrowser extends Component {
   openBrowser = () => {
     console.log('open file browser');
 
-    this.props.dispatch(queryServerFileList());
+    if (!this.props.browserOpened) {
+      this.props.dispatch(queryServerFileList());
+    }
 
     // if (!this.state.browserOpened) {
     //   Meteor.call('queryFileList', (error, result) => {

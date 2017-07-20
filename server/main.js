@@ -113,16 +113,16 @@ Meteor.startup(() => {
 
 
 Meteor.methods({
-  insertResponse(resp) {
-    if (Meteor.isServer) {
-      Responses.insert({
-        resp,
-        // createdAt: new Date(),
-        // owner: Meteor.userId(),
-        // username: Meteor.user().username,
-      });
-    }
-  },
+  // insertResponse(resp) {
+  //   if (Meteor.isServer) {
+  //     Responses.insert({
+  //       resp,
+  //       // createdAt: new Date(),
+  //       // owner: Meteor.userId(),
+  //       // username: Meteor.user().username,
+  //     });
+  //   }
+  // },
 
   queryFileList() {
     // check(taskId, String);

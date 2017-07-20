@@ -30,8 +30,8 @@ export const Actions = {
 
 let selfSessionID = null;
 
-function updateFileBrowserToMongo(Open) {
-  console.log('updateFileBrowserToMongo');
+function updateUIToMongo(data) {
+  console.log('updateUIToMongo');
   const uidata = UIData.find().fetch();
   if (uidata.length > 0) {
     console.log('update UI in db, count:', uidata.length);
@@ -41,16 +41,47 @@ function updateFileBrowserToMongo(Open) {
 
     const ui_id = uidata[0]._id;
 
-    UIData.update(ui_id, { $set: { fileBrowserOpened: Open } });
+    UIData.update(ui_id, { $set: data });
     // console.log('insert Response update:', res_id);
     // Responses.remove({});
     // Responses.update(res_id, resp);
   } else {
     console.log('insert UI in db');
 
-    const _id = UIData.insert({ fileBrowserOpened: Open, session: selfSessionID });
+    const _id = UIData.insert({ ...data, session: selfSessionID });
     console.log('insert fileBrowser is finished:', _id);
   }
+}
+
+function updateFileListToMongo(fileList) {
+  console.log('updateFileListToMongo');
+  updateUIToMongo(fileList);
+}
+
+function updateFileBrowserToMongo(Open) {
+  console.log('updateFileBrowserToMongo');
+
+  updateUIToMongo({ fileBrowserOpened: Open });
+
+  // const uidata = UIData.find().fetch();
+  // if (uidata.length > 0) {
+  //   console.log('update UI in db, count:', uidata.length);
+  //
+  //   const ui = uidata[0];
+  //   console.log('stored UI in db:', ui);
+  //
+  //   const ui_id = uidata[0]._id;
+  //
+  //   UIData.update(ui_id, {$set: {fileBrowserOpened:Open}})
+  //   // console.log('insert Response update:', res_id);
+  //   // Responses.remove({});
+  //   // Responses.update(res_id, resp);
+  // } else {
+  //   console.log('insert UI in db');
+  //
+  //   const _id = UIData.insert({fileBrowserOpened:Open, session:selfSessionID});
+  //   console.log('insert fileBrowser is finished:', _id);
+  // }
 }
 
 // NOTE: follow https://github.com/acdlite/flux-standard-action
@@ -63,17 +94,18 @@ export function receiveUIChange(ui) {
   };
 }
 
-export function receiveFileList(filelist) {
-  return {
-    type: RECEIVE_FILE_LIST,
-    payload: {
-      filelist,
-    },
-  };
-}
+// export function receiveFileList(filelist) {
+//   return {
+//     type: RECEIVE_FILE_LIST,
+//     payload: {
+//       filelist,
+//     },
+//   };
+// }
 
 export function waitForCommandResponses() {
   return (dispatch, getState) => {
+    console.log('waitForCommandResponses');
     // const self = this;
 
     // TODO may feature out how to get the info in client.jsx
@@ -119,7 +151,13 @@ export function waitForCommandResponses() {
             // TODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb?
             // insert to responses
 
-            dispatch(receiveFileList({ files: res.dir, rootDir: res.name }));
+            // NOTE 如果有動到ui collection, 所以這裡又被call第二次? !!!!!!!!!!!!!!!!!!!!!!!
+            // 用 tick ok. 另一方法是用observeation, not tracker.autorun
+            process.nextTick(() => {
+              updateFileListToMongo({ files: res.dir, rootDir: res.name });
+            });
+
+            // dispatch(receiveFileList({ files: res.dir, rootDir:  res.name }));
 
             // self.setState({ files: res.dir, rootDir:  res.name });
           } else if (res.cmd == SELECT_FILE_TO_OPEN) {
@@ -130,6 +168,9 @@ export function waitForCommandResponses() {
             // TODO add setState back
             // self.setState({ imageURL: url });
           }
+
+          // Responses.remove({});
+          // delete responses
         }
       });
     });

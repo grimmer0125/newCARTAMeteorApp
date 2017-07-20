@@ -147,8 +147,8 @@ class FileBrowser extends Component {
 }
 
 const mapStateToPropsListPage = state => ({
-  files: state.serverFileList.files,
-  browserOpened: state.fileBrowserOpened,
+  files: state.fileBrowserUI.files,
+  browserOpened: state.fileBrowserUI.fileBrowserOpened,
 });
 
 export default connect(mapStateToPropsListPage)(FileBrowser);

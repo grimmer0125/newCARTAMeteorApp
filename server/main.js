@@ -3,6 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import '../imports/api/methods.js';
 
 import { Responses } from '../imports/api/responses.js';
+import { UIData } from '../imports/api/uidata.js';
+
 import { Mongo } from 'meteor/mongo';
 
 // const WebSocket = require('ws');

@@ -18,12 +18,15 @@ import { Tracker } from 'meteor/tracker';
 import '../api/methods.js';
 import { Responses } from '../api/responses.js';
 
-//TODO move consts to a file
+// TODO move consts to a file
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
 const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
+import { connect } from 'react-redux';
+import { waitForCommandResponses, closeFileBrowser, queryServerFileList } from '../actions/fileAction';
+
 const browserStyle = {
-  width: 600,
+  width: 800,
   margin: 20,
   // textAlign: 'center',
   // display: 'inline-block',
@@ -34,102 +37,56 @@ const buttonStyle = {
 };
 
 
-let SelectableList = makeSelectable(List);
+const SelectableList = makeSelectable(List);
 
-export default class FileBrowser extends Component {
+class FileBrowser extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       ...this.state,
       files: [],
-      rootDir:"",
+      rootDir: '',
       browserOpened: false,
       // selectedFile: "",
       selectedIndex: -1,
-      imageURL:"",
+      imageURL: '',
     };
 
-    const self = this;
-
-    // TODO may feature out how to get the info in client.jsx
-    // console.log("default session:", simpleStringify(Meteor.connection)); in client.jsx
-    // http://www.danielsvane.dk/blog/getting-session-id-in-meteor-on-startup
-    Meteor.call('getSessionId', (err, session_id) => {
-      console.log('getSessionId return:', session_id);
-
-      // TODO check more, only get the data for this sub-parameter?
-      // another approach is, subscribe name is just session value, e.g. "fdasfasf"
-      // subscribe special Collection,
-      Meteor.subscribe('commandResponse', session_id); // changed???
-
-      // function parseFile(res) {
-      //   this.setState({ files: res.dir });
-      // }
-
-      Tracker.autorun(() => {
-        const responses = Responses.find().fetch();
-        console.log('get responses count:', responses.length, ';content:', responses);
-
-        if (responses.length > 0) {
-          const res = responses[0];
-
-          if (res.cmd == REQUEST_FILE_LIST) {
-            console.log('response is REQUEST_FILE_LIST:');
-            console.log(res);
-            // TODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb?
-            // insert to responses
-
-            // Meteor.call('insertResponse', dataJSON, (error, result) => {
-            //   console.log("get insert response result:", result);
-            // });
-            // Responses.insert({
-            //   resp: dataJSON,
-            //   // createdAt: new Date(),
-            //   // owner: Meteor.userId(),
-            //   // username: Meteor.user().username,
-            // });
-            // insertResponse(dataJSON);
-            self.setState({ files: res.dir, rootDir:  res.name });
-          } else if (res.cmd == SELECT_FILE_TO_OPEN) {
-            console.log('response is SELECT_FILE_TO_OPEN:');
-            console.log(res);
-            const url = "data:image/jpeg;base64,"+ res.image;
-            self.setState({ imageURL: url });
-          }
-
-        }
-      });
-    });
+    this.props.dispatch(waitForCommandResponses());
   }
 
   openBrowser = () => {
-    console.log("open file browser")
-    if (!this.state.browserOpened) {
-      Meteor.call('queryFileList', (error, result) => {
-        console.log("get open file browser result:", result);
-      });
-      this.setState({browserOpened: true});
-    }
+    console.log('open file browser');
+
+    this.props.dispatch(queryServerFileList());
+
+    // if (!this.state.browserOpened) {
+    //   Meteor.call('queryFileList', (error, result) => {
+    //     console.log('get open file browser result:', result);
+    //   });
+    //   this.setState({ browserOpened: true });
+    // }
   }
 
   closeBrowser = () => {
-    console.log("close file browser")
-    if (this.state.browserOpened) {
-      this.setState({browserOpened: false});
-      // this.setState({selectedFile: ""});
-      this.setState({selectedIndex: -1});
-    }
+    console.log('close file browser');
+    // if (this.state.browserOpened) {
+    //   this.setState({ browserOpened: false });
+    //   // this.setState({selectedFile: ""});
+    //   this.setState({ selectedIndex: -1 });
+    // }
+
+    this.props.dispatch(closeFileBrowser());
   }
 
   selectImage = (e, index) => {
-
     // this.state.selectedIndex = index;
     // const file = this.state.files[index];
     // console.log("choolse file to open, index:", index, ";name:", file.name);
     //
     // // this.setState({selectedFile: file.name});
-    this.setState({selectedIndex: index});
+    this.setState({ selectedIndex: index });
 
 
     // Meteor.call('selectFileToOpen', file.name, (error, result) => {
@@ -138,31 +95,32 @@ export default class FileBrowser extends Component {
   }
 
   readImage = () => {
-    if (this.state.selectedIndex>=0) {
+    if (this.state.selectedIndex >= 0) {
       const file = this.state.files[this.state.selectedIndex];
-      console.log("choolse file to read, index:", this.state.selectedIndex, ";name:", file.name);
+      console.log('choolse file to read, index:', this.state.selectedIndex, ';name:', file.name);
 
       // this.setState({selectedFile: file.name});
-      Meteor.call('selectFileToOpen', this.state.rootDir+"/"+file.name, (error, result) => {
-        console.log("get select file result:", result);
+      Meteor.call('selectFileToOpen', `${this.state.rootDir}/${file.name}`, (error, result) => {
+        console.log('get select file result:', result);
       });
 
-      this.setState({browserOpened: false});
+      this.setState({ browserOpened: false });
     }
   }
 
   render() {
-    const fileItems = this.state.files.map((file, index) => {
+    const { browserOpened, files } = this.props;
+    const fileItems = files.map((file, index) => {
       if (file.type === 'fits') {
         return (
           // key is needed for ui array operation react, value is for selectableList of material-ui
-          <ListItem style={{ fontSize: '14px', height: 40 }} value={index}  key={index} primaryText={file.name} leftIcon={<ContentSend />} />
+          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={index} primaryText={file.name} leftIcon={<ContentSend />} />
 
         );
       }
 
       return (
-        <ListItem style={{ fontSize: '14px', height: 40 }}  value={index} key={index} primaryText={file.name} leftIcon={<ContentInbox />} />
+        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={index} primaryText={file.name} leftIcon={<ContentInbox />} />
       );
     });
 
@@ -170,18 +128,25 @@ export default class FileBrowser extends Component {
       <Paper style={browserStyle} zDepth={1} >
         <p>File Browser, open file browser, then choose a file to read</p>
         <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
-        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary={true} />
-        { this.state.browserOpened && fileItems && fileItems.length > 0 &&
+        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary />
+        { browserOpened && fileItems && fileItems.length > 0 &&
           <div>
             <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
               {fileItems}
             </SelectableList>
-            <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary={true} />
+            <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
           </div>
         }
-        <img src={this.state.imageURL}/>
+        <img src={this.state.imageURL} />
 
       </Paper>
     );
   }
 }
+
+const mapStateToPropsListPage = state => ({
+  files: state.serverFileList.files,
+  browserOpened: state.fileBrowserOpened,
+});
+
+export default connect(mapStateToPropsListPage)(FileBrowser);

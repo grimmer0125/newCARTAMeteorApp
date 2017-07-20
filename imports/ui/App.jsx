@@ -1,11 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
+import { Provider } from 'react-redux';
+import configureStore from '../store/configureStore.js';
+
+const store = configureStore();
+
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 injectTapEventPlugin();
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { grey400 } from 'material-ui/styles/colors';
+// import { grey400 } from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 // ref
@@ -36,10 +41,11 @@ import FileBrowser from './FileBrowser';
 export default class App extends Component {
   render() {
     return (
-      <MuiThemeProvider muiTheme={muiTheme}>
-        <FileBrowser />
-      </MuiThemeProvider>
-
+      <Provider store={store}>
+        <MuiThemeProvider muiTheme={muiTheme}>
+          <FileBrowser />
+        </MuiThemeProvider>
+      </Provider>
     );
 
     // return (

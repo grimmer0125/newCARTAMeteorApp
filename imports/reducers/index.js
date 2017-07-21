@@ -17,7 +17,7 @@ const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, ac
   switch (action.type) {
     case Actions.RECEIVE_UI_CHANGE:
       const combine = { ...state, ...action.payload.ui };
-      console.log('combine:', combine);
+      // console.log('combine:', combine);
       return combine;
     default:
       return state;

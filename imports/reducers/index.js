@@ -24,6 +24,17 @@ const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, ac
   }
 };
 
+const image = (state = { imageURL: '' }, action) => {
+  console.log('image action:', action);
+  switch (action.type) {
+    case Actions.RECEIVE_IMAGE_CHANGE:
+      // console.log('combine:', combine);
+      return action.payload.imageData;
+    default:
+      return state;
+  }
+};
+
 
 // action.payload.ui.files;
 // action.payload.ui.rootDir;
@@ -40,6 +51,7 @@ const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, ac
 
 const rootReducer = combineReducers({
   fileBrowserUI,
+  image,
   // fileBrowserOpened,
   // serverFileList,
   // ...userRoot, // other files

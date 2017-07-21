@@ -4,6 +4,7 @@ import '../imports/api/methods.js';
 
 import { Responses } from '../imports/api/Responses.js';
 import '../imports/api/FileBrowsers.js';
+import '../imports/api/Images.js';
 
 import { Mongo } from 'meteor/mongo';
 

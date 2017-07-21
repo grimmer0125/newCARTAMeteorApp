@@ -98,15 +98,16 @@ class FileBrowser extends Component {
 
   readImage = () => {
     if (this.state.selectedIndex >= 0) {
-      const file = this.state.files[this.state.selectedIndex];
+      const file = this.props.files[this.state.selectedIndex];
       console.log('choolse file to read, index:', this.state.selectedIndex, ';name:', file.name);
 
       // this.setState({selectedFile: file.name});
-      Meteor.call('selectFileToOpen', `${this.state.rootDir}/${file.name}`, (error, result) => {
+      Meteor.call('selectFileToOpen', `${this.props.rootDir}/${file.name}`, (error, result) => {
         console.log('get select file result:', result);
       });
 
-      this.setState({ browserOpened: false });
+      // this.setState({ browserOpened: false });
+      this.props.dispatch(closeFileBrowser());
     }
   }
 
@@ -139,7 +140,7 @@ class FileBrowser extends Component {
             <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
           </div>
         }
-        <img src={this.state.imageURL} />
+        <img src={this.props.imageURL} />
 
       </Paper>
     );
@@ -147,7 +148,9 @@ class FileBrowser extends Component {
 }
 
 const mapStateToPropsListPage = state => ({
+  imageURL: state.image.imageURL,
   files: state.fileBrowserUI.files,
+  rootDir: state.fileBrowserUI.rootDir,
   browserOpened: state.fileBrowserUI.fileBrowserOpened,
 });
 

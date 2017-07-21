@@ -8,6 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import '../api/methods.js';
 import { Responses } from '../api/Responses.js';
 import { FileBrowsers } from '../api/FileBrowsers.js';
+import { Images } from '../api/Images.js';
 
 // TODO move consts to a file
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
@@ -15,12 +16,15 @@ const RECEIVE_FILE_LIST = 'RECEIVE_FILE_LIST';
 const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
 const RECEIVE_UI_CHANGE = 'RECEIVE_UI_CHANGE';
+const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
+
 // const FILEBROWSER_CLOSE = `FILEBROWSER_CLOSE`;
 // const FILEBROWSER_OPEN = `FILEBROWSER_OPEN`;
 //
 export const Actions = {
   RECEIVE_UI_CHANGE,
   RECEIVE_FILE_LIST,
+  RECEIVE_IMAGE_CHANGE,
 };
 
 // export const fileBrowserCloseAction = createAction(FILEBROWSER_CLOSE);
@@ -29,6 +33,16 @@ export const Actions = {
 // Current way: logic are how to change mongodb, in AsyncActionCreator
 
 let selfSessionID = null;
+
+function saveImageToMongo(data) {
+  console.log('saveImageToMongo');
+  const images = Images.find().fetch();
+  if (images.length > 0) {
+    Images.update(images[0]._id, { $set: data });
+  } else {
+    Images.insert({ ...data, session: selfSessionID });
+  }
+}
 
 function updateUIToMongo(data) {
   console.log('updateUIToMongo');
@@ -71,7 +85,7 @@ function updateFileBrowserToMongo(Open) {
 }
 
 // NOTE: follow https://github.com/acdlite/flux-standard-action
-export function receiveUIChange(ui) {
+function receiveUIChange(ui) {
   return {
     type: RECEIVE_UI_CHANGE,
     payload: {
@@ -79,6 +93,16 @@ export function receiveUIChange(ui) {
     },
   };
 }
+
+function reflectMongoImageAddToStore(imageData) {
+  return {
+    type: RECEIVE_IMAGE_CHANGE,
+    payload: {
+      imageData,
+    },
+  };
+}
+
 
 // export function receiveFileList(filelist) {
 //   return {
@@ -116,6 +140,7 @@ function handleCommandResponse(resp) {
 
     // TODO add setState back
     // self.setState({ imageURL: url });
+    saveImageToMongo({ imageURL: url });
   }
 }
 
@@ -140,24 +165,35 @@ export function waitForCommandResponses() {
       // subscribe special Collection,
       Meteor.subscribe('commandResponse', session_id, () => {
         console.log('commandResponse subscribes OK !!!');
-      }); // changed???
+      });
 
       Meteor.subscribe('filebrowserui', session_id, () => {
         console.log('filebrowserui subscribes OK !!!');
-      }); // changed???
+      });
+
+      Meteor.subscribe('images', session_id, () => {
+        console.log('images subscribes OK !!!');
+      });
+
+      const imageObservationHandle = Images.find().observe({
+        added(newDoc) {
+          console.log('get image Mongo added');
+          dispatch(reflectMongoImageAddToStore(newDoc));
+        },
+        changed(newDoc, oldDoc) {
+          console.log('get image Mongo changed');
+          dispatch(reflectMongoImageAddToStore(newDoc));
+        },
+      });
 
       const filebrowserObservationHandle = FileBrowsers.find().observe({
         added(newDoc) {
-          console.log('get fileBrowser Mongo added');
+          console.log('get Mongo fileBrowser added');
           dispatch(receiveUIChange(newDoc));
-
-          // handleCommandResponse(newDoc);
         },
         changed(newDoc, oldDoc) {
-          console.log('get fileBrowser Mongo changed');
+          console.log('get Mongo fileBrowser changed');
           dispatch(receiveUIChange(newDoc));
-
-          // handleCommandResponse(newDoc);
         },
       });
 
@@ -184,7 +220,7 @@ export function waitForCommandResponses() {
 
       const respObservationHandle = Responses.find().observe({
         added(newDoc) {
-          console.log('get added response');
+          console.log('get Mongo added response');
           // const resps = Responses.find().fetch();
           // console.log('current response collection:', resps); // yes, already exist in the collection
           // const docId = newDoc.profile.imageFile;
@@ -203,7 +239,7 @@ export function waitForCommandResponses() {
 
         // },
         changed(newDoc, oldDoc) {
-          console.log('get changed response');
+          console.log('get Mongo changed response');
 
           handleCommandResponse(newDoc);
 
@@ -247,5 +283,13 @@ export function closeFileBrowser() {
   return (dispatch, getState) => {
     // send command to mongodb
     updateFileBrowserToMongo(false);
+  };
+}
+
+export function selectFileToOpen(path) {
+  return (dispatch, getState) => {
+    Meteor.call('selectFileToOpen', path, (error, result) => {
+      console.log('get select file result:', result);
+    });
   };
 }

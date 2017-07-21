@@ -16,7 +16,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import '../api/methods.js';
-import { Responses } from '../api/responses.js';
+import { Responses } from '../api/Responses.js';
 
 // TODO move consts to a file
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';

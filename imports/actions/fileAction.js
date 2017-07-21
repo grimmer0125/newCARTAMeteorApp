@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import '../api/methods.js';
-import { Responses } from '../api/responses.js';
-import { UIData } from '../api/uidata.js';
+import { Responses } from '../api/Responses.js';
+import { FileBrowsers } from '../api/FileBrowsers.js';
 
 // TODO move consts to a file
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
@@ -32,7 +32,7 @@ let selfSessionID = null;
 
 function updateUIToMongo(data) {
   console.log('updateUIToMongo');
-  const uidata = UIData.find().fetch();
+  const uidata = FileBrowsers.find().fetch();
   if (uidata.length > 0) {
     console.log('update UI in db, count:', uidata.length);
 
@@ -41,14 +41,14 @@ function updateUIToMongo(data) {
 
     const ui_id = uidata[0]._id;
 
-    UIData.update(ui_id, { $set: data });
+    FileBrowsers.update(ui_id, { $set: data });
     // console.log('insert Response update:', res_id);
     // Responses.remove({});
     // Responses.update(res_id, resp);
   } else {
     console.log('insert UI in db');
 
-    const _id = UIData.insert({ ...data, session: selfSessionID });
+    const _id = FileBrowsers.insert({ ...data, session: selfSessionID });
     console.log('insert fileBrowser is finished:', _id);
   }
 }
@@ -62,26 +62,6 @@ function updateFileBrowserToMongo(Open) {
   console.log('updateFileBrowserToMongo');
 
   updateUIToMongo({ fileBrowserOpened: Open });
-
-  // const uidata = UIData.find().fetch();
-  // if (uidata.length > 0) {
-  //   console.log('update UI in db, count:', uidata.length);
-  //
-  //   const ui = uidata[0];
-  //   console.log('stored UI in db:', ui);
-  //
-  //   const ui_id = uidata[0]._id;
-  //
-  //   UIData.update(ui_id, {$set: {fileBrowserOpened:Open}})
-  //   // console.log('insert Response update:', res_id);
-  //   // Responses.remove({});
-  //   // Responses.update(res_id, resp);
-  // } else {
-  //   console.log('insert UI in db');
-  //
-  //   const _id = UIData.insert({fileBrowserOpened:Open, session:selfSessionID});
-  //   console.log('insert fileBrowser is finished:', _id);
-  // }
 }
 
 // NOTE: follow https://github.com/acdlite/flux-standard-action
@@ -126,7 +106,7 @@ export function waitForCommandResponses() {
       Tracker.autorun(() => {
         // 1st time ok, 2nd insert fail, so becomes back to zero.
         // local write still get this callback.
-        const uidata = UIData.find().fetch();
+        const uidata = FileBrowsers.find().fetch();
 
         console.log('get ui data change from db:', uidata);
         if (uidata.length > 0) {

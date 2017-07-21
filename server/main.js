@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 // import '../imports/api/tasks.js';
 import '../imports/api/methods.js';
 
-import { Responses } from '../imports/api/responses.js';
-import { UIData } from '../imports/api/uidata.js';
+import { Responses } from '../imports/api/Responses.js';
+import '../imports/api/FileBrowsers.js';
 
 import { Mongo } from 'meteor/mongo';
 

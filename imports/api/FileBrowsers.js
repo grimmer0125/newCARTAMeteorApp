@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
-export const UIData = new Mongo.Collection('uidata');
+export const FileBrowsers = new Mongo.Collection('filebrowsers');
 
 if (Meteor.isServer) {
   console.log('publish uidata on server');

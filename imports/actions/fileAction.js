@@ -48,6 +48,12 @@ function updateUIToMongo(data) {
   } else {
     console.log('insert UI in db');
 
+    // 現在有個case是 mongo的 FileBrowsers 有8筆, 兩個原因
+    // 1. 因為response一直都沒有刪掉, 所以reaload時會去處理
+    // 2. 因為順序問題,  當 FileBrowsers還沒有收到mongo sync前, 先得到response->會去insert一筆新的FileBrowser (因為還沒有sync完/得到舊的)
+    // p.s. 看起來meteor 是一筆一筆added 通知, default
+    // TODO https://docs.meteor.com/api/pubsub.html 可能可用這裡的避掉多筆added ?
+
     const _id = FileBrowsers.insert({ ...data, session: selfSessionID });
     console.log('insert fileBrowser is finished:', _id);
   }
@@ -132,9 +138,13 @@ export function waitForCommandResponses() {
       // TODO check more, only get the data for this sub-parameter?
       // another approach is, subscribe name is just session value, e.g. "fdasfasf"
       // subscribe special Collection,
-      Meteor.subscribe('commandResponse', session_id); // changed???
-      Meteor.subscribe('filebrowserui', session_id); // changed???
+      Meteor.subscribe('commandResponse', session_id, () => {
+        console.log('commandResponse subscribes OK !!!');
+      }); // changed???
 
+      Meteor.subscribe('filebrowserui', session_id, () => {
+        console.log('filebrowserui subscribes OK !!!');
+      }); // changed???
 
       const filebrowserObservationHandle = FileBrowsers.find().observe({
         added(newDoc) {
@@ -150,19 +160,20 @@ export function waitForCommandResponses() {
           // handleCommandResponse(newDoc);
         },
       });
+
       // ui part
       // Tracker.autorun(() => {
       //   // 1st time ok, 2nd insert fail, so becomes back to zero.
       //   // local write still get this callback.
       //   const uidata = FileBrowsers.find().fetch();
       //
-      //   console.log('get ui data change from db:', uidata);
-      //   if (uidata.length > 0) {
-      //     const ui = uidata[0];
-      //
-      //     dispatch(receiveUIChange(ui));
-      //   } else {
-      //   }
+      //   console.log('get ui data change from db:', uidata.length);
+      //   // if (uidata.length > 0) {
+      //   //   const ui = uidata[0];
+      //   //
+      //   //   dispatch(receiveUIChange(ui));
+      //   // } else {
+      //   // }
       // });
 
       // TODO turn off observe when client unsubscribes, may not need, think more
@@ -183,9 +194,10 @@ export function waitForCommandResponses() {
           handleCommandResponse(newDoc);
 
           // delete responses
-          // process.nextTick(() => {
-          //   Responses.remove({});
-          // });
+          process.nextTick(() => {
+            console.log('delete response');
+            Responses.remove(newDoc._id);
+          });
         },
         // removed(oldDoc) {
 
@@ -194,9 +206,12 @@ export function waitForCommandResponses() {
           console.log('get changed response');
 
           handleCommandResponse(newDoc);
-          // process.nextTick(() => {
-          //   Responses.remove({}); // 有tracker就是 Not permitted. Untrusted code may only remove documents by ID. 現在是用observeation則是先exception, 改成用tick後還是有not permitted
-          // });
+
+          process.nextTick(() => {
+            console.log('delete response');
+            Responses.remove(newDoc._id);
+          // Responses.remove({}); // 有tracker就是 Not permitted. Untrusted code may only remove documents by ID. 現在是用observeation則是先exception, 改成用tick後還是有not permitted
+          });
         },
       });
 

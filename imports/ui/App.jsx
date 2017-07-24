@@ -1,24 +1,25 @@
-import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
-
-import { Provider } from 'react-redux';
-import configureStore from '../store/configureStore.js';
-
-const store = configureStore();
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
-
-injectTapEventPlugin();
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-// import { grey400 } from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
+import React from 'react';
+// import React, { Component } from 'react';
+
+import { Provider } from 'react-redux';
+import configureStore from '../store/configureStore';
+import FileBrowser from './FileBrowser';
+
+const store = configureStore();
+injectTapEventPlugin();
+
+// import { grey400 } from 'material-ui/styles/colors';
 
 // ref
 // 1. https://github.com/callemall/material-ui/blob/master/src/styles/getMuiTheme.js
 // 2. http://www.material-ui.com/#/customization/themes
 
 // primaryColor: palette.primary1Color, not effect for RaisedButton, why?
-// primary1Color
 // primaryTextColor: palette.alternateTextColor
 // secondaryColor: palette.accent1Color,
 
@@ -26,7 +27,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 const muiTheme = getMuiTheme({
   palette: {
     primary1Color: '#865CD6', // grey400,
-    accent1Color: '#DC2878', // ~ its means is the same as secondary and the following secondary*Color do not take effect
+    accent1Color: '#DC2878', // ~ its meaning is the same as secondary and the following secondary*Color do not take effect
     // secondaryColor: '#DC2878',
     //     secondaryTextColor: '#DC2878',
     //     secondaryIconColor: '#DC2878',
@@ -36,24 +37,30 @@ const muiTheme = getMuiTheme({
   // },
 });
 
-import FileBrowser from './FileBrowser';
-
-export default class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <MuiThemeProvider muiTheme={muiTheme}>
-          <FileBrowser />
-        </MuiThemeProvider>
-      </Provider>
-    );
-
-    // return (
-    //   <div className="container">
-    //   </div>
-    // );
-  }
-}
+const App = () => (
+  <Provider store={store}>
+    <MuiThemeProvider muiTheme={muiTheme}>
+      <FileBrowser />
+    </MuiThemeProvider>
+  </Provider>
+);
+export default App;
+// export default class App extends Component {
+//   render() {
+//     return (
+//       <Provider store={store}>
+//         <MuiThemeProvider muiTheme={muiTheme}>
+//           <FileBrowser />
+//         </MuiThemeProvider>
+//       </Provider>
+//     );
+//
+//     // return (
+//     //   <div className="container">
+//     //   </div>
+//     // );
+//   }
+// }
 
 // App.propTypes = {
 //   tasks: PropTypes.array.isRequired,

@@ -1,7 +1,7 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
+// import FlatButton from 'material-ui/FlatButton';
 
 import { List, ListItem, makeSelectable } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
@@ -13,16 +13,16 @@ import ContentSend from 'material-ui/svg-icons/content/send';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+// import { Tracker } from 'meteor/tracker';
+import { connect } from 'react-redux';
 
-import '../api/methods.js';
-import { Responses } from '../api/Responses.js';
+// import '../api/methods';
+// import { Responses } from '../api/Responses';
 
 // TODO move consts to a file
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
 const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
-import { connect } from 'react-redux';
 import { waitForCommandResponses, closeFileBrowser, queryServerFileList } from '../actions/fileAction';
 
 const browserStyle = {
@@ -117,13 +117,13 @@ class FileBrowser extends Component {
       if (file.type === 'fits') {
         return (
           // key is needed for ui array operation react, value is for selectableList of material-ui
-          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={index} primaryText={file.name} leftIcon={<ContentSend />} />
+          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftIcon={<ContentSend />} />
 
         );
       }
 
       return (
-        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={index} primaryText={file.name} leftIcon={<ContentInbox />} />
+        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftIcon={<ContentInbox />} />
       );
     });
 
@@ -133,14 +133,14 @@ class FileBrowser extends Component {
         <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
         <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary />
         { browserOpened && fileItems && fileItems.length > 0 &&
-          <div>
-            <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
-              {fileItems}
-            </SelectableList>
-            <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-          </div>
+        <div>
+          <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
+            {fileItems}
+          </SelectableList>
+          <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
+        </div>
         }
-        <img src={this.props.imageURL} />
+        <img src={this.props.imageURL} alt="" />
 
       </Paper>
     );

@@ -1,14 +1,12 @@
-// import * as firebase from 'firebase';
-// import firebaseConfig from '../../firebaseConfig';
 // const  moment = require('moment');
 
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+// import { Tracker } from 'meteor/tracker';
 
-import '../api/methods.js';
-import { Responses } from '../api/Responses.js';
-import { FileBrowsers } from '../api/FileBrowsers.js';
-import { Images } from '../api/Images.js';
+import '../api/methods';
+import { Responses } from '../api/Responses';
+import { FileBrowsers } from '../api/FileBrowsers';
+import { Images } from '../api/Images';
 
 // TODO move consts to a file
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
@@ -30,7 +28,7 @@ export const Actions = {
 // export const fileBrowserCloseAction = createAction(FILEBROWSER_CLOSE);
 
 // Normal way: a action will affect 1 or more than 1 reducers. logic are there.
-// Current way: logic are how to change mongodb, in AsyncActionCreator
+// Current way: logic are how to change mongodb, in AsyncActionCreator, **Action files.
 
 let selfSessionID = null;
 
@@ -53,9 +51,9 @@ function updateUIToMongo(data) {
     const ui = uidata[0];
     console.log('stored UI in db:', ui);
 
-    const ui_id = uidata[0]._id;
+    const docID = uidata[0]._id;
 
-    FileBrowsers.update(ui_id, { $set: data });
+    FileBrowsers.update(docID, { $set: data });
     // console.log('insert Response update:', res_id);
     // Responses.remove({});
     // Responses.update(res_id, resp);
@@ -64,12 +62,13 @@ function updateUIToMongo(data) {
 
     // 現在有個case是 mongo的 FileBrowsers 有8筆, 兩個原因
     // 1. 因為response一直都沒有刪掉, 所以reaload時會去處理
-    // 2. 因為順序問題,  當 FileBrowsers還沒有收到mongo sync前, 先得到response->會去insert一筆新的FileBrowser (因為還沒有sync完/得到舊的)
+    // 2. 因為順序問題,  當 FileBrowsers還沒有收到mongo sync前,
+    // 先得到response->會去insert一筆新的FileBrowser (因為還沒有sync完/得到舊的)
     // p.s. 看起來meteor 是一筆一筆added 通知, default
-    // TODO https://docs.meteor.com/api/pubsub.html 可能可用這裡的避掉多筆added ?
+    //  https://docs.meteor.com/api/pubsub.html 可能可用這裡的避掉多筆added ? No. 只好每次用完都刪掉response
 
-    const _id = FileBrowsers.insert({ ...data, session: selfSessionID });
-    console.log('insert fileBrowser is finished:', _id);
+    const docID = FileBrowsers.insert({ ...data, session: selfSessionID });
+    console.log('insert fileBrowser is finished:', docID);
   }
 }
 
@@ -114,26 +113,19 @@ function reflectMongoImageAddToStore(imageData) {
 // }
 
 function handleCommandResponse(resp) {
-  // const res  = responses[0];
-
   console.log('get response:', resp);
 
-  if (resp.cmd == REQUEST_FILE_LIST) {
+  if (resp.cmd === REQUEST_FILE_LIST) {
     console.log('response is REQUEST_FILE_LIST:');
     console.log(resp);
-    // TODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb?
-    // insert to responses
+    // XTODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb to get response from servers(<- Current way)?
 
-    // NOTE 如果有動到ui collection, 所以這裡又被call第二次? !!!!!!!!!!!!!!!!!!!!!!! 把tracker -> observeation 就ok了.
-    // 用 tick ok. 另一方法是用observeation, not tracker.autorun
+    // NOTE 如果有動到ui collection, 所以這裡又被call第二次? !!!!!!!!!!!!!!!!!!!!!!!
+    // 用 tick ok. 另一方法是用observeation (current way, ok), not tracker.autorun.
     // process.nextTick(() => {
     updateFileListToMongo({ files: resp.dir, rootDir: resp.name });
     // });
-
-    // dispatch(receiveFileList({ files: res.dir, rootDir:  res.name }));
-
-    // self.setState({ files: res.dir, rootDir:  res.name });
-  } else if (resp.cmd == SELECT_FILE_TO_OPEN) {
+  } else if (resp.cmd === SELECT_FILE_TO_OPEN) {
     console.log('response is SELECT_FILE_TO_OPEN:');
     console.log(resp);
     const url = `data:image/jpeg;base64,${resp.image}`;
@@ -145,7 +137,7 @@ function handleCommandResponse(resp) {
 }
 
 export function waitForCommandResponses() {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     console.log('waitForCommandResponses');
     // const self = this;
 
@@ -175,6 +167,12 @@ export function waitForCommandResponses() {
         console.log('images subscribes OK !!!');
       });
 
+      // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more
+      // e.g. https://gist.github.com/aaronthorp/06b67c171fde6d1ef317
+      // subscription.onStop(function () {
+      //   userHandle.stop();
+      // });
+
       const imageObservationHandle = Images.find().observe({
         added(newDoc) {
           console.log('get image Mongo added');
@@ -197,6 +195,34 @@ export function waitForCommandResponses() {
         },
       });
 
+      const respObservationHandle = Responses.find().observe({
+        added(newDoc) {
+          console.log('get Mongo added response');
+
+          handleCommandResponse(newDoc);
+
+          // delete responses
+          process.nextTick(() => {
+            console.log('delete response');
+            Responses.remove(newDoc._id);
+          });
+        },
+
+        changed(newDoc, oldDoc) {
+          console.log('get Mongo changed response');
+
+          handleCommandResponse(newDoc);
+
+          process.nextTick(() => {
+            console.log('delete response');
+            Responses.remove(newDoc._id);
+          // NOTE:
+          // Responses.remove({}); // Not permitted. Untrusted code may only remove documents by ID.
+          // 現在是用observeation則是先exception(tracker不會), 改成用tick後還是有not permitted, 要加上用id刪
+          });
+        },
+      });
+
       // ui part
       // Tracker.autorun(() => {
       //   // 1st time ok, 2nd insert fail, so becomes back to zero.
@@ -211,46 +237,6 @@ export function waitForCommandResponses() {
       //   // } else {
       //   // }
       // });
-
-      // TODO turn off observe when client unsubscribes, may not need, think more
-      // e.g. https://gist.github.com/aaronthorp/06b67c171fde6d1ef317
-      // subscription.onStop(function () {
-      //   userHandle.stop();
-      // });
-
-      const respObservationHandle = Responses.find().observe({
-        added(newDoc) {
-          console.log('get Mongo added response');
-          // const resps = Responses.find().fetch();
-          // console.log('current response collection:', resps); // yes, already exist in the collection
-          // const docId = newDoc.profile.imageFile;
-          //
-          // const doc = UserImages.findOne({ _id: docId });
-          // subscription.added(collectionName, docId, doc);
-          handleCommandResponse(newDoc);
-
-          // delete responses
-          process.nextTick(() => {
-            console.log('delete response');
-            Responses.remove(newDoc._id);
-          });
-        },
-        // removed(oldDoc) {
-
-        // },
-        changed(newDoc, oldDoc) {
-          console.log('get Mongo changed response');
-
-          handleCommandResponse(newDoc);
-
-          process.nextTick(() => {
-            console.log('delete response');
-            Responses.remove(newDoc._id);
-          // Responses.remove({}); // 有tracker就是 Not permitted. Untrusted code may only remove documents by ID. 現在是用observeation則是先exception, 改成用tick後還是有not permitted
-          });
-        },
-      });
-
       // response part
       // Tracker.autorun(() => {
       //   const responses = Responses.find().fetch();

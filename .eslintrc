@@ -1,12 +1,15 @@
 {
+  # there are 2 setting + 3 npm packages here:
+  # babel-eslint, eslint-config-airbnb, eslint-plugin-react (which is required by airbnb to install but no need setup here)
+  # without this babel-eslint, some jsx will not be fixed airbnb automatcially.
   "parser": "babel-eslint",
 
   "plugins": [
-      "react"
+      # "react"
   ],
   "extends": [
-      "eslint:recommended",
-      "plugin:react/recommended",
+      # "eslint:recommended",
+      # "plugin:react/recommended",
       "airbnb"
   ],
 

@@ -20,9 +20,9 @@ const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, ac
 };
 
 const image = (state = { imageURL: '' }, action) => {
+  console.log('image action:', action);
   switch (action.type) {
     case Actions.RECEIVE_IMAGE_CHANGE:
-      console.log('image action:', action);
       // console.log('combine:', combine);
       return action.payload.imageData;
     default:
@@ -32,7 +32,7 @@ const image = (state = { imageURL: '' }, action) => {
 
 const fileReducer = {
   fileBrowserUI,
-  image,
+  // image,
 };
 
 export default fileReducer;

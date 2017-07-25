@@ -13,6 +13,8 @@ import FileBrowser from '../file/FileBrowser';
 const store = configureStore();
 injectTapEventPlugin();
 
+import actions from './actions';
+
 // import { grey400 } from 'material-ui/styles/colors';
 
 // ref
@@ -44,6 +46,9 @@ const App = () => (
     </MuiThemeProvider>
   </Provider>
 );
+
+store.dispatch(actions.waitForCommandResponses());
+
 export default App;
 // export default class App extends Component {
 //   render() {

@@ -52,7 +52,7 @@ class FileBrowser extends Component {
       imageURL: '',
     };
 
-    this.props.dispatch(actions.waitForCommandResponses());
+    this.props.dispatch(actions.prepareFileBrowser());
   }
 
   openBrowser = () => {
@@ -158,7 +158,7 @@ const mapStateToPropsListPage = state => ({
 // TODO
 // export function mapDispatchToProps(dispatch) {
 //   return bindActionCreators({
-//     waitForCommandResponses: actions.waitForCommandResponses,
+//     prepareFileBrowser: actions.prepareFileBrowser,
 // }, dispatch);
 // }
 

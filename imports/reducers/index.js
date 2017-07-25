@@ -10,7 +10,7 @@ const testFileList = {
 
 const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, action) => {
   switch (action.type) {
-    case Actions.RECEIVE_UI_CHANGE: {
+    case Actions.RECEIVE_FILEBROWSER_CHANGE: {
       console.log('fileBrowser action:', action);
       const combine = { ...state, ...action.payload.ui };
       // console.log('combine:', combine);

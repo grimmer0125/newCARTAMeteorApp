@@ -13,14 +13,14 @@ const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
 const RECEIVE_FILE_LIST = 'RECEIVE_FILE_LIST';
 const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
-const RECEIVE_UI_CHANGE = 'RECEIVE_UI_CHANGE';
+const RECEIVE_FILEBROWSER_CHANGE = 'RECEIVE_FILEBROWSER_CHANGE';
 const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
 
 // const FILEBROWSER_CLOSE = `FILEBROWSER_CLOSE`;
 // const FILEBROWSER_OPEN = `FILEBROWSER_OPEN`;
 //
 export const Actions = {
-  RECEIVE_UI_CHANGE,
+  RECEIVE_FILEBROWSER_CHANGE,
   RECEIVE_FILE_LIST,
   RECEIVE_IMAGE_CHANGE,
 };
@@ -88,7 +88,7 @@ function updateFileBrowserToMongo(Open) {
 // NOTE: follow https://github.com/acdlite/flux-standard-action
 function receiveUIChange(ui) {
   return {
-    type: RECEIVE_UI_CHANGE,
+    type: RECEIVE_FILEBROWSER_CHANGE,
     payload: {
       ui,
     },

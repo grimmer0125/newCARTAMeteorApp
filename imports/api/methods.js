@@ -8,7 +8,7 @@ Meteor.methods({
       return this.connection.id;
     }
     // TODO id becomes null !!, not same as query in client, session
-    console.log('getSessionId in client:', Meteor.connection._lastSessionId);
+    console.log('getSessionId in client:', Meteor.connection._lastSessionId); // empty
     return Meteor.connection._lastSessionId;
   },
 });

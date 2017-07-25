@@ -21,11 +21,13 @@ const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 //   // ...
 // }));
 // ref2: https://forums.meteor.com/t/meteor-code-must-always-run-within-a-fiber-error/16872/2
+let countResp = 0;
 const insertResponse = Meteor.bindEnvironment((resp) => {
-  console.log('insert Response start');
+  countResp++;
+  console.log('insert Response start:', countResp);
   // TODO can not only use insert, should delete first/update or even set by session id
   const responses = Responses.find().fetch();
-  if (responses.length > 0) {
+  if (false) {
     const resID = responses[0]._id;
     console.log('insert Response by update it into db:', resID);
     Responses.update(resID, resp);
@@ -59,7 +61,7 @@ const insertResponse = Meteor.bindEnvironment((resp) => {
 // I20170719-10:30:18.541(8)? insert Response insert
 
 function handleNodeServerMessage(data) {
-  console.log('get message from WebSocket Server:');
+  console.log('get message from WebSocket Server:', data.length);
 
   let dataJSON;
   try {

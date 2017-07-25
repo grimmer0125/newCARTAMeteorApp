@@ -36,8 +36,10 @@ function saveImageToMongo(data) {
   console.log('saveImageToMongo');
   const images = Images.find().fetch();
   if (images.length > 0) {
+    console.log('save image by update');
     Images.update(images[0]._id, { $set: data });
   } else {
+    console.log('save image by insert');
     Images.insert({ ...data, session: selfSessionID });
   }
 }
@@ -113,7 +115,7 @@ function reflectMongoImageAddToStore(imageData) {
 // }
 
 function handleCommandResponse(resp) {
-  console.log('get response:', resp);
+  console.log('get response:');
 
   if (resp.cmd === REQUEST_FILE_LIST) {
     console.log('response is REQUEST_FILE_LIST:');
@@ -126,10 +128,10 @@ function handleCommandResponse(resp) {
     updateFileListToMongo({ files: resp.dir, rootDir: resp.name });
     // });
   } else if (resp.cmd === SELECT_FILE_TO_OPEN) {
-    console.log('response is SELECT_FILE_TO_OPEN:');
+    console.log('response is SELECT_FILE_TO_OPEN(get image):');
     console.log(resp);
     const url = `data:image/jpeg;base64,${resp.image}`;
-
+    console.log('image url string size:', url.length);
     // TODO add setState back
     // self.setState({ imageURL: url });
     saveImageToMongo({ imageURL: url });
@@ -145,7 +147,7 @@ export function waitForCommandResponses() {
     // console.log("default session:", simpleStringify(Meteor.connection)); in client.jsx
     // http://www.danielsvane.dk/blog/getting-session-id-in-meteor-on-startup
 
-    console.log('default session2:', Meteor.connection._lastSessionId);
+    // console.log('default session2:', Meteor.connection._lastSessionId); empty
 
     Meteor.call('getSessionId', (err, session_id) => {
       console.log('getSessionId return:', session_id);

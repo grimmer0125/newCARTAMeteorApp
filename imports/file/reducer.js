@@ -1,7 +1,5 @@
-import { combineReducers } from 'redux';
-import { Actions } from '../actions/fileAction';
-
-// TODO use only big reducer or multiple reducer?
+// import { combineReducers } from 'redux';
+import { Actions } from './actions';
 
 const testFileList = {
   rootDir: '/tmp',
@@ -32,9 +30,9 @@ const image = (state = { imageURL: '' }, action) => {
   }
 };
 
-const rootReducer = combineReducers({
+const fileReducer = {
   fileBrowserUI,
   image,
-});
+};
 
-export default rootReducer;
+export default fileReducer;

@@ -19,11 +19,10 @@ import { connect } from 'react-redux';
 // import '../api/methods';
 // import { Responses } from '../api/Responses';
 
-// TODO move consts to a file
-const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
-const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
+// const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
+// const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
-import { waitForCommandResponses, closeFileBrowser, queryServerFileList } from '../actions/fileAction';
+import actions from './actions';
 
 const browserStyle = {
   width: 800,
@@ -53,14 +52,14 @@ class FileBrowser extends Component {
       imageURL: '',
     };
 
-    this.props.dispatch(waitForCommandResponses());
+    this.props.dispatch(actions.waitForCommandResponses());
   }
 
   openBrowser = () => {
     console.log('open file browser');
 
     if (!this.props.browserOpened) {
-      this.props.dispatch(queryServerFileList());
+      this.props.dispatch(actions.queryServerFileList());
     }
 
     // if (!this.state.browserOpened) {
@@ -79,7 +78,7 @@ class FileBrowser extends Component {
     //   this.setState({ selectedIndex: -1 });
     // }
 
-    this.props.dispatch(closeFileBrowser());
+    this.props.dispatch(actions.closeFileBrowser());
   }
 
   selectImage = (e, index) => {
@@ -102,12 +101,14 @@ class FileBrowser extends Component {
       console.log('choolse file to read, index:', this.state.selectedIndex, ';name:', file.name);
 
       // this.setState({selectedFile: file.name});
-      Meteor.call('selectFileToOpen', `${this.props.rootDir}/${file.name}`, (error, result) => {
-        console.log('get select file result:', result);
-      });
+      // Meteor.call('selectFileToOpen', `${this.props.rootDir}/${file.name}`, (error, result) => {
+      //   console.log('get select file result:', result);
+      // });
+
+      this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
 
       // this.setState({ browserOpened: false });
-      this.props.dispatch(closeFileBrowser());
+      this.props.dispatch(actions.closeFileBrowser());
     }
   }
 
@@ -153,5 +154,12 @@ const mapStateToPropsListPage = state => ({
   rootDir: state.fileBrowserUI.rootDir,
   browserOpened: state.fileBrowserUI.fileBrowserOpened,
 });
+
+// TODO
+// export function mapDispatchToProps(dispatch) {
+//   return bindActionCreators({
+//     waitForCommandResponses: actions.waitForCommandResponses,
+// }, dispatch);
+// }
 
 export default connect(mapStateToPropsListPage)(FileBrowser);

@@ -3,7 +3,7 @@
 import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 
-import '../api/methods';
+// import '../api/methods';
 import { Responses } from '../api/Responses';
 import { FileBrowsers } from '../api/FileBrowsers';
 import { Images } from '../api/Images';
@@ -281,3 +281,12 @@ export function selectFileToOpen(path) {
     });
   };
 }
+
+const actions = {
+  waitForCommandResponses,
+  closeFileBrowser,
+  queryServerFileList,
+  selectFileToOpen,
+};
+
+export default actions;

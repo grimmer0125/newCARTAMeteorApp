@@ -19,9 +19,8 @@ export default function configureStore(initialState) {
 
   const middleware = applyMiddleware(thunk);
 
-  let enhancer;
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-  enhancer = composeEnhancers(
+  // const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+  const enhancer = composeEnhancers(
     middleware,
     // window.devToolsExtension ? window.devToolsExtension() : f => f,
   );

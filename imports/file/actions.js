@@ -75,7 +75,7 @@ function receiveUIChange(ui) {
   };
 }
 
-export function prepareFileBrowser() {
+function prepareFileBrowser() {
   return (dispatch) => {
     console.log('prepareFileBrowser');
 
@@ -118,7 +118,7 @@ export function prepareFileBrowser() {
   };
 }
 
-export function queryServerFileList() {
+function queryServerFileList() {
   return (dispatch, getState) => {
     // 1. send to mongodb to sync UI
     updateFileBrowserToMongo(true);
@@ -130,14 +130,14 @@ export function queryServerFileList() {
   };
 }
 
-export function closeFileBrowser() {
+function closeFileBrowser() {
   return (dispatch, getState) => {
     // send command to mongodb
     updateFileBrowserToMongo(false);
   };
 }
 
-export function selectFileToOpen(path) {
+function selectFileToOpen(path) {
   return (dispatch, getState) => {
     Meteor.call('selectFileToOpen', path, (error, result) => {
       console.log('get select file result:', result);

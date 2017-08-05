@@ -12,7 +12,7 @@ import ContentSend from 'material-ui/svg-icons/content/send';
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
-import { Meteor } from 'meteor/meteor';
+// import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 import { connect } from 'react-redux';
 

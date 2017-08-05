@@ -15,6 +15,13 @@
 
   "rules": {
       "react/prop-types": 0,
-      "no-console":0
+      "no-console":0,
+      "no-underscore-dangle": 0,
+      # https://stackoverflow.com/questions/37765144/eslint-warning-in-resolving-meteor-pseudo-globals
+      # Unable to resolve path to module 'meteor/meteor'
+      "import/no-unresolved": ["error", { "ignore": ["^meteor/", "^/"] }],
+      "import/no-extraneous-dependencies": 0,  # meteor
+      "import/extensions": ["off", "never"], # meteor,
+      "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }] # jax syntac in js
   }
 }

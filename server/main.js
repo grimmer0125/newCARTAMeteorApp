@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+// import { Mongo } from 'meteor/mongo';
 
 // import '../imports/api/methods';
 
@@ -21,22 +21,23 @@ const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 //   // ...
 // }));
 // ref2: https://forums.meteor.com/t/meteor-code-must-always-run-within-a-fiber-error/16872/2
-let countResp = 0;
+// let countResp = 0;
 const insertResponse = Meteor.bindEnvironment((resp) => {
-  countResp++;
-  console.log('insert Response start:', countResp);
-  // TODO can not only use insert, should delete first/update or even set by session id
-  const responses = Responses.find().fetch();
-  if (false) {
-    const resID = responses[0]._id;
-    console.log('insert Response by update it into db:', resID);
-    Responses.update(resID, resp);
-  } else {
-    console.log('insert Response by insert it into db');
+  // countResp++;
+  // console.log('insert Response start:', countResp); //happen eslint error
 
-    const docId = Responses.insert(resp);
-    console.log('insert is finished:', docId);
-  }
+  // TODO can not only use insert, should delete first/update or even set by session id
+  // if (false) {
+  //   const responses = Responses.find().fetch();
+  //   const resID = responses[0]._id;
+  //   console.log('insert Response by update it into db:', resID);
+  //   Responses.update(resID, resp);
+  // } else {
+  console.log('insert Response by insert it into db');
+
+  const docId = Responses.insert(resp);
+  console.log('insert is finished:', docId);
+  // }
 
   // createdAt: new Date(),
   // owner: Meteor.userId(),

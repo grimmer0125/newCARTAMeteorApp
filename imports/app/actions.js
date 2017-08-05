@@ -5,7 +5,7 @@ import { Images } from '../api/Images';
 import { Responses } from '../api/Responses';
 
 // command response part:
-import { updateFileListToMongo, updateFileBrowserToMongo } from '../file/actions';
+import { updateFileListToMongo } from '../file/actions';
 // response name list part:
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
 const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';

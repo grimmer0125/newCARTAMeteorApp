@@ -8,7 +8,8 @@ import React from 'react';
 
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
-import FileBrowser from '../file/FileBrowser';
+import FileBrowser from '../fileBrowser/FileBrowser';
+import ImageViewer from '../imageViewer/ImageViewer';
 import actions from './actions';
 
 const store = configureStore();
@@ -42,7 +43,10 @@ const muiTheme = getMuiTheme({
 const App = () => (
   <Provider store={store}>
     <MuiThemeProvider muiTheme={muiTheme}>
-      <FileBrowser />
+      <div>
+        <FileBrowser />
+        <ImageViewer />
+      </div>
     </MuiThemeProvider>
   </Provider>
 );

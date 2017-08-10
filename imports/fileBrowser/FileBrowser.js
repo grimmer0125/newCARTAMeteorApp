@@ -42,14 +42,15 @@ class FileBrowser extends Component {
   constructor(props) {
     super(props);
 
+    // TODO add selectedIndex to mongoDB
     this.state = {
-      ...this.state,
-      files: [],
-      rootDir: '',
-      browserOpened: false,
+      // ...this.state,
+      // files: [],
+      // rootDir: '',
+      // browserOpened: false,
       // selectedFile: "",
       selectedIndex: -1,
-      imageURL: '',
+      // imageURL: '',
     };
 
     this.props.dispatch(actions.prepareFileBrowser());
@@ -141,15 +142,15 @@ class FileBrowser extends Component {
           <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
         </div>
         }
-        <img src={this.props.imageURL} alt="" />
+        {/* <img src={this.props.imageURL} alt="" /> */}
 
       </Paper>
     );
   }
 }
 
-const mapStateToPropsListPage = state => ({
-  imageURL: state.image.imageURL,
+const mapStateToProps = state => ({
+  // imageURL: state.image.imageURL,
   files: state.fileBrowserUI.files,
   rootDir: state.fileBrowserUI.rootDir,
   browserOpened: state.fileBrowserUI.fileBrowserOpened,
@@ -162,4 +163,4 @@ const mapStateToPropsListPage = state => ({
 // }, dispatch);
 // }
 
-export default connect(mapStateToPropsListPage)(FileBrowser);
+export default connect(mapStateToProps)(FileBrowser);

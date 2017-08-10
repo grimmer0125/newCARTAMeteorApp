@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
-import fileReducer from './file/reducer';
-import imageReducer from './app/reducer';
+import fileReducer from './fileBrowser/reducer';
+import imageReducer from './imageViewer/reducer';
 
 const rootReducer = combineReducers({
   ...fileReducer,

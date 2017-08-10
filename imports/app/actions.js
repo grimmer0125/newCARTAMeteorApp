@@ -5,40 +5,41 @@ import { Images } from '../api/Images';
 import { Responses } from '../api/Responses';
 
 // command response part:
-import { updateFileListToMongo } from '../file/actions';
+import { updateFileListToMongo } from '../fileBrowser/actions';
+import { saveImageToMongo } from '../imageViewer/actions';
 // response name list part:
 const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
 const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
-// redux part
-const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
-export const Actions = {
-  // RECEIVE_FILEBROWSER_CHANGE,
-  // RECEIVE_FILE_LIST,
-  RECEIVE_IMAGE_CHANGE,
-};
+// // redux part
+// const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
+// export const Actions = {
+//   // RECEIVE_FILEBROWSER_CHANGE,
+//   // RECEIVE_FILE_LIST,
+//   RECEIVE_IMAGE_CHANGE,
+// };
 
-function saveImageToMongo(data) {
-  console.log('saveImageToMongo');
-  const images = Images.find().fetch();
-  if (images.length > 0) {
-    console.log('save image by update');
-    Images.update(images[0]._id, { $set: data });
-  } else {
-    console.log('save image by insert');
-    Images.insert({ ...data, session: SessionManager.get() });
-  }
-}
+// function saveImageToMongo(data) {
+//   console.log('saveImageToMongo');
+//   const images = Images.find().fetch();
+//   if (images.length > 0) {
+//     console.log('save image by update');
+//     Images.update(images[0]._id, { $set: data });
+//   } else {
+//     console.log('save image by insert');
+//     Images.insert({ ...data, session: SessionManager.get() });
+//   }
+// }
 
-function reflectMongoImageAddToStore(imageData) {
-  console.log('reflect image:', imageData);
-  return {
-    type: RECEIVE_IMAGE_CHANGE,
-    payload: {
-      imageData,
-    },
-  };
-}
+// function reflectMongoImageAddToStore(imageData) {
+//   console.log('reflect image:', imageData);
+//   return {
+//     type: RECEIVE_IMAGE_CHANGE,
+//     payload: {
+//       imageData,
+//     },
+//   };
+// }
 
 function handleCommandResponse(resp) {
   console.log('get response:');
@@ -88,9 +89,9 @@ function waitForCommandResponses() {
         console.log('commandResponse subscribes OK !!!');
       });
 
-      Meteor.subscribe('images', session_id, () => {
-        console.log('images subscribes OK !!!');
-      });
+      // Meteor.subscribe('images', session_id, () => {
+      //   console.log('images subscribes OK !!!');
+      // });
 
       // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more
       // e.g. https://gist.github.com/aaronthorp/06b67c171fde6d1ef317
@@ -98,16 +99,16 @@ function waitForCommandResponses() {
       //   userHandle.stop();
       // });
 
-      const imageObservationHandle = Images.find().observe({
-        added(newDoc) {
-          console.log('get image Mongo added');
-          dispatch(reflectMongoImageAddToStore(newDoc));
-        },
-        changed(newDoc, oldDoc) {
-          console.log('get image Mongo changed');
-          dispatch(reflectMongoImageAddToStore(newDoc));
-        },
-      });
+      // const imageObservationHandle = Images.find().observe({
+      //   added(newDoc) {
+      //     console.log('get image Mongo added');
+      //     dispatch(reflectMongoImageAddToStore(newDoc));
+      //   },
+      //   changed(newDoc, oldDoc) {
+      //     console.log('get image Mongo changed');
+      //     dispatch(reflectMongoImageAddToStore(newDoc));
+      //   },
+      // });
 
       const respObservationHandle = Responses.find().observe({
         added(newDoc) {

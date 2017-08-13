@@ -61,9 +61,9 @@ module.exports = {
     this.socket = null;
   },
 
-  createSocket(address) {
+  createSocket() {
     console.log('start to create socket');
-    address = `${'ws:' + '//localhost:'}${severPort}`;
+    const address = `${'ws:' + '//localhost:'}${severPort}`;
     const self = this;
 
     if (!this.socket) {

@@ -7,12 +7,15 @@ import { Responses } from '../imports/api/Responses';
 import '../imports/api/FileBrowsers';
 import '../imports/api/Images';
 
+import ChannelClient from '../imports/api/ChannelClient';
+import Commands from '../imports/api/Commands';
 
 // const WebSocket = require('ws');
-const client = require('../imports/api/ws-client');
+// const client = require('../imports/api/ws-client');
 
-const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
-const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
+
+// const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
+// const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
 
 // ref1: https://stackoverflow.com/questions/27769527/error-meteor-code-must-always-run-within-a-fiber
 // Stripe.charges.create({
@@ -61,22 +64,54 @@ const insertResponse = Meteor.bindEnvironment((resp) => {
 // I20170719-10:30:18.539(8)? insert Response insert
 // I20170719-10:30:18.541(8)? insert Response insert
 
-function handleNodeServerMessage(data) {
-  console.log('get message from WebSocket Server:', data.length);
+let controllerID = null;
 
-  let dataJSON;
+function handleCalculationServerImage(viewName, buffer) {
+  console.log('get image from WebSocket Server, len:', buffer.length);
+  insertResponse({ cmd: Commands.SELECT_FILE_TO_OPEN, buffer });
+}
+
+function handleCalculationServerMessage(cmd, result) {
+  console.log('get message from WebSocket Server, len:', result.length);
+  console.log('cmd resp:', cmd, ';result:', result);
+
+  let data;
   try {
-    dataJSON = JSON.parse(data);
+    data = JSON.parse(result);
     console.log('the response from cpp -> js is json');
-    insertResponse(dataJSON);
+    insertResponse({ cmd, data });
   } catch (e) {
-    console.log('the response from cpp -> js is not a json, invalid:', data);
+    console.log('the response from cpp -> js is not a json');
+    if (cmd == '/CartaObjects/ViewManager:registerView') {
+      console.log('grimmer got it');
+      controllerID = result;
+
+      const viewName = `${controllerID}/view`;
+      const width = 637; // TODO same as the experimental setting in ImageViewer, change later
+      const height = 677;
+
+      client.setupImageViewerSize(viewName, width, height);
+      // Try setup view's size
+      // if (false) QtConnector.jsUpdateViewSlot(this.m_viewName,
+      //   this.m_container.offsetWidth, this.m_container.offsetHeight);
+
+      // query file list x
+      // select file, c14
+      // get stack info, update view size, c14
+      // get image1 (black, due to update size ), c14
+      // reset zoom level, c14, -> TODO Not done 
+      // get image  (real), c14
+    }
   }
 }
 
+let client = null;
 Meteor.startup(() => {
-  client.createSocket();
-  client.registerReceiveHandler(handleNodeServerMessage);
+  client = new ChannelClient();// require('../imports/api/ws-client');
+  client.registerReceiveHandler(handleCalculationServerMessage);
+  client.registerImageHandler(handleCalculationServerImage);
+
+  client.createConnection();
 });
 
 Meteor.methods({
@@ -91,26 +126,47 @@ Meteor.methods({
     return Meteor.connection._lastSessionId;
   },
 
-  queryFileList() {
+  sendCommand(cmd, params) {
     if (Meteor.isServer) {
-      console.log('query in server');
-
+      console.log('forwared commands from clients:', cmd, ';params:', params);
       console.log('session:', this.connection.id);
-      // send to cpp server
-      client.sendData(REQUEST_FILE_LIST);
 
-      return 'dummy';
+      if (cmd == Commands.SELECT_FILE_TO_OPEN) {
+        // QString parameter = "id:/CartaObjects/c14,data:" + fileName;
+        const parameter = `id:${controllerID},data:${params}`;
+        console.log('inject file parameter, become:', parameter);
+        client.sendCommand(cmd, parameter);
+        return '';
+      }
+      // return this.connection.id;
+      client.sendCommand(cmd, params);
+      return '';
     }
-    console.log('query in client, session:', Meteor.connection._lastSessionId);
-    return 'dummy';
+
+    console.log('sendCommand in client');
+    return '';
   },
 
-  selectFileToOpen(fileName) {
-    if (Meteor.isServer) {
-      client.sendData(`SELECT_FILE_TO_OPEN;${fileName};`);
+  // queryFileList() {
+  //   if (Meteor.isServer) {
+  //     console.log('query in server');
+  //
+  //     console.log('session:', this.connection.id);
+  //     // send to cpp server
+  //     // client.sendData(REQUEST_FILE_LIST);
+  //
+  //     return 'dummy';
+  //   }
+  //   console.log('query in client, session:', Meteor.connection._lastSessionId);
+  //   return 'dummy';
+  // },
 
-      console.log('select a file to open:', fileName); // { name: 'aJ2.fits', type: 'fits' }
-    }
-  },
+  // selectFileToOpen(fileName) {
+  //   if (Meteor.isServer) {
+  //     // client.sendData(`SELECT_FILE_TO_OPEN;${fileName};`);
+  //
+  //     console.log('select a file to open:', fileName); // { name: 'aJ2.fits', type: 'fits' }
+  //   }
+  // },
 
 });

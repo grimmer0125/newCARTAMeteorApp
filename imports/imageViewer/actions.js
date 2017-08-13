@@ -2,19 +2,10 @@ import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
 import { Images } from '../api/Images';
-// import { Responses } from '../api/Responses';
-
-// command response part:
-// import { updateFileListToMongo } from '../fileBrowser/actions';
-// // response name list part:
-// const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
-// const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
-
+import Commands from '../api/Commands';
 // redux part
 const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
 export const Actions = {
-  // RECEIVE_FILEBROWSER_CHANGE,
-  // RECEIVE_FILE_LIST,
   RECEIVE_IMAGE_CHANGE,
 };
 
@@ -43,6 +34,22 @@ function prepareImageViewer() {
         console.log('get image Mongo changed');
         dispatch(reflectMongoImageAddToStore(newDoc));
       },
+    });
+
+    // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
+    // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
+    // var pathDict = skel.widgets.Path.getInstance();
+    // var regCmd = pathDict.getCommandRegisterView();
+    // console.log("grimmer x2");
+
+    // 'pluginId:ImageViewer,index:0';
+    const cmd = Commands.REGISTER_IMAGEVIEWER; // '/CartaObjects/ViewManager:registerView';
+    const params = 'pluginId:ImageViewer,index:0';
+    // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
+    // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
+
+    Meteor.call('sendCommand', cmd, params, (error, result) => {
+      console.log('get command dummy result:', result);
     });
   };
 }

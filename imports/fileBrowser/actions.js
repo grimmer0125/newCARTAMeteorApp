@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 // import '../api/methods';
 import { FileBrowsers } from '../api/FileBrowsers';
 import SessionManager from '../api/SessionManager';
-
+import Commands from '../api/Commands';
 
 // TODO move consts to a file
 const RECEIVE_FILEBROWSER_CHANGE = 'RECEIVE_FILEBROWSER_CHANGE';
@@ -14,15 +14,12 @@ const RECEIVE_FILEBROWSER_CHANGE = 'RECEIVE_FILEBROWSER_CHANGE';
 export const Actions = {
   RECEIVE_FILEBROWSER_CHANGE,
   // RECEIVE_FILE_LIST,
-  // RECEIVE_IMAGE_CHANGE,
 };
 
 // export const fileBrowserCloseAction = createAction(FILEBROWSER_CLOSE);
 
 // Normal way: a action will affect 1 or more than 1 reducers. logic are there.
 // Current way: logic are how to change mongodb, in AsyncActionCreator, **Action files.
-
-// const selfSessionID = null;
 
 function updateUIToMongo(data) {
   console.log('updateUIToMongo');
@@ -123,8 +120,14 @@ function queryServerFileList() {
     // 1. send to mongodb to sync UI
     updateFileBrowserToMongo(true);
 
+    // QString command = "/CartaObjects/DataLoader:getData";
+    // QString parameter = "path:";
+
+    // const cmd = Commands.REQUEST_FILE_LIST;// '/CartaObjects/DataLoader:getData';
+    const params = 'path:';// 'pluginId:ImageViewer,index:0';
+
     // 2. send command if it becomes true.
-    Meteor.call('queryFileList', (error, result) => {
+    Meteor.call('sendCommand', Commands.REQUEST_FILE_LIST, params, (error, result) => {
       console.log('get open file browser result:', result);
     });
   };
@@ -139,7 +142,7 @@ function closeFileBrowser() {
 
 function selectFileToOpen(path) {
   return (dispatch, getState) => {
-    Meteor.call('selectFileToOpen', path, (error, result) => {
+    Meteor.call('sendCommand', Commands.SELECT_FILE_TO_OPEN, path, (error, result) => {
       console.log('get select file result:', result);
     });
   };

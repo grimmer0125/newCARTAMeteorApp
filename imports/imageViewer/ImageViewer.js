@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 import actions from './actions';
 
 const browserStyle = {
-  width: 800,
+  width: 637,
+  height: 677,
 };
 
 class ImageViewer extends Component {

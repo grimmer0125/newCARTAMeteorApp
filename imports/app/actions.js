@@ -8,43 +8,15 @@ import { Responses } from '../api/Responses';
 import { updateFileListToMongo } from '../fileBrowser/actions';
 import { saveImageToMongo } from '../imageViewer/actions';
 // response name list part:
-const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
+// const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
+import Commands from '../api/Commands';
+
 const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
-
-// // redux part
-// const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
-// export const Actions = {
-//   // RECEIVE_FILEBROWSER_CHANGE,
-//   // RECEIVE_FILE_LIST,
-//   RECEIVE_IMAGE_CHANGE,
-// };
-
-// function saveImageToMongo(data) {
-//   console.log('saveImageToMongo');
-//   const images = Images.find().fetch();
-//   if (images.length > 0) {
-//     console.log('save image by update');
-//     Images.update(images[0]._id, { $set: data });
-//   } else {
-//     console.log('save image by insert');
-//     Images.insert({ ...data, session: SessionManager.get() });
-//   }
-// }
-
-// function reflectMongoImageAddToStore(imageData) {
-//   console.log('reflect image:', imageData);
-//   return {
-//     type: RECEIVE_IMAGE_CHANGE,
-//     payload: {
-//       imageData,
-//     },
-//   };
-// }
 
 function handleCommandResponse(resp) {
   console.log('get response:');
 
-  if (resp.cmd === REQUEST_FILE_LIST) {
+  if (resp.cmd === Commands.REQUEST_FILE_LIST) {
     console.log('response is REQUEST_FILE_LIST:');
     console.log(resp);
     // XTODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb to get response from servers(<- Current way)?
@@ -52,12 +24,13 @@ function handleCommandResponse(resp) {
     // NOTE 如果有動到ui collection, 所以這裡又被call第二次? !!!!!!!!!!!!!!!!!!!!!!!
     // 用 tick ok. 另一方法是用observeation (current way, ok), not tracker.autorun.
     // process.nextTick(() => {
-    updateFileListToMongo({ files: resp.dir, rootDir: resp.name });
+    const data = resp.data;
+    updateFileListToMongo({ files: data.dir, rootDir: data.name });
     // });
-  } else if (resp.cmd === SELECT_FILE_TO_OPEN) {
+  } else if (resp.cmd === Commands.SELECT_FILE_TO_OPEN) {
     console.log('response is SELECT_FILE_TO_OPEN(get image):');
     console.log(resp);
-    const url = `data:image/jpeg;base64,${resp.image}`;
+    const url = `data:image/jpeg;base64,${resp.buffer}`;
     console.log('image url string size:', url.length);
     // TODO add setState back
     // self.setState({ imageURL: url });

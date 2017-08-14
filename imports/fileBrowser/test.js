@@ -6,7 +6,7 @@ import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import Download from 'material-ui/svg-icons/file/file-download';
 import NavNext from 'material-ui/svg-icons/image/navigate-next';
-//import NavBack from 'material-ui/svg-icons/image/navigate-back';
+import NavBefore from 'material-ui/svg-icons/image/navigate-before';
 // import FlatButton from 'material-ui/FlatButton';
 
 import { List, ListItem, makeSelectable } from 'material-ui/List';
@@ -30,25 +30,77 @@ import { connect } from 'react-redux';
 
 import actions from './actions';
 
-var ReactGridLayout = require('react-grid-layout');
+var _ = require('lodash');
+var PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
+var WidthProvider = require('react-grid-layout').WidthProvider;
+var ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
+ResponsiveReactGridLayout = WidthProvider(ResponsiveReactGridLayout);
+// for storing and retrieving position and size coordinates
+function getFromLS(key) {
+  let ls = {};
+  if (global.localStorage) {
+    try {
+      ls = JSON.parse(global.localStorage.getItem('rgl-8')) || {};
+    } catch(e) {/*Ignore*/}
+  }
+  return ls[key];
+}
 
-var MyFirstGrid = React.createClass({
+function saveToLS(key, value) {
+  if (global.localStorage) {
+    global.localStorage.setItem('rgl-8', JSON.stringify({
+      [key]: value
+    }));
+  }
+}
+//const originalLayouts = getFromLS('layouts') || {};
+class MyFirstGrid extends Component {
+  mixins: [PureRenderMixin]
+  getDefaultProps() {
+    return {
+      className: "layout",
+      cols: {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
+      rowHeight: 30,
+      onLayoutChange: function() {},
+    };
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {}
+    //layouts: JSON.parse(JSON.stringify(originalLayouts)),
+  }
+  // callback function for handling
+  onLayoutChange = (layout) => {
+    //let layouts = this.state.layouts;
+    // console.log("layouts: ", layouts);
+    // console.log("layout: ", layout);
+    saveToLS('layout', layout);
+    console.log('after saving layouts: ', getFromLS('layout'));
+    //this.setState({layout});
+    //this.props.onLayoutChange(layout);
+  }
   render() {
-    // layout is an array of objects, see the demo for more complete usage
-    var layout = [
-      { i: 'a', x: 0, y: 0, w: 1, h: 2, static: true },
-      { i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-      { i: 'c', x: 4, y: 0, w: 1, h: 2 },
-    ];
+    if (this.state) {
+      console.log("in render, print state:", this.state);
+    } else {
+      console.log("this.state does not exist in render");
+    }
     return (
-      <ReactGridLayout className="layout" layout={layout} cols={12} rowHeight={30} width={1200}>
-        <div key={'a'}>a</div>
-        <div key={'b'}>b</div>
-        <div key={'c'}>c</div>
-      </ReactGridLayout>
+      <div>
+        <ResponsiveReactGridLayout
+            ref="rrgl"
+            {...this.props}
+            onLayoutChange={this.onLayoutChange}>
+          <div key="1" data-grid={{w: 2, h: 3, x: 0, y: 0}}><span className="text">1</span></div>
+          <div key="2" data-grid={{w: 2, h: 3, x: 2, y: 0}}><span className="text">2</span></div>
+          <div key="3" data-grid={{w: 2, h: 3, x: 4, y: 0}}><span className="text">3</span></div>
+        </ResponsiveReactGridLayout>
+      </div>
     );
-  },
-});
+  }
+}
+
 const browserStyle = {
   width: 600,
   margin: 20,
@@ -59,10 +111,7 @@ const browserStyle = {
 const buttonStyle = {
   margin: 12,
 };
-
-
 const SelectableList = makeSelectable(List);
-
 class FileBrowser extends Component {
   constructor(props) {
     super(props);
@@ -153,6 +202,7 @@ class FileBrowser extends Component {
 
 
   render() {
+    const expanded = this.state.expand;
     const { browserOpened, files } = this.props;
     const fileItems = files.map((file, index) => {
       if (file.type === 'fits') {
@@ -177,10 +227,12 @@ class FileBrowser extends Component {
         <div style={{ flex: 0.25 }}>
           <Drawer expand={this.state.expand} width={this.state.width}>
             <MenuItem primaryText="test" leftIcon={<Download />} />
-            <NavNext
-              label="Toggle Drawer"
-              onTouchTap={this.handleToggle}
-            />
+            {
+              expanded ?
+                <NavBefore onTouchTap={this.handleToggle} />
+                : <NavNext onTouchTap={this.handleToggle} />
+            }
+
           </Drawer>
         </div>
         <div style={{ flex: 0.30 }}>
@@ -202,7 +254,7 @@ class FileBrowser extends Component {
           </Paper>
         </div>
         <div style={{ flex: 0.45 }}>
-          <MyFirstGrid />
+          <MyFirstGrid/>
         </div>
       </div>
 

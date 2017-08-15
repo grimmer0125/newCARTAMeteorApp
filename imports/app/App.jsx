@@ -46,7 +46,7 @@ const App = () => (
     <MuiThemeProvider muiTheme={muiTheme}>
       <div>
         <FileBrowser />
-        <ImageViewer />
+        {/* <ImageViewer /> */}
       </div>
     </MuiThemeProvider>
   </Provider>

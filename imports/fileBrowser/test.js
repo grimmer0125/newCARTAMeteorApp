@@ -8,13 +8,12 @@ import Download from 'material-ui/svg-icons/file/file-download';
 import NavNext from 'material-ui/svg-icons/image/navigate-next';
 import NavBefore from 'material-ui/svg-icons/image/navigate-before';
 // import FlatButton from 'material-ui/FlatButton';
-
 import { List, ListItem, makeSelectable } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
-
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
 import ContentSend from 'material-ui/svg-icons/content/send';
-
+import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
+import Content from 'react-panelgroup/lib/PanelGroup.js';
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
@@ -60,15 +59,60 @@ class MyFirstGrid extends Component {
     return {
       className: "layout",
       cols: {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
-      rowHeight: 30,
+      rowHeight: 100,
       onLayoutChange: function() {},
     };
   }
 
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      items: [].map(function(i, key, list) {
+        return {i: i.toString(), x: i*2, y: 0, w: 2, h: 2, add: i === (list.length - 1).toString()};
+      }),
+      newCounter: 0,
+    };
     //layouts: JSON.parse(JSON.stringify(originalLayouts)),
+  }
+  createElement = (el) => {
+    console.log("in createElement, state:", this.state);
+    var removeStyle = {
+      position: 'absolute',
+      right: '2px',
+      top: 0,
+      cursor: 'pointer'
+    };
+    var i = el.add ? '+' : el.i;
+    return (
+      <div key={i} data-grid={el}>
+        {el.add ?
+          <span className="add text" onClick={this.onAddItem}>Add +</span>
+        : <span className="text">{i}</span>}
+        <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i)}>x</button>
+        {/* <button className="remove" style={removeStyle} onClick={this.onRemoveItem}>x</button> */}
+
+      </div>
+    );
+  }
+
+  onAddItem = () => {
+    console.log('INSIDE ADD');
+    this.setState({
+      // Add a new item. It must have a unique key!
+      items: this.state.items.concat({
+        i: 'n' + this.state.newCounter,
+        x: this.state.items.length * 2 % (this.state.cols || 12),
+        y: Infinity, // puts it at the bottom
+        w: 2,
+        h: 2
+      }),
+      // Increment the counter to ensure key is always unique.
+      newCounter: this.state.newCounter + 1,
+    });
+  }
+  onRemoveItem(i) {
+    console.log('removing', i);
+    this.setState({items: _.reject(this.state.items, {i: i})});
   }
   // callback function for handling
   onLayoutChange = (layout) => {
@@ -88,13 +132,14 @@ class MyFirstGrid extends Component {
     }
     return (
       <div>
+        <button onClick={this.onAddItem}>Add Item</button>
         <ResponsiveReactGridLayout
             ref="rrgl"
             {...this.props}
             onLayoutChange={this.onLayoutChange}>
-          <div key="1" data-grid={{w: 2, h: 3, x: 0, y: 0}}><span className="text">1</span></div>
-          <div key="2" data-grid={{w: 2, h: 3, x: 2, y: 0}}><span className="text">2</span></div>
-          <div key="3" data-grid={{w: 2, h: 3, x: 4, y: 0}}><span className="text">3</span></div>
+          {/* {_.map(this.state.items, (s)=>this.createElement(s))} */}
+          {this.state.items.map(this.createElement)}
+
         </ResponsiveReactGridLayout>
       </div>
     );
@@ -102,8 +147,9 @@ class MyFirstGrid extends Component {
 }
 
 const browserStyle = {
-  width: 600,
+  width: 500,
   margin: 20,
+  marginLeft: 80,
   // textAlign: 'center',
   // display: 'inline-block',
 };
@@ -217,25 +263,23 @@ class FileBrowser extends Component {
         <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftIcon={<ContentInbox />} />
       );
     });
-    // const nextIcon = (props) => (
-    //   <SvgIcon {...props}>
-    //     <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-    //   </SvgIcon>
-    // );
-    return (
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ flex: 0.25 }}>
-          <Drawer expand={this.state.expand} width={this.state.width}>
-            <MenuItem primaryText="test" leftIcon={<Download />} />
-            {
-              expanded ?
-                <NavBefore onTouchTap={this.handleToggle} />
-                : <NavNext onTouchTap={this.handleToggle} />
-            }
 
-          </Drawer>
-        </div>
-        <div style={{ flex: 0.30 }}>
+    return (
+     <div style={{ height: '100vh', display: 'flex', flexDirection: 'row' }}>
+       <div style={{ flex: 0.2 }}>
+         <Drawer expand={this.state.expand} width={this.state.width}>
+           <MenuItem primaryText="test" leftIcon={<Download />} />
+           {
+             expanded ?
+               <NavBefore onTouchTap={this.handleToggle} />
+               : <NavNext onTouchTap={this.handleToggle} />
+           }
+         </Drawer>
+       </div>
+       <PanelGroup borderColor='grey'>
+        <div style={{ flex: 2, overflowY: "scroll" }}>
+          {/* <PanelGroup borderColor="grey"> */}
+          {/* <div style={{ flex: 1 }}> */}
           <Paper style={browserStyle} zDepth={1} >
             <p>File Browser, open file browser, then choose a file to read</p>
             <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
@@ -249,15 +293,14 @@ class FileBrowser extends Component {
               <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
             </div>
             }
-            {/* <img src={this.props.imageURL} alt="" /> */}
-
           </Paper>
         </div>
-        <div style={{ flex: 0.45 }}>
-          <MyFirstGrid/>
+        <div style={{ flex: 1, overflowY: "scroll" }} />
+        <div style={{ flex: 1, overflowY: "scroll"}}>
+          <MyFirstGrid />
         </div>
+        </PanelGroup>
       </div>
-
     );
   }
 }

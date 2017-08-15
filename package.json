@@ -18,6 +18,7 @@
     "react-dom": "^15.6.1",
     "react-grid-layout": "^0.14.7",
     "react-keyed-file-browser": "^1.0.1",
+    "react-panelgroup": "^1.0.2",
     "react-redux": "^5.0.5",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.7.1",

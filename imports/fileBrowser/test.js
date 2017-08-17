@@ -7,13 +7,18 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Download from 'material-ui/svg-icons/file/file-download';
 import NavNext from 'material-ui/svg-icons/image/navigate-next';
 import NavBefore from 'material-ui/svg-icons/image/navigate-before';
+import Avatar from 'material-ui/Avatar';
 // import FlatButton from 'material-ui/FlatButton';
 import { List, ListItem, makeSelectable } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
-import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import ContentSend from 'material-ui/svg-icons/content/send';
+// import ContentInbox from 'material-ui/svg-icons/content/inbox';
+// import ContentSend from 'material-ui/svg-icons/content/send';
 import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
 import Content from 'react-panelgroup/lib/PanelGroup.js';
+
+import bounds from 'react-bounds';
+import ReactCSS from 'reactcss';
+
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
@@ -58,6 +63,7 @@ class MyFirstGrid extends Component {
   getDefaultProps() {
     return {
       className: "layout",
+      breakpoints: {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 2},
       cols: {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
       rowHeight: 100,
       onLayoutChange: function() {},
@@ -84,7 +90,7 @@ class MyFirstGrid extends Component {
     };
     var i = el.add ? '+' : el.i;
     return (
-      <div key={i} data-grid={el}>
+      <div key={i} data-grid={el} style={{backgroundColor: '#808080'}}>
         {el.add ?
           <span className="add text" onClick={this.onAddItem}>Add +</span>
         : <span className="text">{i}</span>}
@@ -103,8 +109,9 @@ class MyFirstGrid extends Component {
         i: 'n' + this.state.newCounter,
         x: this.state.items.length * 2 % (this.state.cols || 12),
         y: Infinity, // puts it at the bottom
-        w: 2,
-        h: 2
+        w: 4,
+        h: 2,
+        isResizable: false,
       }),
       // Increment the counter to ensure key is always unique.
       newCounter: this.state.newCounter + 1,
@@ -113,6 +120,13 @@ class MyFirstGrid extends Component {
   onRemoveItem(i) {
     console.log('removing', i);
     this.setState({items: _.reject(this.state.items, {i: i})});
+  }
+
+  onBreakpointChange = (breakpoint, cols) => {
+    this.setState({
+      breakpoint: breakpoint,
+      cols: cols
+    });
   }
   // callback function for handling
   onLayoutChange = (layout) => {
@@ -124,23 +138,28 @@ class MyFirstGrid extends Component {
     //this.setState({layout});
     //this.props.onLayoutChange(layout);
   }
+  test = () => {
+    console.log("onWidthChange CALLED");
+  }
   render() {
-    if (this.state) {
-      console.log("in render, print state:", this.state);
-    } else {
-      console.log("this.state does not exist in render");
-    }
+    // if (this.state) {
+    //   console.log("in render, print state:", this.state);
+    // } else {
+    //   console.log("this.state does not exist in render");
+    // }
     return (
       <div>
         <button onClick={this.onAddItem}>Add Item</button>
-        <ResponsiveReactGridLayout
-            ref="rrgl"
-            {...this.props}
-            onLayoutChange={this.onLayoutChange}>
+            <ResponsiveReactGridLayout
+                ref="rrgl"
+                {...this.props}
+                onLayoutChange={this.onLayoutChange}
+                onBreakpointChange={this.onBreakpointChange}
+                onWidthChange={this.test}>
           {/* {_.map(this.state.items, (s)=>this.createElement(s))} */}
-          {this.state.items.map(this.createElement)}
+              {this.state.items.map(this.createElement)}
 
-        </ResponsiveReactGridLayout>
+            </ResponsiveReactGridLayout>
       </div>
     );
   }
@@ -236,6 +255,11 @@ class FileBrowser extends Component {
     }
   }
 
+  // define callback
+  onUpdate = (array) => {
+    console.log("state change: ", array);
+  }
+
   handleToggle = () => {
     const expandState = !this.state.expand;
     this.setState({ expand: expandState });
@@ -245,7 +269,9 @@ class FileBrowser extends Component {
       this.setState({ width: this.state.closeWidth });
     }
   }
-
+  test = () => {
+    console.log('SUCCESS');
+  }
 
   render() {
     const expanded = this.state.expand;
@@ -254,21 +280,21 @@ class FileBrowser extends Component {
       if (file.type === 'fits') {
         return (
           // key is needed for ui array operation react, value is for selectableList of material-ui
-          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftIcon={<ContentSend />} />
+          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src='https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/fits.png'/>} />
 
         );
       }
 
       return (
-        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftIcon={<ContentInbox />} />
+        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/casa.png"/>} />
       );
     });
 
     return (
-     <div style={{ height: '100vh', display: 'flex', flexDirection: 'row' }}>
-       <div style={{ flex: 0.2 }}>
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'row' }}>
+        <div>
          <Drawer expand={this.state.expand} width={this.state.width}>
-           <MenuItem primaryText="test" leftIcon={<Download />} />
+           <MenuItem style={{ overflowX: 'hidden' }} primaryText="test" leftIcon={<Download />} />
            {
              expanded ?
                <NavBefore onTouchTap={this.handleToggle} />
@@ -276,29 +302,27 @@ class FileBrowser extends Component {
            }
          </Drawer>
        </div>
-       <PanelGroup borderColor='grey'>
-        <div style={{ flex: 2, overflowY: "scroll" }}>
-          {/* <PanelGroup borderColor="grey"> */}
-          {/* <div style={{ flex: 1 }}> */}
-          <Paper style={browserStyle} zDepth={1} >
-            <p>File Browser, open file browser, then choose a file to read</p>
-            <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
-            <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary />
-
-            { browserOpened && fileItems && fileItems.length > 0 &&
-            <div>
-              <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
-                {fileItems}
-              </SelectableList>
-              <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-            </div>
-            }
+       <PanelGroup borderColor='grey' onUpdate={this.onUpdate}>
+       {/* <div> */}
+         <div style={{ flex: 1, overflowY: "scroll", backgroundColor: 'cornflowerblue' }}>
+           <Paper style={browserStyle} zDepth={1} >
+             <p>File Browser, open file browser, then choose a file to read</p>
+             <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
+             <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary />
+             { browserOpened && fileItems && fileItems.length > 0 &&
+              <div>
+                <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
+                  {fileItems}
+                </SelectableList>
+                <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
+              </div>
+              }
+            </Paper>
+          </div>
+          <Paper style={{ flex: 1, overflowY: "scroll", backgroundColor: 'lightgrey'}}>
+            <MyFirstGrid/>
           </Paper>
-        </div>
-        <div style={{ flex: 1, overflowY: "scroll" }} />
-        <div style={{ flex: 1, overflowY: "scroll"}}>
-          <MyFirstGrid />
-        </div>
+          <div style={{ flex: 1, overflowY: "scroll", backgroundColor: 'yellow'}}/>
         </PanelGroup>
       </div>
     );
@@ -318,5 +342,4 @@ const mapStateToPropsListPage = state => ({
 //     prepareFileBrowser: actions.prepareFileBrowser,
 // }, dispatch);
 // }
-
 export default connect(mapStateToPropsListPage)(FileBrowser);

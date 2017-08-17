@@ -11,6 +11,7 @@ import configureStore from './configureStore';
 import ImageViewer from '../imageViewer/ImageViewer';
 //import FileBrowser from '../fileBrowser/FileBrowser';
 import FileBrowser from '../fileBrowser/test';
+
 import actions from './actions';
 
 const store = configureStore();

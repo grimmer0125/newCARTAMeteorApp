@@ -19,6 +19,9 @@ import Content from 'react-panelgroup/lib/PanelGroup.js';
 import bounds from 'react-bounds';
 import ReactCSS from 'reactcss';
 
+import { ContextMenu, MenuItem as MenuItem2, ContextMenuTrigger } from 'react-contextmenu';
+
+
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
@@ -161,6 +164,10 @@ class Main extends Component {
   //   console.log('SUCCESS');
   // }
 
+  handleClick = (e, data) => {
+    console.log(data);
+  }
+
   render() {
     const expanded = this.state.expand;
     // const { browserOpened, files } = this.props;
@@ -190,6 +197,24 @@ class Main extends Component {
             </Paper>
           </div>
           <div style={{ flex: 1, backgroundColor: 'yellow' }}>
+            <div>
+              <ContextMenuTrigger id="some_unique_identifier" >
+                <div className="well">Right click to see the menu</div>
+              </ContextMenuTrigger>
+
+              <ContextMenu id="some_unique_identifier">
+                <MenuItem data={'some_data'} onClick={this.handleClick}>
+          ContextMenu Item 1
+                </MenuItem>
+                <MenuItem data={'some_data'} onClick={this.handleClick}>
+          ContextMenu Item 2
+                </MenuItem>
+                <MenuItem divider />
+                <MenuItem data={'some_data'} onClick={this.handleClick}>
+          ContextMenu Item 3
+                </MenuItem>
+              </ContextMenu>
+            </div>
             <FileBrowser />
             <ImageViewer />
           </div>

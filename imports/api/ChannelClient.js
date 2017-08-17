@@ -117,16 +117,22 @@ export default class ChannelClient {
 
   createNewSession(session) {
     // TODO use session later
-    this.QConnector.jsConnectorReadySlot();
+    if (this.QConnector) {
+      this.QConnector.jsConnectorReadySlot();
+    }
   }
 
   sendCommand(cmd, params) {
-    this.QConnector.jsSendCommandSlot(cmd, params);
+    if (this.QConnector) {
+      this.QConnector.jsSendCommandSlot(cmd, params);
+    }
     // QtConnector.jsUpdateViewSlot(this.m_viewName, th
   }
 
   setupImageViewerSize(viewName, width, height) {
-    this.QConnector.jsUpdateViewSlot(viewName, width, height);
+    if (this.QConnector) {
+      this.QConnector.jsUpdateViewSlot(viewName, width, height);
+    }
   }
 }
 

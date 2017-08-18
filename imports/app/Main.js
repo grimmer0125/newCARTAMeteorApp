@@ -191,7 +191,7 @@ class Main extends Component {
 
         <PanelGroup onUpdate={this.onUpdate} >
           <div style={{ height: 200, backgroundColor: 'cornflowerblue' }}>1111111111111</div>
-          <div style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'green' }}>
+          <div style={{ flex: 1, backgroundColor: 'green' }}>
             <Paper style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'lightgrey' }}>
               <MyFirstGrid width={this.state.secondColumnWidth} />
             </Paper>

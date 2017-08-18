@@ -39,7 +39,9 @@ import React, { Component } from 'react';
 const _ = require('lodash');
 const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const WidthProvider = require('react-grid-layout').WidthProvider;
-const ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
+const ReactGridLayout = require('react-grid-layout');
+
+const Responsive = require('react-grid-layout').Responsive;
 
 // ResponsiveReactGridLayout = WidthProvider(ResponsiveReactGridLayout);
 
@@ -77,46 +79,45 @@ class MyFirstGrid extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: [].map((i, key, list) => ({ i: i.toString(), x: i * 2, y: 0, w: 2, h: 2, add: i === (list.length - 1).toString() })),
+      // items: [].map((i, key, list) => ({ i: i.toString(), x: i * 2, y: 0, w: 2, h: 2, add: i === (list.length - 1).toString() })),
+      items: [0, 1, 2, 3],
       newCounter: 0,
     };
     // layouts: JSON.parse(JSON.stringify(originalLayouts)),
   }
-  createElement = (el) => {
-    console.log('in createElement, state:', this.state);
-    const removeStyle = {
-      position: 'absolute',
-      right: '2px',
-      top: 0,
-      cursor: 'pointer',
-    };
-    const i = el.add ? '+' : el.i;
-    return (
-      <div key={i} data-grid={el} style={{ backgroundColor: '#808080' }}>
-        {el.add ?
-          <span className="add text" onClick={this.onAddItem}>Add +</span>
-          : <span className="text">{i}</span>}
-        <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i)}>x</button>
-        {/* <button className="remove" style={removeStyle} onClick={this.onRemoveItem}>x</button> */}
+  createElement = i =>
+    // console.log('in createElement, state:', this.state);
+    // const removeStyle = {
+    //   position: 'absolute',
+    //   right: '2px',
+    //   top: 0,
+    //   cursor: 'pointer',
+    // };
+    // const i = el.add ? '+' : el.i;
+    (
+    <div key={i} style={{ backgroundColor: '#808080' }} data-grid={{ x: 0, y: i, w: 1, h: 2 }}>i</div>
 
-      </div>
-    );
-  }
+      // <div key={i} data-grid={el} style={{ backgroundColor: '#808080' }}>
+      //   {el.add ?
+      //     <span className="add text" onClick={this.onAddItem}>Add +</span>
+      //     : <span className="text">{i}</span>}
+      //   <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i)}>x</button>
+      //   {/* <button className="remove" style={removeStyle} onClick={this.onRemoveItem}>x</button> */}
+      //
+      // </div>
+    )
+
 
   onAddItem = () => {
-    console.log('INSIDE ADD');
+    const newItems = this.state.items.slice(0);
+    newItems.push(newItems.length);
+    // console.log('INSIDE ADD');
     this.setState({
       // Add a new item. It must have a unique key!
-      items: this.state.items.concat({
-        i: `n${this.state.newCounter}`,
-        x: this.state.items.length * 2 % (this.state.cols || 12),
-        y: Infinity, // puts it at the bottom
-        w: 4,
-        h: 2,
-        isResizable: false,
-      }),
+      items: newItems,
+
       // Increment the counter to ensure key is always unique.
-      newCounter: this.state.newCounter + 1,
+      // newCounter: this.state.newCounter + 1,
     });
   }
   onRemoveItem(i) {
@@ -153,19 +154,24 @@ class MyFirstGrid extends Component {
     return (
       <div style={{ backgroundColor: 'purple' }}>
         <button onClick={this.onAddItem}>Add Item</button>
-        <ResponsiveReactGridLayout
+        <ReactGridLayout
           ref="rrgl"
           {...this.props}
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
           onWidthChange={this.onWidthChange}
+          rowHeight={30}
+          cols={1}
           // style={{ width: '100%' }}
           width={width}
         >
           {/* {_.map(this.state.items, (s)=>this.createElement(s))} */}
           {this.state.items.map(this.createElement)}
 
-        </ResponsiveReactGridLayout>
+          {/* <div style={{ backgroundColor: '#808080' }} key="a" data-grid={{ x: 0, y: 0, w: 1, h: 2 }}>a</div>
+          <div style={{ backgroundColor: '#808080' }} key="b" data-grid={{ x: 0, y: 1, w: 1, h: 2 }}>b</div>
+          <div style={{ backgroundColor: '#808080' }} key="c" data-grid={{ x: 0, y: 2, w: 1, h: 2 }}>c</div> */}
+        </ReactGridLayout>
       </div>
     );
   }

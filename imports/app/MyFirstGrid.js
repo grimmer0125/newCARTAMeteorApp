@@ -39,8 +39,8 @@ import React, { Component } from 'react';
 const _ = require('lodash');
 const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const WidthProvider = require('react-grid-layout').WidthProvider;
-const ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
-
+// const ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
+const ReactGridLayout = require('react-grid-layout');
 // ResponsiveReactGridLayout = WidthProvider(ResponsiveReactGridLayout);
 
 
@@ -67,9 +67,9 @@ class MyFirstGrid extends Component {
   getDefaultProps() {
     return {
       className: 'layout',
-      breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 2 },
-      cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
-      rowHeight: 100,
+      //breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 2 },
+      //cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+      // rowHeight: 100,
       onLayoutChange() {},
     };
   }
@@ -104,12 +104,13 @@ class MyFirstGrid extends Component {
   }
 
   onAddItem = () => {
-    console.log('INSIDE ADD');
+    // console.log('INSIDE ADD');
     this.setState({
       // Add a new item. It must have a unique key!
       items: this.state.items.concat({
         i: `n${this.state.newCounter}`,
-        x: this.state.items.length * 2 % (this.state.cols || 12),
+        //x: this.state.items.length * 2 % (this.state.cols || 12),
+        x: 0,
         y: Infinity, // puts it at the bottom
         w: 4,
         h: 2,
@@ -140,9 +141,6 @@ class MyFirstGrid extends Component {
     // this.setState({layout});
     // this.props.onLayoutChange(layout);
   }
-  onWidthChange = (containerWidth) => {
-    console.log('MyFirstGrid onWidthChange CALLED:', containerWidth);
-  }
   render() {
     // if (this.state) {
     //   console.log("in render, print state:", this.state);
@@ -151,21 +149,21 @@ class MyFirstGrid extends Component {
     // }
     const width = this.props.width ? this.props.width : 200;
     return (
-      <div style={{ backgroundColor: 'purple' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: 'purple' }}>
         <button onClick={this.onAddItem}>Add Item</button>
-        <ResponsiveReactGridLayout
+        <ReactGridLayout
           ref="rrgl"
           {...this.props}
+          autoSize={true}
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
-          onWidthChange={this.onWidthChange}
-          // style={{ width: '100%' }}
+          cols={1}
           width={width}
         >
           {/* {_.map(this.state.items, (s)=>this.createElement(s))} */}
           {this.state.items.map(this.createElement)}
 
-        </ResponsiveReactGridLayout>
+        </ReactGridLayout>
       </div>
     );
   }

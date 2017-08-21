@@ -15,6 +15,7 @@ import Paper from 'material-ui/Paper';
 // import ContentSend from 'material-ui/svg-icons/content/send';
 import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
 import Content from 'react-panelgroup/lib/PanelGroup.js';
+import { hideMenu } from 'react-contextmenu/modules/actions'
 
 import bounds from 'react-bounds';
 import ReactCSS from 'reactcss';
@@ -164,8 +165,9 @@ class Main extends Component {
   //   console.log('SUCCESS');
   // }
 
-  handleClick = (e, data) => {
-    console.log(data);
+  handleClick = () => {
+    this.refs.grid.onAddItem();
+    hideMenu();
   }
 
   render() {
@@ -184,37 +186,30 @@ class Main extends Component {
     //     <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/casa.png" />} />
     //   );
     // });
-
+    const midPanel = (
+      <div>
+        <ContextMenuTrigger id='menu' holdToDisplay={1000}>
+                {/* <Paper style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'lightgrey' }}> */}
+            <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} />
+                {/* </Paper> */}
+        </ContextMenuTrigger>
+        <ContextMenu id='menu'>
+          <MenuItem onClick={this.handleClick}>Add</MenuItem>
+          {/* <MenuItem onClick={this.handleClick} data={{ item: 'item 2' }}>Menu Item 2</MenuItem>
+          <MenuItem divider />
+          <MenuItem onClick={this.handleClick} data={{ item: 'item 3' }}>Menu Item 3</MenuItem> */}
+        </ContextMenu>
+      </div>
+    );
     return (
       <div style={{ height: '100vh', backgroundColor: 'red' }}>
         {/* <div> */}
-
-        <PanelGroup onUpdate={this.onUpdate} >
+        <PanelGroup onUpdate={this.onUpdate}>
           <div style={{ height: 200, backgroundColor: 'cornflowerblue' }}>1111111111111</div>
           <div style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'green' }}>
-            <Paper style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'lightgrey' }}>
-              <MyFirstGrid width={this.state.secondColumnWidth} />
-            </Paper>
+            {midPanel}
           </div>
           <div style={{ flex: 1, backgroundColor: 'yellow' }}>
-            <div>
-              <ContextMenuTrigger id="some_unique_identifier" >
-                <div className="well">Right click to see the menu</div>
-              </ContextMenuTrigger>
-
-              <ContextMenu id="some_unique_identifier">
-                <MenuItem data={'some_data'} onClick={this.handleClick}>
-          ContextMenu Item 1
-                </MenuItem>
-                <MenuItem data={'some_data'} onClick={this.handleClick}>
-          ContextMenu Item 2
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem data={'some_data'} onClick={this.handleClick}>
-          ContextMenu Item 3
-                </MenuItem>
-              </ContextMenu>
-            </div>
             <FileBrowser />
             <ImageViewer />
           </div>

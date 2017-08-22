@@ -91,8 +91,8 @@ class FileBrowser extends Component {
     //
     // // this.setState({selectedFile: file.name});
     this.setState({ selectedIndex: index });
-
-
+    console.log("SELECTED INDEX: ", index);
+    this.props.dispatch(actions.selectFile(index));
     // Meteor.call('selectFileToOpen', file.name, (error, result) => {
     //   console.log("get select file result:", result);
     // });
@@ -118,7 +118,7 @@ class FileBrowser extends Component {
   render() {
     const fitsURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/fits.png';
     const casaURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/casa.png';
-    const { browserOpened, files } = this.props;
+    const { browserOpened, files, selectedFile } = this.props;
     const fileItems = files.map((file, index) => {
       if (file.type === 'fits') {
         return (
@@ -126,7 +126,6 @@ class FileBrowser extends Component {
           <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={fitsURL} />} />
         );
       }
-
       return (
         <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={casaURL} />} />
       );
@@ -137,9 +136,10 @@ class FileBrowser extends Component {
         <p>File Browser, open file browser, then choose a file to read</p>
         <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
         <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary />
-        { browserOpened && fileItems && fileItems.length > 0 &&
+        {/* add defaultValue here; check if defaultValue exists first */}
+        {  browserOpened && fileItems && fileItems.length > 0 &&
         <div>
-          <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
+          <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
             {fileItems}
           </SelectableList>
           <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
@@ -157,6 +157,8 @@ const mapStateToProps = state => ({
   files: state.fileBrowserUI.files,
   rootDir: state.fileBrowserUI.rootDir,
   browserOpened: state.fileBrowserUI.fileBrowserOpened,
+  selectedFile: state.fileBrowserUI.selectedFile,
+  //console.log('RECEIVED SELECTEDFILE: ', selectedFile);
 });
 
 // TODO

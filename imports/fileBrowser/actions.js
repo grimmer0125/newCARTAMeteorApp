@@ -26,7 +26,7 @@ function updateUIToMongo(data) {
   const uidata = FileBrowsers.find().fetch();
   if (uidata.length > 0) {
     console.log('update UI in db, count:', uidata.length);
-
+    console.log('data: ', data);
     const ui = uidata[0];
     console.log('stored UI in db:', ui);
 
@@ -132,7 +132,12 @@ function queryServerFileList() {
     });
   };
 }
-
+function selectFile(index) {
+  return (dispatch, getState) => {
+    updateUIToMongo({selectedFile: index});
+    //console.log("REACHED SELECTFILE()");
+  };
+}
 function closeFileBrowser() {
   return (dispatch, getState) => {
     // send command to mongodb
@@ -153,6 +158,7 @@ const actions = {
   closeFileBrowser,
   queryServerFileList,
   selectFileToOpen,
+  selectFile,
 };
 
 export default actions;

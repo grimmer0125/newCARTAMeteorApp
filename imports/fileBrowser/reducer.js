@@ -7,7 +7,7 @@ const testFileList = {
 };
 
 const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, action) => {
-  console.log("INSIDE REDUCER");
+  console.log('INSIDE REDUCER');
 
   switch (action.type) {
     case Actions.RECEIVE_FILEBROWSER_CHANGE: {

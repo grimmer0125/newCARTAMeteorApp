@@ -2,7 +2,7 @@ import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
 import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
+import MenuItemMUI from 'material-ui/MenuItem';
 import DropDownMenu from 'material-ui/DropDownMenu';
 
 // import RaisedButton from 'material-ui/RaisedButton';
@@ -17,14 +17,15 @@ import Paper from 'material-ui/Paper';
 // import ContentSend from 'material-ui/svg-icons/content/send';
 import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
 import Content from 'react-panelgroup/lib/PanelGroup.js';
-import { hideMenu } from 'react-contextmenu/modules/actions';
+// import { hideMenu } from 'react-contextmenu/modules/actions';
 
-import bounds from 'react-bounds';
-import ReactCSS from 'reactcss';
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
-import { ContextMenu, MenuItem as MenuItem2, ContextMenuTrigger } from 'react-contextmenu';
-
-
+import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
+import 'react-contextmenu/public/styles.5bb557.css';
+// import ContextMenuTrigger from 'react-contextmenu/src/ContextMenuTrigger';
+// import ContextMenu from 'react-contextmenu/src/ContextMenu';
+// import MenuItem from 'react-contextmenu/src/MenuItem';
+// import SubMenu from 'react-contextmenu/src/SubMenu';
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
@@ -44,27 +45,9 @@ import MyFirstGrid from './MyFirstGrid';
 import FileBrowser from '../fileBrowser/FileBrowser';
 import ImageViewer from '../imageViewer/ImageViewer';
 
-const _ = require('lodash');
-const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
-const WidthProvider = require('react-grid-layout').WidthProvider;
-let ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
 
-ResponsiveReactGridLayout = WidthProvider(ResponsiveReactGridLayout);
 // for storing and retrieving position and size coordinates
 
-
-// const browserStyle = {
-//   width: 500,
-//   margin: 20,
-//   marginLeft: 80,
-//   // textAlign: 'center',
-//   // display: 'inline-block',
-// };
-//
-// const buttonStyle = {
-//   margin: 12,
-// };
-// const SelectableList = makeSelectable(List);
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -163,40 +146,27 @@ class Main extends Component {
       this.setState({ width: this.state.closeWidth });
     }
   }
-  // test = () => {
-  //   console.log('SUCCESS');
-  // }
 
-  handleClick = () => {
-    this.refs.grid.onAddItem();
-    hideMenu();
+  handleClick = (e, data) => {
+    // console.log(`data is ${data.type}`);
+    this.refs.grid.onAddItem(data.type);
   }
 
   render() {
     const expanded = this.state.expand;
-    // const { browserOpened, files } = this.props;
-    // const fileItems = files.map((file, index) => {
-    //   if (file.type === 'fits') {
-    //     return (
-    //       // key is needed for ui array operation react, value is for selectableList of material-ui
-    //       <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/fits.png" />} />
-    //
-    //     );
-    //   }
-    //
-    //   return (
-    //     <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/casa.png" />} />
-    //   );
-    // });
     const midPanel = (
       <div>
         <ContextMenuTrigger id="menu" holdToDisplay={1000}>
-          {/* <Paper style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'lightgrey' }}> */}
           <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} />
-          {/* </Paper> */}
         </ContextMenuTrigger>
         <ContextMenu id="menu">
-          <MenuItem onClick={this.handleClick}>Add</MenuItem>
+          <SubMenu title="Layout">
+            {/* <MenuItem onClick={this.handleClick} data={{ type: 'Default' }}>Default Layout</MenuItem> */}
+            <MenuItem onClick={this.handleClick} data={{ type: 'Profiler' }}>Profiler</MenuItem>
+            <MenuItem onClick={this.handleClick} data={{ type: 'Histogram' }}>Histogram</MenuItem>
+            {/* <MenuItem onClick={this.handleClick} data={{ type: 'Image Composite' }}>Image Composite Layout</MenuItem>
+          <MenuItem onClick={this.handleClick} data={{ type: 'Custom' }}>Custom Layout</MenuItem> */}
+          </SubMenu>
           {/* <MenuItem onClick={this.handleClick} data={{ item: 'item 2' }}>Menu Item 2</MenuItem>
           <MenuItem divider />
           <MenuItem onClick={this.handleClick} data={{ item: 'item 3' }}>Menu Item 3</MenuItem> */}
@@ -212,13 +182,9 @@ class Main extends Component {
         <Toolbar style={contentStyle}>
           <ToolbarGroup firstChild>
             <DropDownMenu value={this.state.value} onChange={this.handleChange}>
-              <MenuItem value={1} primaryText="All Broadcasts" />
+              {/* <MenuItem value={1} primaryText="All Broadcasts" />
               <MenuItem value={2} primaryText="All Voice" />
-              <MenuItem value={3} primaryText="All Text" />
-              <MenuItem value={4} primaryText="Complete Voice" />
-              <MenuItem value={5} primaryText="Complete Text" />
-              <MenuItem value={6} primaryText="Active Voice" />
-              <MenuItem value={7} primaryText="Active Text" />
+              <MenuItem value={3} primaryText="All Text" /> */}
             </DropDownMenu>
           </ToolbarGroup>
           <ToolbarGroup>
@@ -228,19 +194,20 @@ class Main extends Component {
         </Toolbar>
         <div style={contentStyle}>
           <PanelGroup onUpdate={this.onUpdate}>
-            <div style={{ flex: 1, minHeight: '100vh', backgroundColor: 'blue' }}>
-              <ImageViewer />
+            <div style={{ flex: 1, overflowY: 'scroll', height: '100vh', backgroundColor: 'blue' }}>
+              {/* <ImageViewer /> */}
             </div>
-            <div style={{ flex: 1, overflowY: 'scroll' }}>
+            <div style={{ flex: 1, overflowY: 'scroll', maxHeight: '100vh' }}>
               {midPanel}
             </div>
-            <div style={{ flex: 1, minHeight: '100vh', backgroundColor: 'yellow' }}>
+            <div style={{ flex: 1, overflowY: 'scroll', height: '100vh', backgroundColor: 'yellow' }}>
               <FileBrowser />
+              <ImageViewer />
             </div>
           </PanelGroup>
         </div>
         <Drawer expand={this.state.expand} width={this.state.width} style={{ opacity: 0.8 }}>
-          <MenuItem style={{ overflowX: 'hidden' }} primaryText="test" leftIcon={<Download />} />
+          <MenuItemMUI style={{ overflowX: 'hidden' }} primaryText="test" leftIcon={<Download />} />
           {
             expanded ?
               <NavBefore onTouchTap={this.handleToggle} />

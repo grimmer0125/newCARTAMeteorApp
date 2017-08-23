@@ -3,6 +3,8 @@ import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
+import DropDownMenu from 'material-ui/DropDownMenu';
+
 // import RaisedButton from 'material-ui/RaisedButton';
 import Download from 'material-ui/svg-icons/file/file-download';
 import NavNext from 'material-ui/svg-icons/image/navigate-next';
@@ -15,11 +17,11 @@ import Paper from 'material-ui/Paper';
 // import ContentSend from 'material-ui/svg-icons/content/send';
 import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
 import Content from 'react-panelgroup/lib/PanelGroup.js';
-import { hideMenu } from 'react-contextmenu/modules/actions'
+import { hideMenu } from 'react-contextmenu/modules/actions';
 
 import bounds from 'react-bounds';
 import ReactCSS from 'reactcss';
-
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
 import { ContextMenu, MenuItem as MenuItem2, ContextMenuTrigger } from 'react-contextmenu';
 
 
@@ -188,12 +190,12 @@ class Main extends Component {
     // });
     const midPanel = (
       <div>
-        <ContextMenuTrigger id='menu' holdToDisplay={1000}>
-                {/* <Paper style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'lightgrey' }}> */}
-            <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} />
-                {/* </Paper> */}
+        <ContextMenuTrigger id="menu" holdToDisplay={1000}>
+          {/* <Paper style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'lightgrey' }}> */}
+          <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} />
+          {/* </Paper> */}
         </ContextMenuTrigger>
-        <ContextMenu id='menu'>
+        <ContextMenu id="menu">
           <MenuItem onClick={this.handleClick}>Add</MenuItem>
           {/* <MenuItem onClick={this.handleClick} data={{ item: 'item 2' }}>Menu Item 2</MenuItem>
           <MenuItem divider />
@@ -201,19 +203,42 @@ class Main extends Component {
         </ContextMenu>
       </div>
     );
+    const contentStyle = { marginLeft: 72 };
+    if (expanded) {
+      contentStyle.marginLeft = 200;
+    }
     return (
-      <div style={{ height: '100vh', backgroundColor: 'red' }}>
-        {/* <div> */}
-        <PanelGroup onUpdate={this.onUpdate}>
-          <div style={{ height: 200, backgroundColor: 'cornflowerblue' }}>1111111111111</div>
-          <div style={{ flex: 1, overflowY: 'scroll', backgroundColor: 'green' }}>
-            {midPanel}
-          </div>
-          <div style={{ flex: 1, backgroundColor: 'yellow' }}>
-            <FileBrowser />
-            <ImageViewer />
-          </div>
-        </PanelGroup>
+      <div style={{ height: '100vh' }}>
+        <Toolbar style={contentStyle}>
+          <ToolbarGroup firstChild>
+            <DropDownMenu value={this.state.value} onChange={this.handleChange}>
+              <MenuItem value={1} primaryText="All Broadcasts" />
+              <MenuItem value={2} primaryText="All Voice" />
+              <MenuItem value={3} primaryText="All Text" />
+              <MenuItem value={4} primaryText="Complete Voice" />
+              <MenuItem value={5} primaryText="Complete Text" />
+              <MenuItem value={6} primaryText="Active Voice" />
+              <MenuItem value={7} primaryText="Active Text" />
+            </DropDownMenu>
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <ToolbarTitle text="Options" />
+            <ToolbarSeparator />
+          </ToolbarGroup>
+        </Toolbar>
+        <div style={contentStyle}>
+          <PanelGroup onUpdate={this.onUpdate}>
+            <div style={{ flex: 1, minHeight: '100vh', backgroundColor: 'blue' }}>
+              <ImageViewer />
+            </div>
+            <div style={{ flex: 1, overflowY: 'scroll' }}>
+              {midPanel}
+            </div>
+            <div style={{ flex: 1, minHeight: '100vh', backgroundColor: 'yellow' }}>
+              <FileBrowser />
+            </div>
+          </PanelGroup>
+        </div>
         <Drawer expand={this.state.expand} width={this.state.width} style={{ opacity: 0.8 }}>
           <MenuItem style={{ overflowX: 'hidden' }} primaryText="test" leftIcon={<Download />} />
           {
@@ -222,11 +247,6 @@ class Main extends Component {
               : <NavNext onTouchTap={this.handleToggle} />
           }
         </Drawer>
-        {/* </div> */}
-
-        {/* <PanelGroup borderColor="grey" onUpdate={this.onUpdate}>
-          1111
-        </PanelGroup> */}
       </div>
     );
   }

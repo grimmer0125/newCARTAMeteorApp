@@ -58,6 +58,16 @@ class FileBrowser extends Component {
     this.props.dispatch(actions.prepareFileBrowser());
   }
 
+  closeBrowser = () => {
+    console.log('close file browser');
+    // if (this.state.browserOpened) {
+    //   this.setState({ browserOpened: false });
+    //   // this.setState({selectedFile: ""});
+    //   this.setState({ selectedIndex: -1 });
+    // }
+
+    this.props.dispatch(actions.closeFileBrowser());
+  }
   openBrowser = () => {
     console.log('open file browser');
 
@@ -72,18 +82,6 @@ class FileBrowser extends Component {
     //   this.setState({ browserOpened: true });
     // }
   }
-
-  closeBrowser = () => {
-    console.log('close file browser');
-    // if (this.state.browserOpened) {
-    //   this.setState({ browserOpened: false });
-    //   // this.setState({selectedFile: ""});
-    //   this.setState({ selectedIndex: -1 });
-    // }
-
-    this.props.dispatch(actions.closeFileBrowser());
-  }
-
   selectImage = (e, index) => {
     // this.state.selectedIndex = index;
     // const file = this.state.files[index];
@@ -91,7 +89,7 @@ class FileBrowser extends Component {
     //
     // // this.setState({selectedFile: file.name});
     this.setState({ selectedIndex: index });
-    console.log("SELECTED INDEX: ", index);
+    console.log('SELECTED INDEX: ', index);
     this.props.dispatch(actions.selectFile(index));
     // Meteor.call('selectFileToOpen', file.name, (error, result) => {
     //   console.log("get select file result:", result);
@@ -130,24 +128,25 @@ class FileBrowser extends Component {
         <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={casaURL} />} />
       );
     });
-
+    if (this.props.openBrowser) {
+      this.openBrowser();
+      console.log('OPENBROWSER TRUE');
+    }
     return (
-      <Paper style={browserStyle} zDepth={1} >
-        <p>File Browser, open file browser, then choose a file to read</p>
-        <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
-        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary />
-        {/* add defaultValue here; check if defaultValue exists first */}
-        {  browserOpened && fileItems && fileItems.length > 0 &&
-        <div>
-          <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
-            {fileItems}
-          </SelectableList>
-          <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-        </div>
+      // <Paper style={browserStyle} zDepth={1} >
+      <div>
+        {/* <p>File Browser, open file browser, then choose a file to read</p> */}
+        {/* <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
+        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary /> */}
+        { browserOpened && fileItems && fileItems.length > 0 &&
+          <div>
+            <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
+              {fileItems}
+            </SelectableList>
+            <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
+          </div>
         }
-        {/* <img src={this.props.imageURL} alt="" /> */}
-
-      </Paper>
+      </div>
     );
   }
 }
@@ -158,7 +157,6 @@ const mapStateToProps = state => ({
   rootDir: state.fileBrowserUI.rootDir,
   browserOpened: state.fileBrowserUI.fileBrowserOpened,
   selectedFile: state.fileBrowserUI.selectedFile,
-  //console.log('RECEIVED SELECTEDFILE: ', selectedFile);
 });
 
 // TODO

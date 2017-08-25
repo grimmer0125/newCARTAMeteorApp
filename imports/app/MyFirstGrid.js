@@ -12,6 +12,7 @@ const ReactGridLayout = require('react-grid-layout');
 // ResponsiveReactGridLayout = WidthProvider(ResponsiveReactGridLayout);
 import Histogram from './Histogram';
 import Profiler from './Profiler';
+// import FileBrowser from '../fileBrowser/FileBrowser';
 
 function getFromLS(key) {
   let ls = {};

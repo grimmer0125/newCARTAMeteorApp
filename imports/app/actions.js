@@ -24,17 +24,12 @@ function handleCommandResponse(resp) {
     // NOTE 如果有動到ui collection, 所以這裡又被call第二次? !!!!!!!!!!!!!!!!!!!!!!!
     // 用 tick ok. 另一方法是用observeation (current way, ok), not tracker.autorun.
     // process.nextTick(() => {
-    const data = resp.data;
-    updateFileListToMongo({ files: data.dir, rootDir: data.name });
+    updateFileListToMongo(resp.data);
     // });
   } else if (resp.cmd === Commands.SELECT_FILE_TO_OPEN) {
     console.log('response is SELECT_FILE_TO_OPEN(get image):');
     console.log(resp);
-    const url = `data:image/jpeg;base64,${resp.buffer}`;
-    console.log('image url string size:', url.length);
-    // TODO add setState back
-    // self.setState({ imageURL: url });
-    saveImageToMongo({ imageURL: url });
+    saveImageToMongo(resp.buffer);
   }
 }
 
@@ -49,20 +44,29 @@ function waitForCommandResponses() {
 
     // console.log('default session2:', Meteor.connection._lastSessionId); empty
 
-    Meteor.call('getSessionId', (err, session_id) => {
-      console.log('getSessionId return:', session_id);
+    Meteor.call('getSessionId', (err, sessionID) => {
+      console.log('getSessionId return:', sessionID);
 
-      SessionManager.set(session_id);
-      // selfSessionID = session_id;
+      SessionManager.set(sessionID);
+      // selfSessionID = sessionID;
 
       // TODO check more, only get the data for this sub-parameter?
       // another approach is, subscribe name is just session value, e.g. "fdasfasf"
       // subscribe special Collection,
-      Meteor.subscribe('commandResponse', session_id, () => {
+      Meteor.subscribe('commandResponse', sessionID, () => {
         console.log('commandResponse subscribes OK !!!');
       });
 
-      // Meteor.subscribe('images', session_id, () => {
+      // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty
+      Meteor.subscribe('filebrowserui', SessionManager.get(), () => {
+        console.log('filebrowserui subscribes OK: !!!', SessionManager.get());
+      });
+
+      Meteor.subscribe('images', SessionManager.get(), () => {
+        console.log('images subscribes OK !!!');
+      });
+
+      // Meteor.subscribe('images', sessionID, () => {
       //   console.log('images subscribes OK !!!');
       // });
 

@@ -21,10 +21,6 @@ function reflectMongoImageAddToStore(imageData) {
 
 function prepareImageViewer() {
   return (dispatch) => {
-    Meteor.subscribe('images', SessionManager.get(), () => {
-      console.log('images subscribes OK !!!');
-    });
-
     const imageObservationHandle = Images.find().observe({
       added(newDoc) {
         console.log('get image Mongo added');
@@ -54,7 +50,11 @@ function prepareImageViewer() {
   };
 }
 
-export function saveImageToMongo(data) {
+export function saveImageToMongo(buffer) {
+  const url = `data:image/jpeg;base64,${buffer}`;
+  console.log('image url string size:', url.length);
+  const data = { imageURL: url };
+
   console.log('saveImageToMongo');
   const images = Images.find().fetch();
   if (images.length > 0) {

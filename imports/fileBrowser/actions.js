@@ -37,7 +37,7 @@ function updateUIToMongo(data) {
     // Responses.remove({});
     // Responses.update(res_id, resp);
   } else {
-    console.log('insert UI in db');
+    console.log('insert UI in db:', SessionManager.get());
 
     // 現在有個case是 mongo的 FileBrowsers 有8筆, 兩個原因
     // 1. 因為response一直都沒有刪掉, 所以reaload時會去處理
@@ -46,12 +46,13 @@ function updateUIToMongo(data) {
     // p.s. 看起來meteor 是一筆一筆added 通知, default
     //  https://docs.meteor.com/api/pubsub.html 可能可用這裡的避掉多筆added ? No. 只好每次用完都刪掉response
 
-    const docID = FileBrowsers.insert({ ...data, session: SessionManager.get() });
-    console.log('insert fileBrowser is finished:', docID);
+    const docID = FileBrowsers.insert({ ...data, sessionID: SessionManager.get() });
+    console.log('insert fileBrowser is finished:', docID, ';session:', SessionManager.get());
   }
 }
 
-export function updateFileListToMongo(fileList) {
+export function updateFileListToMongo(data) {
+  const fileList = { files: data.dir, rootDir: data.name };
   console.log('updateFileListToMongo');
   updateUIToMongo(fileList);
 }
@@ -74,11 +75,7 @@ function receiveUIChange(ui) {
 
 function prepareFileBrowser() {
   return (dispatch) => {
-    console.log('prepareFileBrowser');
-
-    Meteor.subscribe('filebrowserui', SessionManager.get(), () => {
-      console.log('filebrowserui subscribes OK !!!');
-    });
+    console.log('prepareFileBrowser:', SessionManager.get());
 
     // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more
     // e.g. https://gist.github.com/aaronthorp/06b67c171fde6d1ef317
@@ -97,7 +94,7 @@ function prepareFileBrowser() {
       },
     });
 
-      // ui part
+      // ui part, old way
       // Tracker.autorun(() => {
       //   // 1st time ok, 2nd insert fail, so becomes back to zero.
       //   // local write still get this callback.
@@ -127,6 +124,7 @@ function queryServerFileList() {
     const params = 'path:';// 'pluginId:ImageViewer,index:0';
 
     // 2. send command if it becomes true.
+    // TODO need to send Seesion id ? Server knows this and do we need to check this on server side? (Seesion change case)
     Meteor.call('sendCommand', Commands.REQUEST_FILE_LIST, params, (error, result) => {
       console.log('get open file browser result:', result);
     });

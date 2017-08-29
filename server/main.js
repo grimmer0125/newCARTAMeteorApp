@@ -71,7 +71,7 @@ function handleCalculationServerImage(viewName, buffer) {
   insertResponse({ cmd: Commands.SELECT_FILE_TO_OPEN, buffer });
 }
 
-function handleCalculationServerMessage(cmd, result) {
+function handleCalculationServerMessage(sessionID, cmd, result) {
   console.log('get message from WebSocket Server, len:', result.length);
   console.log('cmd resp:', cmd, ';result:', result);
 
@@ -79,7 +79,7 @@ function handleCalculationServerMessage(cmd, result) {
   try {
     data = JSON.parse(result);
     console.log('the response from cpp -> js is json');
-    insertResponse({ cmd, data });
+    insertResponse({ sessionID, cmd, data });
   } catch (e) {
     console.log('the response from cpp -> js is not a json');
     if (cmd == '/CartaObjects/ViewManager:registerView') {
@@ -99,7 +99,7 @@ function handleCalculationServerMessage(cmd, result) {
       // select file, c14
       // get stack info, update view size, c14
       // get image1 (black, due to update size ), c14
-      // reset zoom level, c14, -> TODO Not done 
+      // reset zoom level, c14, -> TODO Not done
       // get image  (real), c14
     }
   }
@@ -119,27 +119,30 @@ Meteor.methods({
   getSessionId() {
     if (Meteor.isServer) {
       console.log('getSessionId server side, being called getSessionId:', this.connection.id);
+
+      client.createNewSession(this.connection.id);
+
       return this.connection.id;
     }
-    // TODO id becomes null !!, not same as query in client, session
-    console.log('getSessionId in client:', Meteor.connection._lastSessionId); // empty
-    return Meteor.connection._lastSessionId;
+
+    // On Client side, this.connectino.id will be empty
+    return '';
   },
 
   sendCommand(cmd, params) {
     if (Meteor.isServer) {
       console.log('forwared commands from clients:', cmd, ';params:', params);
-      console.log('session:', this.connection.id);
+      console.log('client session:', this.connection.id);
 
       if (cmd == Commands.SELECT_FILE_TO_OPEN) {
         // QString parameter = "id:/CartaObjects/c14,data:" + fileName;
         const parameter = `id:${controllerID},data:${params}`;
         console.log('inject file parameter, become:', parameter);
-        client.sendCommand(cmd, parameter);
+        client.sendCommand(this.connection.id, cmd, parameter);
         return '';
       }
       // return this.connection.id;
-      client.sendCommand(cmd, params);
+      client.sendCommand(this.connection.id, cmd, params);
       return '';
     }
 

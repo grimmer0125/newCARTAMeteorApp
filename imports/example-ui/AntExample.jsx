@@ -59,13 +59,13 @@ export default class Example extends Component {
     //TODO may feature out how to get the info in client.jsx
     // console.log("default session:", simpleStringify(Meteor.connection)); in client.jsx
     // http://www.danielsvane.dk/blog/getting-session-id-in-meteor-on-startup
-    Meteor.call("getSessionId", function(err, session_id) {
-      console.log("getSessionId return:", session_id);
+    Meteor.call("getSessionId", function(err, sessionID) {
+      console.log("getSessionId return:", sessionID);
 
       //TODO check more, only get the data for this sub-parameter?
       // another approach is, subscribe name is just session value, e.g. "fdasfasf"
       //subscribe special Collection,
-      Meteor.subscribe("commandResponse", session_id); //changed???
+      Meteor.subscribe("commandResponse", sessionID); //changed???
 
       function parseFile(res) {
         this.setState({files: res.dir});

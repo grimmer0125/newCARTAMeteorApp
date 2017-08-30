@@ -105,7 +105,6 @@ class FileBrowser extends Component {
       // Meteor.call('selectFileToOpen', `${this.props.rootDir}/${file.name}`, (error, result) => {
       //   console.log('get select file result:', result);
       // });
-
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
 
       // this.setState({ browserOpened: false });

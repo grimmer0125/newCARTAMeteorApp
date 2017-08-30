@@ -42,16 +42,14 @@ export default class SideMenu extends Component {
       openBrowser: !this.state.openBrowser,
     });
   }
-
   render() {
-    const expanded = this.props.expand;
     const buttonStyle1 = { margin: 'auto', left: '10%', bottom: '10px', position: 'absolute' };
     const buttonStyle2 = { margin: 'auto', right: '10%', bottom: '10px', position: 'absolute' };
     const menu = (
       <div>
         <MenuItemMUI style={{ overflowX: 'hidden' }} onClick={this.handleOpenFiles} primaryText="Files" leftIcon={<Folder />} />
         {
-          expanded ?
+          this.props.expand ?
             <IconButton style={buttonStyle2}>
               <NavBefore onTouchTap={this.handleToggle} />
             </IconButton>

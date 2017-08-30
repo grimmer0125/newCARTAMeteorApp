@@ -91,6 +91,10 @@ class MyFirstGrid extends Component {
       newCounter: this.state.newCounter + 1,
     });
   }
+  setSetting(type) {
+    console.log('THE TYPE TO BE PASSED: ', type);
+    this.props.setSetting(type);
+  }
   addGraph = (type) => {
     // console.log(`TYPE: ${type}`);
     if (type === 'Histogram') {
@@ -116,6 +120,7 @@ class MyFirstGrid extends Component {
         <span className="text">{el.i}</span>
         {this.addGraph(el.type)}
         <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i)}>x</button>
+        <button style={{ position: 'absolute', right: '23px', top: 0 }} onClick={() => this.setSetting(el.type)}>Setting</button>
       </div>
     );
   }
@@ -125,7 +130,8 @@ class MyFirstGrid extends Component {
     // } else {
     //   console.log("this.state does not exist in render");
     // }
-    const width = this.props.width ? this.props.width : 200;
+    const width = this.props.width ? this.props.width : 400;
+    console.log('WIDTH RECEIVED BY GRID: ', width);
     return (
       <div style={{ minHeight: '100vh' }}>
         {/* <button onClick={this.onAddItem('none')}>Add Item</button> */}

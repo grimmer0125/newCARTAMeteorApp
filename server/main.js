@@ -64,45 +64,59 @@ const insertResponse = Meteor.bindEnvironment((resp) => {
 // I20170719-10:30:18.539(8)? insert Response insert
 // I20170719-10:30:18.541(8)? insert Response insert
 
-let controllerID = null;
 
-function handleCalculationServerImage(viewName, buffer) {
+function handleCalculationServerImage(sessionID, viewName, buffer) {
   console.log('get image from WebSocket Server, len:', buffer.length);
-  insertResponse({ cmd: Commands.SELECT_FILE_TO_OPEN, buffer });
+  insertResponse({ sessionID, cmd: Commands.SELECT_FILE_TO_OPEN, buffer });
 }
 
 function handleCalculationServerMessage(sessionID, cmd, result) {
   console.log('get message from WebSocket Server, len:', result.length);
-  console.log('cmd resp:', cmd, ';result:', result);
 
-  let data;
+  let data = null;
+
+
+  // if (typeof result === 'string') {
+
+  // if (cmd == '/CartaObjects/ViewManager:registerView') {
+  // console.log('grimmer got register view command response');
+  // controllerID = result;
+  //
+  // const viewName = `${controllerID}/view`;
+  // const width = 637; // TODO same as the experimental setting in ImageViewer, change later
+  // const height = 677;
+  //
+  // client.setupImageViewerSize(viewName, width, height);
+  // Try setup view's size
+  // if (false) QtConnector.jsUpdateViewSlot(this.m_viewName,
+  //   this.m_container.offsetWidth, this.m_container.offsetHeight);
+
+  // query file list x
+  // select file, c14
+  // get stack info, update view size, c14
+  // get image1 (black, due to update size ), c14
+  // reset zoom level, c14, -> TODO Not done
+  // get image  (real), c14
+  // }
+  // } else {
+  // data = JSON.parse(result);
+  // }
+
+
   try {
     data = JSON.parse(result);
-    console.log('the response from cpp -> js is json');
-    insertResponse({ sessionID, cmd, data });
+    console.log('the response from cpp -> js is json:', data);
+    // data = json;
+    // insertResponse({ sessionID, cmd, data });
+
+  //   console.log('the response from cpp -> js is json');
+  //   insertResponse({ sessionID, cmd, data });
   } catch (e) {
-    console.log('the response from cpp -> js is not a json');
-    if (cmd == '/CartaObjects/ViewManager:registerView') {
-      console.log('grimmer got it');
-      controllerID = result;
-
-      const viewName = `${controllerID}/view`;
-      const width = 637; // TODO same as the experimental setting in ImageViewer, change later
-      const height = 677;
-
-      client.setupImageViewerSize(viewName, width, height);
-      // Try setup view's size
-      // if (false) QtConnector.jsUpdateViewSlot(this.m_viewName,
-      //   this.m_container.offsetWidth, this.m_container.offsetHeight);
-
-      // query file list x
-      // select file, c14
-      // get stack info, update view size, c14
-      // get image1 (black, due to update size ), c14
-      // reset zoom level, c14, -> TODO Not done
-      // get image  (real), c14
-    }
+    data = result;
+    console.log('the response from cpp -> js is string:', data);
+    // insertResponse({ sessionID, cmd, data });
   }
+  insertResponse({ sessionID, cmd, data });
 }
 
 let client = null;
@@ -115,6 +129,15 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
+
+  setupViewSize(viewName, width, height) {
+    if (Meteor.isServer) {
+      console.log("forwared client's setupViewSize");
+      console.log('client session:', this.connection.id);
+
+      client.setupImageViewerSize(this.connection.id, viewName, width, height);
+    }
+  },
 
   getSessionId() {
     if (Meteor.isServer) {
@@ -134,13 +157,14 @@ Meteor.methods({
       console.log('forwared commands from clients:', cmd, ';params:', params);
       console.log('client session:', this.connection.id);
 
-      if (cmd == Commands.SELECT_FILE_TO_OPEN) {
-        // QString parameter = "id:/CartaObjects/c14,data:" + fileName;
-        const parameter = `id:${controllerID},data:${params}`;
-        console.log('inject file parameter, become:', parameter);
-        client.sendCommand(this.connection.id, cmd, parameter);
-        return '';
-      }
+      // if (cmd == Commands.SELECT_FILE_TO_OPEN) {
+      //   // QString parameter = "id:/CartaObjects/c14,data:" + fileName;
+      //   const parameter = `id:${controllerID},data:${params}`;
+      //   console.log('inject file parameter, become:', parameter);
+      //   client.sendCommand(this.connection.id, cmd, parameter);
+      //   return '';
+      // }
+
       // return this.connection.id;
       client.sendCommand(this.connection.id, cmd, params);
       return '';

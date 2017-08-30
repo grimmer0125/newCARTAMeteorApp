@@ -85,10 +85,10 @@ export default class ChannelClient {
         });
 
         // listen for jsViewUpdatedSignal to render the image
-        this.QConnector.jsViewUpdatedSignal.connect((viewName, buffer, refreshId) => {
+        this.QConnector.jsViewUpdatedSignal.connect((sessionID, viewName, buffer, refreshId) => {
           try {
             if (this.imageHandler) {
-              this.imageHandler(viewName, buffer);
+              this.imageHandler(sessionID, viewName, buffer);
             }
             // const view = m_views[viewName];
             // if (view == null) {

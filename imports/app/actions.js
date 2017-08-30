@@ -6,7 +6,7 @@ import { Responses } from '../api/Responses';
 
 // command response part:
 import { updateFileListToMongo } from '../fileBrowser/actions';
-import { saveImageToMongo } from '../imageViewer/actions';
+import { saveImageToMongo, receiveReigsterViewResp } from '../imageViewer/actions';
 // response name list part:
 // const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
 import Commands from '../api/Commands';
@@ -30,6 +30,8 @@ function handleCommandResponse(resp) {
     console.log('response is SELECT_FILE_TO_OPEN(get image):');
     console.log(resp);
     saveImageToMongo(resp.buffer);
+  } else if (resp.cmd === Commands.REGISTER_IMAGEVIEWER) {
+    receiveReigsterViewResp(resp.data);
   }
 }
 

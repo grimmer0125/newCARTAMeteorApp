@@ -22,7 +22,7 @@ export const Actions = {
 // Current way: logic are how to change mongodb, in AsyncActionCreator, **Action files.
 
 function updateUIToMongo(data) {
-  console.log('updateUIToMongo');
+  console.log('updateUIToMongo:', data);
   const uidata = FileBrowsers.find().fetch();
   if (uidata.length > 0) {
     console.log('update UI in db, count:', uidata.length);
@@ -47,7 +47,7 @@ function updateUIToMongo(data) {
     //  https://docs.meteor.com/api/pubsub.html 可能可用這裡的避掉多筆added ? No. 只好每次用完都刪掉response
 
     const docID = FileBrowsers.insert({ ...data, sessionID: SessionManager.get() });
-    console.log('insert fileBrowser is finished:', docID, ';session:', SessionManager.get());
+    console.log('insert fileBrowser is finished:', docID, ';sessionID:', SessionManager.get());
   }
 }
 
@@ -140,7 +140,14 @@ function closeFileBrowser() {
 
 function selectFileToOpen(path) {
   return (dispatch, getState) => {
-    Meteor.call('sendCommand', Commands.SELECT_FILE_TO_OPEN, path, (error, result) => {
+    const state = getState();
+
+    // 得到controllerID
+    const controllerID = state.image.controllerID;
+    const parameter = `id:${controllerID},data:${path}`;
+    console.log('inject file parameter, become:', parameter);
+
+    Meteor.call('sendCommand', Commands.SELECT_FILE_TO_OPEN, parameter, (error, result) => {
       console.log('get select file result:', result);
     });
   };

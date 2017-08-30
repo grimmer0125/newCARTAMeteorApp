@@ -6,7 +6,7 @@ const image = (state = { imageURL: '' }, action) => {
   switch (action.type) {
     case Actions.RECEIVE_IMAGE_CHANGE:
       // console.log('combine:', combine);
-      return action.payload.imageData;
+      return { ...state, ...action.payload };
     default:
       return state;
   }

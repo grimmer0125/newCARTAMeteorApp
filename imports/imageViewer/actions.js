@@ -30,6 +30,14 @@ function prepareImageViewer() {
         console.log('get image Mongo changed');
         dispatch(reflectMongoImageAddToStore(newDoc));
       },
+      removed(oldDocument) {
+        console.log('get image Mongo delete');
+        const images = Images.find().fetch();
+        if (images.length > 0) {
+          const image = images[0];
+          dispatch(reflectMongoImageAddToStore(image));
+        }
+      },
     });
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js

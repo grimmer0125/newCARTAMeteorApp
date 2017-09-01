@@ -5,7 +5,7 @@ const QWebChannel = require('./qwebchannel').QWebChannel;
 
 const WebSocket = require('ws');
 
-const wsUri = 'ws://localhost:4317';
+const wsUri = 'ws://127.0.0.1:4317';
 
 export default class ChannelClient {
   constructor() {
@@ -116,10 +116,16 @@ export default class ChannelClient {
   }
 
   createNewSession(sessionID) {
-    // TODO use session later
     if (this.QConnector) {
       console.log('create new Session:', sessionID);
       this.QConnector.newSessionCreatedSlot(sessionID);
+    }
+  }
+
+  sendKeepAlive() {
+    if (this.QConnector) {
+      console.log('cleint send keep alive packet');
+      this.QConnector.jsSendKeepAlive();
     }
   }
 

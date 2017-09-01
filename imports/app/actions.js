@@ -20,17 +20,21 @@ export const Actions = {
   GET_SESSIONID,
 };
 
+let otherSubHnadleFile = null;
+let otherSubHandleImage = null;
+
 function turnOnWatching(watchingSessionID) {
   return (dispatch) => {
     // subscribe
     SessionManager.useOtherSession(watchingSessionID);
 
     console.log('use other session:', SessionManager.getOtherSession());
-    Meteor.subscribe('filebrowserui', SessionManager.getOtherSession(), () => {
+
+    otherSubHnadleFile = Meteor.subscribe('filebrowserui', SessionManager.getOtherSession(), () => {
       console.log('filebrowserui subscribes OK: !!!', SessionManager.get());
     });
 
-    Meteor.subscribe('images', SessionManager.getOtherSession(), () => {
+    otherSubHandleImage = Meteor.subscribe('images', SessionManager.getOtherSession(), () => {
       console.log('images subscribes OK !!!');
     });
   };
@@ -38,7 +42,17 @@ function turnOnWatching(watchingSessionID) {
 
 function turnOffWatching() {
   return (dispatch) => {
+    SessionManager.stopUsingOtherSession();
 
+    if (otherSubHnadleFile) {
+      console.log('stop file handle');
+      otherSubHnadleFile.stop();
+    }
+
+    if (otherSubHandleImage) {
+      console.log('stop image handle');
+      otherSubHandleImage.stop();
+    }
   };
   // unsubscribe
 

@@ -91,6 +91,14 @@ function prepareFileBrowser() {
         console.log('get Mongo fileBrowser changed');
         dispatch(receiveUIChange(newDoc));
       },
+      removed(oldDocument) {
+        console.log('get Mongo fileBrowse delete');
+        const uidata = FileBrowsers.find().fetch();
+        if (uidata.length > 0) {
+          const ui = uidata[0];
+          dispatch(receiveUIChange(ui));
+        }
+      },
     });
 
       // ui part, old way

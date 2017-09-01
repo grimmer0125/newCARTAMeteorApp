@@ -75,12 +75,12 @@ export function receiveReigsterViewResp(result) {
   });
 }
 
-export function saveImageToMongo(buffer) {
+export function receiveImageToMongo(buffer) {
   const url = `data:image/jpeg;base64,${buffer}`;
   console.log('image url string size:', url.length);
   const data = { imageURL: url };
 
-  console.log('saveImageToMongo');
+  console.log('receiveImageToMongo');
   const images = Images.find().fetch();
   if (images.length > 0) {
     console.log('save image by update');

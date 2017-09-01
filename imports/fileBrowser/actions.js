@@ -13,7 +13,6 @@ const RECEIVE_FILEBROWSER_CHANGE = 'RECEIVE_FILEBROWSER_CHANGE';
 
 export const Actions = {
   RECEIVE_FILEBROWSER_CHANGE,
-  // RECEIVE_FILE_LIST,
 };
 
 // export const fileBrowserCloseAction = createAction(FILEBROWSER_CLOSE);
@@ -51,9 +50,9 @@ function updateUIToMongo(data) {
   }
 }
 
-export function updateFileListToMongo(data) {
+export function receiveFileList(data) {
   const fileList = { files: data.dir, rootDir: data.name };
-  console.log('updateFileListToMongo');
+  // console.log('updateFileListToMongo');
   updateUIToMongo(fileList);
 }
 
@@ -75,7 +74,7 @@ function receiveUIChange(ui) {
 
 function prepareFileBrowser() {
   return (dispatch) => {
-    console.log('prepareFileBrowser:', SessionManager.get());
+    // console.log('prepareFileBrowser:', SessionManager.get());
 
     // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more
     // e.g. https://gist.github.com/aaronthorp/06b67c171fde6d1ef317

@@ -99,7 +99,7 @@ function handleCalculationServerMessage(cmd, result) {
       // select file, c14
       // get stack info, update view size, c14
       // get image1 (black, due to update size ), c14
-      // reset zoom level, c14, -> TODO Not done 
+      // reset zoom level, c14, -> TODO Not done
       // get image  (real), c14
     }
   }
@@ -146,7 +146,6 @@ Meteor.methods({
     console.log('sendCommand in client');
     return '';
   },
-
   // queryFileList() {
   //   if (Meteor.isServer) {
   //     console.log('query in server');

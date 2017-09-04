@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 export default class HistogramSettings extends Component {
   constructor(props) {
+    console.log('HISTOGRAM SETTINGS');
     super(props);
     this.state = {};
   }

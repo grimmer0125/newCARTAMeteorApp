@@ -8,7 +8,7 @@ import { FileBrowsers } from '../api/FileBrowsers';
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
 
-import { setupMongoListeners } from '../api/MongoHelper';
+import { setupMongoListeners, mongoUpsert } from '../api/MongoHelper';
 
 
 // TODO move consts to a file
@@ -23,46 +23,47 @@ export const Actions = {
 // Normal way: a action will affect 1 or more than 1 reducers. logic are there.
 // Current way: logic are how to change mongodb, in AsyncActionCreator, **Action files.
 
-function updateUIToMongo(data) {
-  console.log('updateUIToMongo:', data);
-  const uidata = FileBrowsers.find().fetch();
-  if (uidata.length > 0) {
-    console.log('update UI in db, count:', uidata.length);
-    console.log('data: ', data);
-    const ui = uidata[0];
-    console.log('stored UI in db:', ui);
-
-    const docID = uidata[0]._id;
-
-    FileBrowsers.update(docID, { $set: data });
-    // console.log('insert Response update:', res_id);
-    // Responses.remove({});
-    // Responses.update(res_id, resp);
-  } else {
-    console.log('insert UI in db:', SessionManager.get());
-
-    // 現在有個case是 mongo的 FileBrowsers 有8筆, 兩個原因
-    // 1. 因為response一直都沒有刪掉, 所以reaload時會去處理
-    // 2. 因為順序問題,  當 FileBrowsers還沒有收到mongo sync前,
-    // 先得到response->會去insert一筆新的FileBrowser (因為還沒有sync完/得到舊的)
-    // p.s. 看起來meteor 是一筆一筆added 通知, default
-    //  https://docs.meteor.com/api/pubsub.html 可能可用這裡的避掉多筆added ? No. 只好每次用完都刪掉response
-
-    const docID = FileBrowsers.insert({ ...data, sessionID: SessionManager.get() });
-    console.log('insert fileBrowser is finished:', docID, ';sessionID:', SessionManager.get());
-  }
-}
+// function updateUIToMongo(data) {
+//   console.log('updateUIToMongo:', data);
+//   const uidata = FileBrowsers.find().fetch();
+//   if (uidata.length > 0) {
+//     console.log('update UI in db, count:', uidata.length);
+//     console.log('data: ', data);
+//     const ui = uidata[0];
+//     console.log('stored UI in db:', ui);
+//
+//     const docID = uidata[0]._id;
+//
+//     FileBrowsers.update(docID, { $set: data });
+//     // console.log('insert Response update:', res_id);
+//     // Responses.remove({});
+//     // Responses.update(res_id, resp);
+//   } else {
+//     console.log('insert UI in db:', SessionManager.get());
+//
+//     // 現在有個case是 mongo的 FileBrowsers 有8筆, 兩個原因
+//     // 1. 因為response一直都沒有刪掉, 所以reaload時會去處理
+//     // 2. 因為順序問題,  當 FileBrowsers還沒有收到mongo sync前,
+//     // 先得到response->會去insert一筆新的FileBrowser (因為還沒有sync完/得到舊的)
+//     // p.s. 看起來meteor 是一筆一筆added 通知, default
+//     //  https://docs.meteor.com/api/pubsub.html 可能可用這裡的避掉多筆added ? No. 只好每次用完都刪掉response
+//
+//     const docID = FileBrowsers.insert({ ...data, sessionID: SessionManager.get() });
+//     console.log('insert fileBrowser is finished:', docID, ';sessionID:', SessionManager.get());
+//   }
+// }
 
 export function receiveFileList(data) {
   const fileList = { files: data.dir, rootDir: data.name };
   // console.log('updateFileListToMongo');
-  updateUIToMongo(fileList);
+  // updateUIToMongo(fileList);
+  mongoUpsert(FileBrowsers, fileList);
 }
 
 export function updateFileBrowserToMongo(Open) {
   console.log('updateFileBrowserToMongo');
-
-  updateUIToMongo({ fileBrowserOpened: Open });
+  mongoUpsert(FileBrowsers, { fileBrowserOpened: Open });
+  // updateUIToMongo({ fileBrowserOpened: Open });
 }
 
 // NOTE: follow https://github.com/acdlite/flux-standard-action
@@ -125,7 +126,9 @@ function queryServerFileList() {
 }
 function selectFile(index) {
   return (dispatch, getState) => {
-    updateUIToMongo({ selectedFile: index });
+    mongoUpsert(FileBrowsers, { selectedFile: index });
+
+    // updateUIToMongo({ selectedFile: index });
     // console.log("REACHED SELECTFILE()");
   };
 }
@@ -140,7 +143,7 @@ function selectFileToOpen(path) {
   return (dispatch, getState) => {
     const state = getState();
 
-    // 得到controllerID
+    // get controllerID
     const controllerID = state.image.controllerID;
     const parameter = `id:${controllerID},data:${path}`;
     console.log('inject file parameter, become:', parameter);

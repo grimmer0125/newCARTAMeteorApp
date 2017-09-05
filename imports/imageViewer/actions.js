@@ -9,14 +9,14 @@ export const Actions = {
   RECEIVE_IMAGE_CHANGE,
 };
 
-import { setupMongoListeners } from '../api/MongoHelper';
+import { setupMongoListeners, mongoUpsert } from '../api/MongoHelper';
 
 function reflectMongoImageAddToStore(imageData) {
   console.log('reflect image:', imageData);
   return {
     type: RECEIVE_IMAGE_CHANGE,
     payload: {
-      ...imageData,
+      imageData,
     },
   };
 }
@@ -47,15 +47,16 @@ export function receiveReigsterViewResp(result) {
   console.log('grimmer got register view command response');
   const controllerID = result;
 
+  mongoUpsert(Images, { controllerID });
   // step1: save controllerID to mongodb
-  const images = Images.find().fetch();
-  if (images.length > 0) {
-    console.log('save image-controllerID by update');
-    Images.update(images[0]._id, { $set: controllerID });
-  } else {
-    console.log('save image-controllerID by insert');
-    Images.insert({ controllerID, sessionID: SessionManager.get() });
-  }
+  // const images = Images.find().fetch();
+  // if (images.length > 0) {
+  //   console.log('save image-controllerID by update');
+  //   Images.update(images[0]._id, { $set: controllerID });
+  // } else {
+  //   console.log('save image-controllerID by insert');
+  //   Images.insert({ controllerID, sessionID: SessionManager.get() });
+  // }
 
   // step2
   const viewName = `${controllerID}/view`;
@@ -71,17 +72,19 @@ export function receiveReigsterViewResp(result) {
 export function receiveImageToMongo(buffer) {
   const url = `data:image/jpeg;base64,${buffer}`;
   console.log('image url string size:', url.length);
-  const data = { imageURL: url };
+  // const data = { imageURL: url };
 
   console.log('receiveImageToMongo');
-  const images = Images.find().fetch();
-  if (images.length > 0) {
-    console.log('save image by update');
-    Images.update(images[0]._id, { $set: { ...data } });
-  } else {
-    console.log('save image by insert');
-    Images.insert({ ...data, session: SessionManager.get() });
-  }
+  mongoUpsert(Images, { imageURL: url });
+
+  // const images = Images.find().fetch();
+  // if (images.length > 0) {
+  //   console.log('save image by update');
+  //   Images.update(images[0]._id, { $set: { ...data } });
+  // } else {
+  //   console.log('save image by insert');
+  //   Images.insert({ ...data, session: SessionManager.get() });
+  // }
 }
 
 const actions = {

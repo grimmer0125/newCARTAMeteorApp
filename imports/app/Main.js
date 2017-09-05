@@ -1,20 +1,21 @@
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
-import Drawer from 'material-ui/Drawer';
-import MenuItemMUI from 'material-ui/MenuItem';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import IconButton from 'material-ui/IconButton';
-
-import NavNext from 'material-ui/svg-icons/image/navigate-next';
-import NavBefore from 'material-ui/svg-icons/image/navigate-before';
-import Backspace from 'material-ui/svg-icons/hardware/keyboard-backspace';
 import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
-
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
+import Paper from 'material-ui/Paper';
+import IconButton from 'material-ui/IconButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import NumericInput from 'react-numeric-input';
+import { Tabs, Tab } from 'material-ui/Tabs';
+import Slider from 'material-ui/Slider';
+import SkipPrev from 'material-ui/svg-icons/av/skip-previous';
+import SkipNext from 'material-ui/svg-icons/av/skip-next';
+import Stop from 'material-ui/svg-icons/av/stop';
+import PlayForward from 'material-ui/svg-icons/av/play-arrow';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItemMUI from 'material-ui/MenuItem';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-contextmenu/public/styles.5bb557.css';
-import Folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
 // import Layout from './Layout';
@@ -39,6 +40,7 @@ import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import SideMenu from './SideMenu';
 import ImageViewer from '../imageViewer/ImageViewer';
+import Topbar from './Topbar';
 
 // for storing and retrieving position and size coordinates
 class Main extends Component {
@@ -93,6 +95,8 @@ class Main extends Component {
   }
 
   render() {
+    const string = 'Image';
+    const label = <div>{string}<br /><sub>image 0</sub></div>;
     const contentStyle = { marginLeft: 65 };
     const expanded = this.state.expand;
     const setting = this.state.setting;
@@ -119,15 +123,8 @@ class Main extends Component {
     return (
       <div>
         <div style={{ overflowY: 'hidden', height: '100vh' }}>
-          <Toolbar style={contentStyle}>
-            <ToolbarGroup firstChild>
-              <DropDownMenu value={this.state.value} onChange={this.handleChange}>
-                <MenuItemMUI value={1} primaryText="All Broadcasts" />
-                <MenuItemMUI value={2} primaryText="All Voice" />
-                <MenuItemMUI value={3} primaryText="All Text" />
-              </DropDownMenu>
-            </ToolbarGroup>
-          </Toolbar>
+          <Topbar style={contentStyle} handleLogout={this.props.handleLogout} />
+          {/* <Topbar style={contentStyle} /> */}
           <div style={contentStyle}>
             {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
             predfined panel widths; with onupdate, resizing doesn't work, b/c
@@ -143,6 +140,48 @@ class Main extends Component {
             >
               <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
                 <ImageViewer />
+                <br />
+                <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
+                  <Tabs>
+                    <Tab label={label} />
+                    <Tab label="Channel" />
+                    <Tab label="Stokes" />
+                  </Tabs>
+                  <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
+                    <DropDownMenu value={1} underlineStyle={{ color: 'black' }}>
+                      <MenuItemMUI value={1} primaryText="Image 0" />
+                    </DropDownMenu>
+                    <p>&#8804; 3</p>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
+                    <div style={{ marginTop: '15px' }}>
+                      <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={0} />
+                    </div>
+                    <div>
+                      <Slider sliderStyle={{ width: '500px', left: '10px', height: '2px' }} step={1} min={0} max={3} value={3} />
+                    </div>
+                    <div style={{ marginLeft: '30px', marginTop: '15px' }}>
+                      <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={3} />
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', height: '50%', margin: 'auto', width: '40%' }}>
+                    <IconButton style={{ transform: 'rotate(180deg)' }}>
+                      <PlayForward />
+                    </IconButton>
+                    <IconButton>
+                      <SkipPrev />
+                    </IconButton>
+                    <IconButton>
+                      <Stop />
+                    </IconButton>
+                    <IconButton>
+                      <SkipNext />
+                    </IconButton>
+                    <IconButton>
+                      <PlayForward />
+                    </IconButton>
+                  </div>
+                </Paper>
               </div>
               <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
                 {midPanel}

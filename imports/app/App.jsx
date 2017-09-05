@@ -1,19 +1,19 @@
 
+import { Meteor } from 'meteor/meteor';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { connect } from 'react-redux';
-
-import React from 'react';
-// import React, { Component } from 'react';
+import React, { Component } from 'react';
 
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
-import ImageViewer from '../imageViewer/ImageViewer';
+// import ImageViewer from '../imageViewer/ImageViewer';
 // import FileBrowser from '../fileBrowser/FileBrowser';
 import Main from './Main';
 import SessionUI from './SessionUI';
 
+import Login from './Login.jsx';
 import actions from './actions';
 
 const store = configureStore();
@@ -44,21 +44,73 @@ const muiTheme = getMuiTheme({
   // },
 });
 
-const App = () => (
-  <Provider store={store}>
-    <MuiThemeProvider muiTheme={muiTheme}>
-      <div>
-        <div className="layout-row-end-center ">
-          <SessionUI />
-        </div>
-
-        <Main />
-        {/* <ImageViewer /> */}
-      </div>
-    </MuiThemeProvider>
-  </Provider>
-);
-
+// const App = () => (
+//   <Provider store={store}>
+//     <MuiThemeProvider muiTheme={muiTheme}>
+//       <div>
+//         <Login />
+//       </div>
+//     </MuiThemeProvider>
+//   </Provider>
+// );
+// Name = React.createClass({
+//
+//   render() {
+//     return <App user={this.data.currentUser} />;
+//   },
+// });
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...this.state,
+      loggedIn: false,
+    };
+  }
+  handleLogin = () => {
+    this.setState({ loggedIn: true });
+  }
+  handleLogout = () => {
+    console.log('INSIDE APP handleLogout');
+    Meteor.logout((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        this.setState({ loggedIn: false });
+      }
+    });
+  }
+  render() {
+    console.log('LOGGED IN STATE: ', this.state.loggedIn);
+    // if (!this.state.loggedIn && (Meteor.user() !== null)) {
+    //   return (
+    //     <Provider store={store}>
+    //       <MuiThemeProvider muiTheme={muiTheme}>
+    //         <div>
+    //           <Login handleLogin={this.handleLogin} />
+    //         </div>
+    //       </MuiThemeProvider>
+    //     </Provider>
+    //   );
+    // }
+    return (
+      <Provider store={store}>
+        <MuiThemeProvider muiTheme={muiTheme}>
+          <div>
+            <div className="layout-row-end-center ">
+              <SessionUI />
+            </div>
+            {
+              (this.state.loggedIn || Meteor.user() !== null) ?
+                <Main handleLogout={this.handleLogout} />
+                : <Login handleLogin={this.handleLogin} />
+            }
+          </div>
+        </MuiThemeProvider>
+      </Provider>
+    );
+  }
+}
 store.dispatch(actions.waitForCommandResponses());
 
 

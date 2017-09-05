@@ -11,7 +11,7 @@ const style = {
 class SessionUI extends Component {
   constructor(props) {
     super(props);
-    this.state = { watching: false, sessionText: 'abcd' };
+    this.state = { watching: false, sessionText: '' };
   }
 
   handleChange = (event) => {

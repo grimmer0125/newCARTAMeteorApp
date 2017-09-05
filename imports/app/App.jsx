@@ -9,9 +9,11 @@ import React from 'react';
 
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
-import FileBrowser from '../fileBrowser/FileBrowser';
 import ImageViewer from '../imageViewer/ImageViewer';
+// import FileBrowser from '../fileBrowser/FileBrowser';
+import Main from './Main';
 import SessionUI from './SessionUI';
+
 import actions from './actions';
 
 const store = configureStore();
@@ -49,8 +51,9 @@ const App = () => (
         <div className="layout-row-end-center ">
           <SessionUI />
         </div>
-        <FileBrowser />
-        <ImageViewer />
+
+        <Main />
+        {/* <ImageViewer /> */}
       </div>
     </MuiThemeProvider>
   </Provider>

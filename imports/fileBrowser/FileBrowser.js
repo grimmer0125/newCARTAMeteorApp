@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 import { List, ListItem, makeSelectable } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
+import Avatar from 'material-ui/Avatar';
 
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
 import ContentSend from 'material-ui/svg-icons/content/send';
@@ -50,12 +51,23 @@ class FileBrowser extends Component {
       // browserOpened: false,
       // selectedFile: "",
       selectedIndex: -1,
+
       // imageURL: '',
     };
 
     this.props.dispatch(actions.prepareFileBrowser());
   }
 
+  closeBrowser = () => {
+    console.log('close file browser');
+    // if (this.state.browserOpened) {
+    //   this.setState({ browserOpened: false });
+    //   // this.setState({selectedFile: ""});
+    //   this.setState({ selectedIndex: -1 });
+    // }
+
+    this.props.dispatch(actions.closeFileBrowser());
+  }
   openBrowser = () => {
     console.log('open file browser');
 
@@ -70,18 +82,6 @@ class FileBrowser extends Component {
     //   this.setState({ browserOpened: true });
     // }
   }
-
-  closeBrowser = () => {
-    console.log('close file browser');
-    // if (this.state.browserOpened) {
-    //   this.setState({ browserOpened: false });
-    //   // this.setState({selectedFile: ""});
-    //   this.setState({ selectedIndex: -1 });
-    // }
-
-    this.props.dispatch(actions.closeFileBrowser());
-  }
-
   selectImage = (e, index) => {
     // this.state.selectedIndex = index;
     // const file = this.state.files[index];
@@ -89,8 +89,8 @@ class FileBrowser extends Component {
     //
     // // this.setState({selectedFile: file.name});
     this.setState({ selectedIndex: index });
-
-
+    console.log('SELECTED INDEX: ', index);
+    this.props.dispatch(actions.selectFile(index));
     // Meteor.call('selectFileToOpen', file.name, (error, result) => {
     //   console.log("get select file result:", result);
     // });
@@ -105,7 +105,6 @@ class FileBrowser extends Component {
       // Meteor.call('selectFileToOpen', `${this.props.rootDir}/${file.name}`, (error, result) => {
       //   console.log('get select file result:', result);
       // });
-
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
 
       // this.setState({ browserOpened: false });
@@ -114,37 +113,39 @@ class FileBrowser extends Component {
   }
 
   render() {
-    const { browserOpened, files } = this.props;
+    const fitsURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/fits.png';
+    const casaURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/casa.png';
+    const { browserOpened, files, selectedFile } = this.props;
     const fileItems = files.map((file, index) => {
       if (file.type === 'fits') {
         return (
           // key is needed for ui array operation react, value is for selectableList of material-ui
-          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftIcon={<ContentSend />} />
-
+          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={fitsURL} />} />
         );
       }
-
       return (
-        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftIcon={<ContentInbox />} />
+        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={casaURL} />} />
       );
     });
-
+    if (this.props.openBrowser) {
+      this.openBrowser();
+      console.log('OPENBROWSER TRUE');
+    }
     return (
-      <Paper style={browserStyle} zDepth={1} >
-        <p>File Browser, open file browser, then choose a file to read</p>
-        <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
-        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary />
+      // <Paper style={browserStyle} zDepth={1} >
+      <div>
+        {/* <p>File Browser, open file browser, then choose a file to read</p> */}
+        {/* <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
+        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary /> */}
         { browserOpened && fileItems && fileItems.length > 0 &&
-        <div>
-          <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={this.state.selectedIndex}>
-            {fileItems}
-          </SelectableList>
-          <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-        </div>
+          <div>
+            <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
+              {fileItems}
+            </SelectableList>
+            <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
+          </div>
         }
-        {/* <img src={this.props.imageURL} alt="" /> */}
-
-      </Paper>
+      </div>
     );
   }
 }
@@ -154,6 +155,7 @@ const mapStateToProps = state => ({
   files: state.fileBrowserUI.files,
   rootDir: state.fileBrowserUI.rootDir,
   browserOpened: state.fileBrowserUI.fileBrowserOpened,
+  selectedFile: state.fileBrowserUI.selectedFile,
 });
 
 // TODO

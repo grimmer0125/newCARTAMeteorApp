@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import NumericInput from 'react-numeric-input';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import Slider from 'material-ui/Slider';
@@ -13,8 +14,6 @@ import Stop from 'material-ui/svg-icons/av/stop';
 import PlayForward from 'material-ui/svg-icons/av/play-arrow';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItemMUI from 'material-ui/MenuItem';
-import Subheader from 'material-ui/Subheader';
-
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-contextmenu/public/styles.5bb557.css';
 // import attachment from 'material-ui/svg-icons/file/attachment';
@@ -124,7 +123,8 @@ class Main extends Component {
     return (
       <div>
         <div style={{ overflowY: 'hidden', height: '100vh' }}>
-          <Topbar style={contentStyle} />
+          <Topbar style={contentStyle} handleLogout={this.props.handleLogout} />
+          {/* <Topbar style={contentStyle} /> */}
           <div style={contentStyle}>
             {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
             predfined panel widths; with onupdate, resizing doesn't work, b/c

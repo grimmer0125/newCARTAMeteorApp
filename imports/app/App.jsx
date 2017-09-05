@@ -1,15 +1,14 @@
 
+import { Meteor } from 'meteor/meteor';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { Meteor } from 'meteor/meteor';
-import ReactMeteorData from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
 // import React, { Component } from 'react';
 
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
-import ImageViewer from '../imageViewer/ImageViewer';
+// import ImageViewer from '../imageViewer/ImageViewer';
 // import FileBrowser from '../fileBrowser/FileBrowser';
 import Main from './Main';
 import Login from './Login.jsx';
@@ -52,33 +51,55 @@ const muiTheme = getMuiTheme({
 //     </MuiThemeProvider>
 //   </Provider>
 // );
+// Name = React.createClass({
+//
+//   render() {
+//     return <App user={this.data.currentUser} />;
+//   },
+// });
 class App extends Component {
-  mixins: [ReactMeteorData];
   constructor(props) {
     super(props);
     this.state = {
       ...this.state,
+      loggedIn: false,
     };
   }
-  // getMeteorData = () => ({
-  //   currentUser: Meteor.user(),
-  // })
+  handleLogin = () => {
+    this.setState({ loggedIn: true });
+  }
+  handleLogout = () => {
+    console.log('INSIDE APP handleLogout');
+    Meteor.logout((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        this.setState({ loggedIn: false });
+      }
+    });
+  }
   render() {
-    let toReturn;
-    // const currentUser = this.data;
-    // console.log('CURRENTUSER: ', currentUser);
-    if (Meteor.user()) {
-      console.log('CURR USER:', Meteor.user());
-      toReturn = <Main />;
-    } else {
-      console.log('INSIDE LOGIN COMPONENT');
-      toReturn = <Login />;
-    }
+    console.log('LOGGED IN STATE: ', this.state.loggedIn);
+    // if (!this.state.loggedIn && (Meteor.user() !== null)) {
+    //   return (
+    //     <Provider store={store}>
+    //       <MuiThemeProvider muiTheme={muiTheme}>
+    //         <div>
+    //           <Login handleLogin={this.handleLogin} />
+    //         </div>
+    //       </MuiThemeProvider>
+    //     </Provider>
+    //   );
+    // }
     return (
       <Provider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
-            {toReturn}
+            {
+              (this.state.loggedIn || Meteor.user() !== null) ?
+                <Main handleLogout={this.handleLogout} />
+                : <Login handleLogin={this.handleLogin} />
+            }
           </div>
         </MuiThemeProvider>
       </Provider>

@@ -9,6 +9,8 @@ export const Actions = {
   RECEIVE_IMAGE_CHANGE,
 };
 
+import { setupMongoListeners } from '../api/MongoHelper';
+
 function reflectMongoImageAddToStore(imageData) {
   console.log('reflect image:', imageData);
   return {
@@ -21,24 +23,7 @@ function reflectMongoImageAddToStore(imageData) {
 
 function prepareImageViewer() {
   return (dispatch) => {
-    const imageObservationHandle = Images.find().observe({
-      added(newDoc) {
-        console.log('get image Mongo added');
-        dispatch(reflectMongoImageAddToStore(newDoc));
-      },
-      changed(newDoc, oldDoc) {
-        console.log('get image Mongo changed');
-        dispatch(reflectMongoImageAddToStore(newDoc));
-      },
-      removed(oldDocument) {
-        console.log('get image Mongo delete');
-        const images = Images.find().fetch();
-        if (images.length > 0) {
-          const image = images[0];
-          dispatch(reflectMongoImageAddToStore(image));
-        }
-      },
-    });
+    setupMongoListeners(Images, dispatch, reflectMongoImageAddToStore);
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;

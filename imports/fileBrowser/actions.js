@@ -8,6 +8,9 @@ import { FileBrowsers } from '../api/FileBrowsers';
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
 
+import { setupMongoListeners } from '../api/MongoHelper';
+
+
 // TODO move consts to a file
 const RECEIVE_FILEBROWSER_CHANGE = 'RECEIVE_FILEBROWSER_CHANGE';
 
@@ -82,39 +85,22 @@ function prepareFileBrowser() {
     //   userHandle.stop();
     // });
 
-    const filebrowserObservationHandle = FileBrowsers.find().observe({
-      added(newDoc) {
-        console.log('get Mongo fileBrowser added');
-        dispatch(receiveUIChange(newDoc));
-      },
-      changed(newDoc, oldDoc) {
-        console.log('get Mongo fileBrowser changed');
-        dispatch(receiveUIChange(newDoc));
-      },
-      removed(oldDocument) {
-        console.log('get Mongo fileBrowse delete');
-        const uidata = FileBrowsers.find().fetch();
-        if (uidata.length > 0) {
-          const ui = uidata[0];
-          dispatch(receiveUIChange(ui));
-        }
-      },
-    });
+    setupMongoListeners(FileBrowsers, dispatch, receiveUIChange);
 
-      // ui part, old way
-      // Tracker.autorun(() => {
-      //   // 1st time ok, 2nd insert fail, so becomes back to zero.
-      //   // local write still get this callback.
-      //   const uidata = FileBrowsers.find().fetch();
-      //
-      //   console.log('get ui data change from db:', uidata.length);
-      //   // if (uidata.length > 0) {
-      //   //   const ui = uidata[0];
-      //   //
-      //   //   dispatch(receiveUIChange(ui));
-      //   // } else {
-      //   // }
-      // });
+    // ui part, old way
+    // Tracker.autorun(() => {
+    //   // 1st time ok, 2nd insert fail, so becomes back to zero.
+    //   // local write still get this callback.
+    //   const uidata = FileBrowsers.find().fetch();
+    //
+    //   console.log('get ui data change from db:', uidata.length);
+    //   // if (uidata.length > 0) {
+    //   //   const ui = uidata[0];
+    //   //
+    //   //   dispatch(receiveUIChange(ui));
+    //   // } else {
+    //   // }
+    // });
     // });
   };
 }
@@ -139,8 +125,8 @@ function queryServerFileList() {
 }
 function selectFile(index) {
   return (dispatch, getState) => {
-    updateUIToMongo({selectedFile: index});
-    //console.log("REACHED SELECTFILE()");
+    updateUIToMongo({ selectedFile: index });
+    // console.log("REACHED SELECTFILE()");
   };
 }
 function closeFileBrowser() {

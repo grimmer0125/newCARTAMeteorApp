@@ -29,9 +29,8 @@ function prepareImageViewer() {
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
     // var pathDict = skel.widgets.Path.getInstance();
     // var regCmd = pathDict.getCommandRegisterView();
-    // console.log("grimmer x2");
-
     // 'pluginId:ImageViewer,index:0';
+
     const cmd = Commands.REGISTER_IMAGEVIEWER; // '/CartaObjects/ViewManager:registerView';
     const params = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
@@ -43,48 +42,29 @@ function prepareImageViewer() {
   };
 }
 
-export function receiveReigsterViewResp(result) {
+export function parseReigsterViewResp(result) {
   console.log('grimmer got register view command response');
   const controllerID = result;
 
-  mongoUpsert(Images, { controllerID });
   // step1: save controllerID to mongodb
-  // const images = Images.find().fetch();
-  // if (images.length > 0) {
-  //   console.log('save image-controllerID by update');
-  //   Images.update(images[0]._id, { $set: controllerID });
-  // } else {
-  //   console.log('save image-controllerID by insert');
-  //   Images.insert({ controllerID, sessionID: SessionManager.get() });
-  // }
+  mongoUpsert(Images, { controllerID });
 
   // step2
   const viewName = `${controllerID}/view`;
   const width = 637; // TODO same as the experimental setting in ImageViewer, change later
   const height = 677;
 
-  // client.setupImageViewerSize(viewName, width, height);
   Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
     console.log('get setupViewSize dummy result:', result);
   });
 }
 
-export function receiveImageToMongo(buffer) {
+export function parseImageToMongo(buffer) {
   const url = `data:image/jpeg;base64,${buffer}`;
   console.log('image url string size:', url.length);
-  // const data = { imageURL: url };
 
-  console.log('receiveImageToMongo');
+  console.log('parseImageToMongo');
   mongoUpsert(Images, { imageURL: url });
-
-  // const images = Images.find().fetch();
-  // if (images.length > 0) {
-  //   console.log('save image by update');
-  //   Images.update(images[0]._id, { $set: { ...data } });
-  // } else {
-  //   console.log('save image by insert');
-  //   Images.insert({ ...data, session: SessionManager.get() });
-  // }
 }
 
 const actions = {

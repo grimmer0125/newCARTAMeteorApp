@@ -13,16 +13,7 @@ import ContentSend from 'material-ui/svg-icons/content/send';
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
-// import { Meteor } from 'meteor/meteor';
-// import { Tracker } from 'meteor/tracker';
 import { connect } from 'react-redux';
-
-// import '../api/methods';
-// import { Responses } from '../api/Responses';
-
-// const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
-// const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
-
 import actions from './actions';
 
 const browserStyle = {
@@ -43,16 +34,8 @@ class FileBrowser extends Component {
   constructor(props) {
     super(props);
 
-    // TODO add selectedIndex to mongoDB
     this.state = {
-      // ...this.state,
-      // files: [],
-      // rootDir: '',
-      // browserOpened: false,
-      // selectedFile: "",
       selectedIndex: -1,
-
-      // imageURL: '',
     };
 
     this.props.dispatch(actions.prepareFileBrowser());
@@ -60,11 +43,6 @@ class FileBrowser extends Component {
 
   closeBrowser = () => {
     console.log('close file browser');
-    // if (this.state.browserOpened) {
-    //   this.setState({ browserOpened: false });
-    //   // this.setState({selectedFile: ""});
-    //   this.setState({ selectedIndex: -1 });
-    // }
 
     this.props.dispatch(actions.closeFileBrowser());
   }
@@ -74,26 +52,11 @@ class FileBrowser extends Component {
     if (!this.props.browserOpened) {
       this.props.dispatch(actions.queryServerFileList());
     }
-
-    // if (!this.state.browserOpened) {
-    //   Meteor.call('queryFileList', (error, result) => {
-    //     console.log('get open file browser result:', result);
-    //   });
-    //   this.setState({ browserOpened: true });
-    // }
   }
   selectImage = (e, index) => {
-    // this.state.selectedIndex = index;
-    // const file = this.state.files[index];
-    // console.log("choolse file to open, index:", index, ";name:", file.name);
-    //
-    // // this.setState({selectedFile: file.name});
     this.setState({ selectedIndex: index });
     console.log('SELECTED INDEX: ', index);
     this.props.dispatch(actions.selectFile(index));
-    // Meteor.call('selectFileToOpen', file.name, (error, result) => {
-    //   console.log("get select file result:", result);
-    // });
   }
 
   readImage = () => {
@@ -101,20 +64,13 @@ class FileBrowser extends Component {
       const file = this.props.files[this.state.selectedIndex];
       console.log('choolse file to read, index:', this.state.selectedIndex, ';name:', file.name);
 
-      // this.setState({selectedFile: file.name});
-      // Meteor.call('selectFileToOpen', `${this.props.rootDir}/${file.name}`, (error, result) => {
-      //   console.log('get select file result:', result);
-      // });
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
 
-      // this.setState({ browserOpened: false });
       this.props.dispatch(actions.closeFileBrowser());
     }
   }
 
   render() {
-    // const fitsURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/fits.png';
-    // const casaURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/casa.png';
     const { browserOpened, files, selectedFile } = this.props;
     const fileItems = files.map((file, index) => {
       if (file.type === 'fits') {
@@ -151,14 +107,13 @@ class FileBrowser extends Component {
 }
 
 const mapStateToProps = state => ({
-  // imageURL: state.image.imageURL,
   files: state.fileBrowserUI.files,
   rootDir: state.fileBrowserUI.rootDir,
   browserOpened: state.fileBrowserUI.fileBrowserOpened,
   selectedFile: state.fileBrowserUI.selectedFile,
 });
 
-// TODO
+// TODO use the below way to use simplified methods 
 // export function mapDispatchToProps(dispatch) {
 //   return bindActionCreators({
 //     prepareFileBrowser: actions.prepareFileBrowser,

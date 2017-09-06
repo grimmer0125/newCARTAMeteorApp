@@ -53,7 +53,7 @@ export const Actions = {
 //   }
 // }
 
-export function receiveFileList(data) {
+export function parseFileList(data) {
   const fileList = { files: data.dir, rootDir: data.name };
   // console.log('updateFileListToMongo');
   // updateUIToMongo(fileList);

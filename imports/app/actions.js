@@ -5,13 +5,10 @@ import { Images } from '../api/Images';
 import { Responses } from '../api/Responses';
 
 // command response part:
-import { receiveFileList } from '../fileBrowser/actions';
-import { receiveImageToMongo, receiveReigsterViewResp } from '../imageViewer/actions';
-// response name list part:
-// const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
-import Commands from '../api/Commands';
+import { parseFileList } from '../fileBrowser/actions';
+import { parseImageToMongo, parseReigsterViewResp } from '../imageViewer/actions';
 
-// const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
+import Commands from '../api/Commands';
 
 // TODO move consts to a file
 const GET_SESSIONID = 'GET_SESSIONID';
@@ -44,6 +41,7 @@ function turnOffWatching() {
   return (dispatch) => {
     SessionManager.stopUsingOtherSession();
 
+    // unsubscribe
     if (otherSubHnadleFile) {
       console.log('stop file handle');
       otherSubHnadleFile.stop();
@@ -54,21 +52,12 @@ function turnOffWatching() {
       otherSubHandleImage.stop();
     }
   };
-  // unsubscribe
-
-  // Meteor.subscribe('filebrowserui', SessionManager.getOtherSession(), () => {
-  //   console.log('filebrowserui subscribes OK: !!!', SessionManager.get());
-  // });
-  //
-  // Meteor.subscribe('images', SessionManager.getOtherSession(), () => {
-  //   console.log('images subscribes OK !!!');
-  // });
 }
 
 function subscribeNonCommandCollections() {
-  // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty
+  // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty, subscribing will fail
   Meteor.subscribe('filebrowserui', SessionManager.get(), () => {
-    console.log('filebrowserui subscribes OK: !!!', SessionManager.get());
+    console.log('filebrowserui subscribes OK: !!!');
   });
 
   Meteor.subscribe('images', SessionManager.get(), () => {
@@ -82,19 +71,15 @@ function handleCommandResponse(resp) {
   if (resp.cmd === Commands.REQUEST_FILE_LIST) {
     console.log('response is REQUEST_FILE_LIST:');
     console.log(resp);
-    // XTODO use https://github.com/arunoda/meteor-streams or https://github.com/YuukanOO/streamy or mongodb to get response from servers(<- Current way)?
 
-    // NOTE 如果有動到ui collection, 所以這裡又被call第二次? !!!!!!!!!!!!!!!!!!!!!!!
-    // 用 tick ok. 另一方法是用observeation (current way, ok), not tracker.autorun.
-    // process.nextTick(() => {
-    receiveFileList(resp.data);
-    // });
+    parseFileList(resp.data);
   } else if (resp.cmd === Commands.SELECT_FILE_TO_OPEN) {
     console.log('response is SELECT_FILE_TO_OPEN(get image):');
     console.log(resp);
-    receiveImageToMongo(resp.buffer);
+    parseImageToMongo(resp.buffer);
   } else if (resp.cmd === Commands.REGISTER_IMAGEVIEWER) {
-    receiveReigsterViewResp(resp.data);
+    console.log('response is REGISTER_IMAGEVIEWER:');
+    parseReigsterViewResp(resp.data);
   }
 }
 
@@ -112,21 +97,10 @@ function waitForCommandResponses() {
         payload: sessionID,
       });
 
-      // TODO check more, only get the data for this sub-parameter?
-      // another approach is, subscribe name is just session value, e.g. "fdasfasf"
-      // subscribe special Collection,
       Meteor.subscribe('commandResponse', SessionManager.get(), () => {
         console.log('commandResponse subscribes OK !!!');
       });
 
-      // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty
-      // Meteor.subscribe('filebrowserui', SessionManager.get(), () => {
-      //   console.log('filebrowserui subscribes OK: !!!', SessionManager.get());
-      // });
-      //
-      // Meteor.subscribe('images', SessionManager.get(), () => {
-      //   console.log('images subscribes OK !!!');
-      // });
       subscribeNonCommandCollections();
 
       // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more
@@ -134,6 +108,7 @@ function waitForCommandResponses() {
       // subscription.onStop(function () {
       //   userHandle.stop();
       // });
+      // ref: https://docs.meteor.com/api/collections.html#Mongo-Cursor-observe
 
       const respObservationHandle = Responses.find().observe({
         added(newDoc) {
@@ -157,8 +132,8 @@ function waitForCommandResponses() {
             console.log('delete response');
             Responses.remove(newDoc._id);
           // NOTE:
-          // Responses.remove({}); // Not permitted. Untrusted code may only remove documents by ID.
-          // 現在是用observeation則是先exception(tracker不會), 改成用tick後還是有not permitted, 要加上用id刪
+          // 1. Responses.remove({}); // Not permitted. Untrusted code may only remove documents by ID.
+          // 2. tracker way does not need nextTickt to remove. Current osbserveration will throw exception if no tick
           });
         },
       });
@@ -183,9 +158,7 @@ function waitForCommandResponses() {
       //   console.log('get responses count:', responses.length, ';content:', responses);
       //
       //   if (responses.length > 0) {
-      //
-      //
-      //     // Responses.remove({});
+      //      //     // Responses.remove({});
       //     // delete responses
       //   }
       // });

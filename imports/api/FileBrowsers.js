@@ -6,6 +6,4 @@ export const FileBrowsers = new Mongo.Collection('filebrowsers');
 if (Meteor.isServer) {
   console.log('publish FileBrowsers on server');
   Meteor.publish('filebrowserui', sessionID => FileBrowsers.find({ sessionID }));
-} else {
-  // console.log('load FileBrowsers dg on client');
 }

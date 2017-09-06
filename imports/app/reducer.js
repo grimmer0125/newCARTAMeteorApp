@@ -1,4 +1,3 @@
-// import { combineReducers } from 'redux';
 import { Actions } from './actions';
 
 const sessionID = (state = 'def', action) => {

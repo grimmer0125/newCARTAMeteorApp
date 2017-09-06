@@ -44,21 +44,6 @@ const muiTheme = getMuiTheme({
   // },
 });
 
-// const App = () => (
-//   <Provider store={store}>
-//     <MuiThemeProvider muiTheme={muiTheme}>
-//       <div>
-//         <Login />
-//       </div>
-//     </MuiThemeProvider>
-//   </Provider>
-// );
-// Name = React.createClass({
-//
-//   render() {
-//     return <App user={this.data.currentUser} />;
-//   },
-// });
 class App extends Component {
   constructor(props) {
     super(props);
@@ -115,32 +100,3 @@ store.dispatch(actions.waitForCommandResponses());
 
 
 export default App;
-// export default class App extends Component {
-//   render() {
-//     return (
-//       <Provider store={store}>
-//         <MuiThemeProvider muiTheme={muiTheme}>
-//           <FileBrowser />
-//         </MuiThemeProvider>
-//       </Provider>
-//     );
-//
-//     // return (
-//     //   <div className="container">
-//     //   </div>
-//     // );
-//   }
-// }
-
-// App.propTypes = {
-//   tasks: PropTypes.array.isRequired,
-// };
-
-// export default createContainer(() => {
-//   let test = Tasks.find({}, { sort: { createdAt: -1 } }).fetch();
-//   console.log("task:", test);
-//   console.log("task num:", test.length);
-//   return {
-//     tasks: test,
-//   };
-// }, App);

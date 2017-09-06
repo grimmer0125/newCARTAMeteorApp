@@ -58,9 +58,9 @@ class Main extends Component {
 
   // define callback
   onUpdate = (array) => {
-    console.log('pannelgroup change: ', array);
+    // console.log('pannelgroup change: ', array);
     const newWidth = array[1].size;
-    console.log('new width:', newWidth);
+    // console.log('new width:', newWidth);
     this.setState({ secondColumnWidth: newWidth });
     // use 2nd column's width
   }
@@ -87,7 +87,7 @@ class Main extends Component {
   }
   showSetting = (setting) => {
     console.log('INSIDE SHOWSETTING!!');
-    console.log('SETTING TO BE SHOWN: ', setting);
+    // console.log('SETTING TO BE SHOWN: ', setting);
     if (setting) {
       if (setting === 'Profiler') return <ProfilerSettings />;
       else if (setting === 'Histogram') return <HistogramSettings />;

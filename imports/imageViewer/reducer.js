@@ -1,9 +1,9 @@
 import { Actions } from './actions';
 
-const image = (state = { imageURL: '' }, action) => {
-  console.log('image action:', action);
+const imageController = (state = { imageURL: '' }, action) => {
   switch (action.type) {
     case Actions.IMAGEVIEWER_CHANGE:
+      console.log('INSIDE imageController REDUCER');
       return { ...state, ...action.payload.imageData };
     default:
       return state;
@@ -11,7 +11,7 @@ const image = (state = { imageURL: '' }, action) => {
 };
 
 const imageReducer = {
-  image,
+  imageController,
 };
 
 export default imageReducer;

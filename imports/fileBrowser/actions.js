@@ -33,10 +33,10 @@ export function parseFileList(data) {
   mongoUpsert(FileBrowsers, fileList, GET_FILELIST);
 }
 
-export function updateFileBrowserToMongo(Open) {
-  console.log('updateFileBrowserToMongo');
-  mongoUpsert(FileBrowsers, { fileBrowserOpened: Open }, OPEN_FILEBROWSER);
-}
+// export function updateFileBrowserToMongo(Open) {
+//   console.log('updateFileBrowserToMongo');
+//   mongoUpsert(FileBrowsers, { fileBrowserOpened: Open }, OPEN_FILEBROWSER);
+// }
 
 // NOTE: follow https://github.com/acdlite/flux-standard-action
 function receiveUIChange(ui) {
@@ -57,7 +57,7 @@ function prepareFileBrowser() {
 function queryServerFileList() {
   return (dispatch, getState) => {
     // 1. send to mongodb to sync UI
-    updateFileBrowserToMongo(true);
+    // updateFileBrowserToMongo(true);
 
     // QString command = "/CartaObjects/DataLoader:getData";
     // QString parameter = "path:";
@@ -77,18 +77,18 @@ function selectFile(index) {
     mongoUpsert(FileBrowsers, { selectedFile: index }, SELECT_FILE);
   };
 }
-function closeFileBrowser() {
-  return (dispatch, getState) => {
-    updateFileBrowserToMongo(false);
-  };
-}
+// function closeFileBrowser() {
+//   return (dispatch, getState) => {
+//     updateFileBrowserToMongo(false);
+//   };
+// }
 
 function selectFileToOpen(path) {
   return (dispatch, getState) => {
     const state = getState();
 
     // get controllerID
-    const controllerID = state.image.controllerID;
+    const controllerID = state.imageController.controllerID;
     const parameter = `id:${controllerID},data:${path}`;
     console.log('inject file parameter, become:', parameter);
 
@@ -100,7 +100,7 @@ function selectFileToOpen(path) {
 
 const actions = {
   prepareFileBrowser,
-  closeFileBrowser,
+  // closeFileBrowser,
   queryServerFileList,
   selectFileToOpen,
   selectFile,

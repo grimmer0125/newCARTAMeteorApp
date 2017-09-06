@@ -65,11 +65,15 @@ export function parseReigsterViewResp(result) {
 }
 
 export function parseImageToMongo(buffer) {
-  const url = `data:image/jpeg;base64,${buffer}`;
-  console.log('image url string size:', url.length);
+  if (buffer) {
+    const url = `data:image/jpeg;base64,${buffer}`;
+    console.log('image url string size:', url.length);
 
-  console.log('parseImageToMongo');
-  mongoUpsert(Images, { imageURL: url }, GET_IMAGE);
+    console.log('parseImageToMongo');
+    mongoUpsert(Images, { imageURL: url }, GET_IMAGE);
+  } else {
+    console.log('get dummy image response');
+  }
 }
 
 const actions = {

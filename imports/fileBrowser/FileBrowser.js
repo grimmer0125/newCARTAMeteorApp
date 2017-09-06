@@ -34,41 +34,52 @@ class FileBrowser extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      selectedIndex: -1,
-    };
+    // this.state = {
+    //   selectedIndex: -1,
+    // };
 
     this.props.dispatch(actions.prepareFileBrowser());
-  }
+    console.log('grimmer filebrowser constructor');
 
-  closeBrowser = () => {
-    console.log('close file browser');
-
-    this.props.dispatch(actions.closeFileBrowser());
-  }
-  openBrowser = () => {
-    console.log('open file browser');
-
-    if (!this.props.browserOpened) {
+    if (this.props.openBrowser) {
       this.props.dispatch(actions.queryServerFileList());
+      console.log('OPENBROWSER, query file list ');
     }
   }
+
+  // closeBrowser = () => {
+  //   console.log('close file browser');
+  //
+  //   this.props.dispatch(actions.closeFileBrowser());
+  // }
+  // openBrowser = () => {
+  //   console.log('open file browser');
+  //
+  //   if (!this.props.browserOpened) {
+  //     this.props.dispatch(actions.queryServerFileList());
+  //   }
+  // }
   selectImage = (e, index) => {
-    this.setState({ selectedIndex: index });
+    // this.setState({ selectedIndex: index });
     console.log('SELECTED INDEX: ', index);
     this.props.dispatch(actions.selectFile(index));
   }
 
   readImage = () => {
-    if (this.state.selectedIndex >= 0) {
-      const file = this.props.files[this.state.selectedIndex];
-      console.log('choolse file to read, index:', this.state.selectedIndex, ';name:', file.name);
+    if (this.props.selectedFile >= 0) {
+      const file = this.props.files[this.props.selectedFile];
+      console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
 
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
 
-      this.props.dispatch(actions.closeFileBrowser());
+      // this.props.dispatch(actions.closeFileBrowser());
     }
   }
+
+  componentDidMount() {
+    console.log('grimmer filebrowser did mount');
+  }
+
 
   render() {
     const { browserOpened, files, selectedFile } = this.props;
@@ -83,17 +94,14 @@ class FileBrowser extends Component {
         <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="/images/casa.png" />} />
       );
     });
-    if (this.props.openBrowser) {
-      this.openBrowser();
-      console.log('OPENBROWSER TRUE');
-    }
+
     return (
       // <Paper style={browserStyle} zDepth={1} >
       <div>
         {/* <p>File Browser, open file browser, then choose a file to read</p> */}
         {/* <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
         <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary /> */}
-        { browserOpened && fileItems && fileItems.length > 0 &&
+        { fileItems && fileItems.length > 0 &&
           <div>
             <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
               {fileItems}
@@ -109,11 +117,11 @@ class FileBrowser extends Component {
 const mapStateToProps = state => ({
   files: state.fileBrowserUI.files,
   rootDir: state.fileBrowserUI.rootDir,
-  browserOpened: state.fileBrowserUI.fileBrowserOpened,
+  // browserOpened: state.fileBrowserUI.fileBrowserOpened,
   selectedFile: state.fileBrowserUI.selectedFile,
 });
 
-// TODO use the below way to use simplified methods 
+// TODO use the below way to use simplified methods
 // export function mapDispatchToProps(dispatch) {
 //   return bindActionCreators({
 //     prepareFileBrowser: actions.prepareFileBrowser,

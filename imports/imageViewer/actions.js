@@ -4,9 +4,14 @@ import SessionManager from '../api/SessionManager';
 import { Images } from '../api/Images';
 import Commands from '../api/Commands';
 // redux part
-const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
+const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
+
+// only for saving action history in mongo
+const RESPONSE_REGISTER_IMAGEVIEWER = 'RESPONSE_REGISTER_IMAGEVIEWER';
+const GET_IMAGE = 'GET_IMAGE';
+
 export const Actions = {
-  RECEIVE_IMAGE_CHANGE,
+  IMAGEVIEWER_CHANGE,
 };
 
 import { setupMongoListeners, mongoUpsert } from '../api/MongoHelper';
@@ -14,7 +19,7 @@ import { setupMongoListeners, mongoUpsert } from '../api/MongoHelper';
 function reflectMongoImageAddToStore(imageData) {
   console.log('reflect image:', imageData);
   return {
-    type: RECEIVE_IMAGE_CHANGE,
+    type: IMAGEVIEWER_CHANGE,
     payload: {
       imageData,
     },
@@ -47,7 +52,7 @@ export function parseReigsterViewResp(result) {
   const controllerID = result;
 
   // step1: save controllerID to mongodb
-  mongoUpsert(Images, { controllerID });
+  mongoUpsert(Images, { controllerID }, RESPONSE_REGISTER_IMAGEVIEWER);
 
   // step2
   const viewName = `${controllerID}/view`;
@@ -64,7 +69,7 @@ export function parseImageToMongo(buffer) {
   console.log('image url string size:', url.length);
 
   console.log('parseImageToMongo');
-  mongoUpsert(Images, { imageURL: url });
+  mongoUpsert(Images, { imageURL: url }, GET_IMAGE);
 }
 
 const actions = {

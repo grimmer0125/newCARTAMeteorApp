@@ -18,16 +18,15 @@ export function setupMongoListeners(collection, dispatch, handler) {
   });
 }
 
-export function mongoUpsert(collection, newDocObject) {
+export function mongoUpsert(collection, newDocObject, actionType) {
+  newDocObject.actionType = actionType;
   const docs = collection.find().fetch();
   if (docs.length > 0) {
     const doc = docs[0];
     const docID = doc._id;
     collection.update(docID, { $set: newDocObject });
   } else {
-    // const docID = collection.insert({ ...newDocObject, sessionID: SessionManager.get() });
-
+    newDocObject.sessionID = SessionManager.get();
     const docID = collection.insert(newDocObject);
-    collection.update(docID, { $set: { sessionID: SessionManager.get() } });
   }
 }

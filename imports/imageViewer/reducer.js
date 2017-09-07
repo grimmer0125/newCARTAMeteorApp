@@ -1,20 +1,17 @@
-// import { combineReducers } from 'redux';
 import { Actions } from './actions';
 
-const image = (state = { imageURL: '' }, action) => {
-  console.log('image action:', action);
+const imageController = (state = { imageURL: '' }, action) => {
   switch (action.type) {
-    case Actions.RECEIVE_IMAGE_CHANGE:
-      // console.log('combine:', combine);
-      return { ...state, ...action.payload };
+    case Actions.IMAGEVIEWER_CHANGE:
+      console.log('INSIDE imageController REDUCER');
+      return { ...state, ...action.payload.imageData };
     default:
       return state;
   }
 };
 
 const imageReducer = {
-  // fileBrowserUI,
-  image,
+  imageController,
 };
 
 export default imageReducer;

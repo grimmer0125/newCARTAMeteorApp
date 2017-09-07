@@ -4,19 +4,24 @@ import SessionManager from '../api/SessionManager';
 import { Images } from '../api/Images';
 import Commands from '../api/Commands';
 // redux part
-const RECEIVE_IMAGE_CHANGE = 'RECEIVE_IMAGE_CHANGE';
+const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
+
+// only for saving action history in mongo
+const RESPONSE_REGISTER_IMAGEVIEWER = 'RESPONSE_REGISTER_IMAGEVIEWER';
+const GET_IMAGE = 'GET_IMAGE';
+
 export const Actions = {
-  RECEIVE_IMAGE_CHANGE,
+  IMAGEVIEWER_CHANGE,
 };
 
-import { setupMongoListeners } from '../api/MongoHelper';
+import { setupMongoListeners, mongoUpsert } from '../api/MongoHelper';
 
 function reflectMongoImageAddToStore(imageData) {
   console.log('reflect image:', imageData);
   return {
-    type: RECEIVE_IMAGE_CHANGE,
+    type: IMAGEVIEWER_CHANGE,
     payload: {
-      ...imageData,
+      imageData,
     },
   };
 }
@@ -29,58 +34,45 @@ function prepareImageViewer() {
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
     // var pathDict = skel.widgets.Path.getInstance();
     // var regCmd = pathDict.getCommandRegisterView();
-    // console.log("grimmer x2");
-
     // 'pluginId:ImageViewer,index:0';
+
     const cmd = Commands.REGISTER_IMAGEVIEWER; // '/CartaObjects/ViewManager:registerView';
     const params = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
-    Meteor.call('sendCommand', cmd, params, (error, result) => {
+    Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
       console.log('get command dummy result:', result);
     });
   };
 }
 
-export function receiveReigsterViewResp(result) {
+export function parseReigsterViewResp(result) {
   console.log('grimmer got register view command response');
   const controllerID = result;
 
   // step1: save controllerID to mongodb
-  const images = Images.find().fetch();
-  if (images.length > 0) {
-    console.log('save image-controllerID by update');
-    Images.update(images[0]._id, { $set: controllerID });
-  } else {
-    console.log('save image-controllerID by insert');
-    Images.insert({ controllerID, sessionID: SessionManager.get() });
-  }
+  mongoUpsert(Images, { controllerID }, RESPONSE_REGISTER_IMAGEVIEWER);
 
   // step2
   const viewName = `${controllerID}/view`;
   const width = 637; // TODO same as the experimental setting in ImageViewer, change later
   const height = 677;
 
-  // client.setupImageViewerSize(viewName, width, height);
   Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
     console.log('get setupViewSize dummy result:', result);
   });
 }
 
-export function receiveImageToMongo(buffer) {
-  const url = `data:image/jpeg;base64,${buffer}`;
-  console.log('image url string size:', url.length);
-  const data = { imageURL: url };
+export function parseImageToMongo(buffer) {
+  if (buffer) {
+    const url = `data:image/jpeg;base64,${buffer}`;
+    console.log('image url string size:', url.length);
 
-  console.log('receiveImageToMongo');
-  const images = Images.find().fetch();
-  if (images.length > 0) {
-    console.log('save image by update');
-    Images.update(images[0]._id, { $set: { ...data } });
+    console.log('parseImageToMongo');
+    mongoUpsert(Images, { imageURL: url }, GET_IMAGE);
   } else {
-    console.log('save image by insert');
-    Images.insert({ ...data, session: SessionManager.get() });
+    console.log('get dummy image response');
   }
 }
 

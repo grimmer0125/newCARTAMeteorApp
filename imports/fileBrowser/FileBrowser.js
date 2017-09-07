@@ -13,16 +13,7 @@ import ContentSend from 'material-ui/svg-icons/content/send';
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
-// import { Meteor } from 'meteor/meteor';
-// import { Tracker } from 'meteor/tracker';
 import { connect } from 'react-redux';
-
-// import '../api/methods';
-// import { Responses } from '../api/Responses';
-
-// const REQUEST_FILE_LIST = 'REQUEST_FILE_LIST';
-// const SELECT_FILE_TO_OPEN = 'SELECT_FILE_TO_OPEN';
-
 import actions from './actions';
 
 const browserStyle = {
@@ -43,78 +34,54 @@ class FileBrowser extends Component {
   constructor(props) {
     super(props);
 
-    // TODO add selectedIndex to mongoDB
-    this.state = {
-      // ...this.state,
-      // files: [],
-      // rootDir: '',
-      // browserOpened: false,
-      // selectedFile: "",
-      selectedIndex: -1,
-
-      // imageURL: '',
-    };
+    // this.state = {
+    //   selectedIndex: -1,
+    // };
 
     this.props.dispatch(actions.prepareFileBrowser());
-  }
+    console.log('grimmer filebrowser constructor');
 
-  closeBrowser = () => {
-    console.log('close file browser');
-    // if (this.state.browserOpened) {
-    //   this.setState({ browserOpened: false });
-    //   // this.setState({selectedFile: ""});
-    //   this.setState({ selectedIndex: -1 });
-    // }
-
-    this.props.dispatch(actions.closeFileBrowser());
-  }
-  openBrowser = () => {
-    console.log('open file browser');
-
-    if (!this.props.browserOpened) {
+    if (this.props.openBrowser) {
       this.props.dispatch(actions.queryServerFileList());
+      console.log('OPENBROWSER, query file list ');
     }
-
-    // if (!this.state.browserOpened) {
-    //   Meteor.call('queryFileList', (error, result) => {
-    //     console.log('get open file browser result:', result);
-    //   });
-    //   this.setState({ browserOpened: true });
-    // }
   }
+
+  // closeBrowser = () => {
+  //   console.log('close file browser');
+  //
+  //   this.props.dispatch(actions.closeFileBrowser());
+  // }
+  // openBrowser = () => {
+  //   console.log('open file browser');
+  //
+  //   if (!this.props.browserOpened) {
+  //     this.props.dispatch(actions.queryServerFileList());
+  //   }
+  // }
   selectImage = (e, index) => {
-    // this.state.selectedIndex = index;
-    // const file = this.state.files[index];
-    // console.log("choolse file to open, index:", index, ";name:", file.name);
-    //
-    // // this.setState({selectedFile: file.name});
-    this.setState({ selectedIndex: index });
+    // this.setState({ selectedIndex: index });
     console.log('SELECTED INDEX: ', index);
     this.props.dispatch(actions.selectFile(index));
-    // Meteor.call('selectFileToOpen', file.name, (error, result) => {
-    //   console.log("get select file result:", result);
-    // });
   }
 
   readImage = () => {
-    if (this.state.selectedIndex >= 0) {
-      const file = this.props.files[this.state.selectedIndex];
-      console.log('choolse file to read, index:', this.state.selectedIndex, ';name:', file.name);
+    if (this.props.selectedFile >= 0) {
+      const file = this.props.files[this.props.selectedFile];
+      console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
 
-      // this.setState({selectedFile: file.name});
-      // Meteor.call('selectFileToOpen', `${this.props.rootDir}/${file.name}`, (error, result) => {
-      //   console.log('get select file result:', result);
-      // });
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
 
-      // this.setState({ browserOpened: false });
-      this.props.dispatch(actions.closeFileBrowser());
+      // this.props.dispatch(actions.closeFileBrowser());
     }
   }
 
+  componentDidMount() {
+    console.log('grimmer filebrowser did mount');
+  }
+
+
   render() {
-    // const fitsURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/fits.png';
-    // const casaURL = 'https://raw.githubusercontent.com/CARTAvis/carta/develop/carta/html5/common/skel/source/resource/skel/file_icons/casa.png';
     const { browserOpened, files, selectedFile } = this.props;
     const fileItems = files.map((file, index) => {
       if (file.type === 'fits') {
@@ -127,17 +94,14 @@ class FileBrowser extends Component {
         <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="/images/casa.png" />} />
       );
     });
-    if (this.props.openBrowser) {
-      this.openBrowser();
-      console.log('OPENBROWSER TRUE');
-    }
+
     return (
       // <Paper style={browserStyle} zDepth={1} >
       <div>
         {/* <p>File Browser, open file browser, then choose a file to read</p> */}
         {/* <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
         <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary /> */}
-        { browserOpened && fileItems && fileItems.length > 0 &&
+        { fileItems && fileItems.length > 0 &&
           <div>
             <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
               {fileItems}
@@ -151,14 +115,13 @@ class FileBrowser extends Component {
 }
 
 const mapStateToProps = state => ({
-  // imageURL: state.image.imageURL,
   files: state.fileBrowserUI.files,
   rootDir: state.fileBrowserUI.rootDir,
-  browserOpened: state.fileBrowserUI.fileBrowserOpened,
+  // browserOpened: state.fileBrowserUI.fileBrowserOpened,
   selectedFile: state.fileBrowserUI.selectedFile,
 });
 
-// TODO
+// TODO use the below way to use simplified methods
 // export function mapDispatchToProps(dispatch) {
 //   return bindActionCreators({
 //     prepareFileBrowser: actions.prepareFileBrowser,

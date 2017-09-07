@@ -1,3 +1,5 @@
+import SessionManager from '../api/SessionManager';
+
 export function setupMongoListeners(collection, dispatch, handler) {
   const collectionObservationHandle = collection.find().observe({
     added(newDoc) {
@@ -14,4 +16,20 @@ export function setupMongoListeners(collection, dispatch, handler) {
       }
     },
   });
+}
+
+export function mongoUpsert(collection, newDocObject, actionType) {
+  newDocObject.actionType = actionType;
+  const sessionID = SessionManager.getSuitableSession();
+  const docs = collection.find({ sessionID }).fetch();
+  if (docs.length > 0) {
+    console.log('collection update');
+    const doc = docs[0];
+    const docID = doc._id;
+    collection.update(docID, { $set: newDocObject });
+  } else {
+    console.log('collection insert');
+    newDocObject.sessionID = sessionID;
+    const docID = collection.insert(newDocObject);
+  }
 }

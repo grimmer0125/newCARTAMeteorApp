@@ -10,10 +10,9 @@ const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, ac
   console.log('INSIDE REDUCER');
 
   switch (action.type) {
-    case Actions.RECEIVE_FILEBROWSER_CHANGE: {
+    case Actions.FILEBROWSER_CHANGE: {
       console.log('fileBrowser action:', action);
       const combine = { ...state, ...action.payload.ui };
-      // console.log('combine:', combine);
       return combine;
     }
     default:

@@ -6,7 +6,6 @@ const Commands = {
   REGISTER_IMAGEVIEWER,
   REQUEST_FILE_LIST,
   SELECT_FILE_TO_OPEN,
-  // RECEIVE_FILE_LIST,
 };
 
 export default Commands;

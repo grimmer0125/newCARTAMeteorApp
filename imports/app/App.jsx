@@ -44,21 +44,6 @@ const muiTheme = getMuiTheme({
   // },
 });
 
-// const App = () => (
-//   <Provider store={store}>
-//     <MuiThemeProvider muiTheme={muiTheme}>
-//       <div>
-//         <Login />
-//       </div>
-//     </MuiThemeProvider>
-//   </Provider>
-// );
-// Name = React.createClass({
-//
-//   render() {
-//     return <App user={this.data.currentUser} />;
-//   },
-// });
 class App extends Component {
   constructor(props) {
     super(props);

@@ -2,6 +2,7 @@ import React from 'react';
 import Pane from './Pane';
 import '../stylesheets/index.css';
 
+
 function clearSelection() {
   if (window.getSelection) {
     if (window.getSelection().empty) {
@@ -25,7 +26,7 @@ class SplitterLayout extends React.Component {
     this.handleSplitterMouseDown = this.handleSplitterMouseDown.bind(this);
     this.state = {
       secondaryPaneSize: 0,
-      resizing: false
+      resizing: false,
     };
   }
 
@@ -37,9 +38,8 @@ class SplitterLayout extends React.Component {
     let secondaryPaneSize;
     if (typeof this.props.secondaryInitialSize !== 'undefined') {
       secondaryPaneSize = this.props.secondaryInitialSize;
-      const containerRect = this.container.getBoundingClientRect();
 
-      console.log('grimmer componentDidMount:', secondaryPaneSize, 'container_width/total_width:', containerRect.width);
+      console.log('grimmer componentDidMount:', secondaryPaneSize);
     } else {
       const containerRect = this.container.getBoundingClientRect();
       let splitterRect;
@@ -51,12 +51,22 @@ class SplitterLayout extends React.Component {
       }
       secondaryPaneSize = this.getSecondaryPaneSize(containerRect, splitterRect, {
         left: containerRect.left + ((containerRect.width - splitterRect.width) / 2),
-        top: containerRect.top + ((containerRect.height - splitterRect.height) / 2)
+        top: containerRect.top + ((containerRect.height - splitterRect.height) / 2),
       }, false);
       console.log('grimmer componentDidMount:', secondaryPaneSize, 'container_width:', containerRect.width);
     }
 
     this.setState({ secondaryPaneSize });
+    if (this.props.mountHandler) {
+      // added by grimmer
+      const containerRect = this.container.getBoundingClientRect();
+      console.log('grimmer componentDidMount, container_width/total_width:', containerRect.width);
+
+      // width, height, secondaryPaneSize
+      // if (containerRect.width) {
+      this.props.mountHandler(containerRect.width, containerRect.height, secondaryPaneSize);
+      // }
+    }
   }
 
   componentWillUnmount() {
@@ -112,16 +122,32 @@ class SplitterLayout extends React.Component {
   }
 
   handleResize() {
+    let returnSecondaryPaneSize;
+
     if (this.splitter && !this.props.percentage) {
       const containerRect = this.container.getBoundingClientRect();
       const splitterRect = this.splitter.getBoundingClientRect();
       const secondaryPaneSize = this.getSecondaryPaneSize(containerRect, splitterRect, {
         left: splitterRect.left,
-        top: splitterRect.top
+        top: splitterRect.top,
       }, false);
 
-      console.log('grimmer handleResize:', secondaryPaneSize, 'container_width:', containerRect.width);
+      // console.log('grimmer handleResize:', secondaryPaneSize, 'container_width:', containerRect.width);
       this.setState({ secondaryPaneSize });
+      returnSecondaryPaneSize = secondaryPaneSize;
+    } else {
+      returnSecondaryPaneSize = this.state.secondaryPaneSize; //! !!
+    }
+
+    if (this.props.resizeHandler) {
+      // added by grimmer
+      const containerRect = this.container.getBoundingClientRect();
+      console.log('grimmer handleResize:', returnSecondaryPaneSize, 'container/total_width:', containerRect.width);
+
+      // width, height, secondaryPaneSize
+      // if (containerRect.width) {
+      this.props.resizeHandler(containerRect.width, containerRect.height, returnSecondaryPaneSize);
+      // }
     }
   }
 
@@ -131,12 +157,22 @@ class SplitterLayout extends React.Component {
       const splitterRect = this.splitter.getBoundingClientRect();
       const secondaryPaneSize = this.getSecondaryPaneSize(containerRect, splitterRect, {
         left: e.clientX,
-        top: e.clientY
+        top: e.clientY,
       }, true);
       clearSelection();
 
-      console.log('grimmer handleMouseMove:', secondaryPaneSize, 'container_width:', containerRect.width);
+      // console.log('grimmer handleMouseMove:', secondaryPaneSize, 'container_width:', containerRect.width);
       this.setState({ secondaryPaneSize });
+
+      if (this.props.drageHandler) {
+        // added by grimmer
+        console.log('grimmer handleMouseMove:', secondaryPaneSize, ';container_width/total_width:', containerRect.width);
+
+        // width, height, secondaryPaneSize
+        // if (containerRect.width) {
+        this.props.drageHandler(containerRect.width, containerRect.height, secondaryPaneSize);
+        // }
+      }
     }
   }
 
@@ -177,7 +213,7 @@ class SplitterLayout extends React.Component {
       wrappedChildren.push(
         <Pane vertical={this.props.vertical} percentage={this.props.percentage} primary={primary} size={size}>
           {children[i]}
-        </Pane>
+        </Pane>,
       );
     }
 
@@ -205,7 +241,7 @@ SplitterLayout.propTypes = {
   primaryMinSize: React.PropTypes.number,
   secondaryInitialSize: React.PropTypes.number,
   secondaryMinSize: React.PropTypes.number,
-  children: React.PropTypes.arrayOf(React.PropTypes.node)
+  children: React.PropTypes.arrayOf(React.PropTypes.node),
 };
 
 SplitterLayout.defaultProps = {
@@ -216,7 +252,7 @@ SplitterLayout.defaultProps = {
   primaryMinSize: 0,
   secondaryInitialSize: undefined,
   secondaryMinSize: 0,
-  children: []
+  children: [],
 };
 
 export default SplitterLayout;

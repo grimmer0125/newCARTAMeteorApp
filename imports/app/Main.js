@@ -1,7 +1,9 @@
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
-import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
+// import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
+import SplitterLayout from 'react-splitter-layout';
+
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -98,6 +100,10 @@ class Main extends Component {
     const string = 'Image';
     const label = <div>{string}<br /><sub>image 0</sub></div>;
     const contentStyle = { marginLeft: 65 };
+    const toolbarStyle = {
+      marginLeft: 65,
+      backgroundColor: '#EEEEEE',
+    };
     const expanded = this.state.expand;
     const setting = this.state.setting;
     const midPanel = (
@@ -119,25 +125,18 @@ class Main extends Component {
     );
     if (expanded) {
       contentStyle.marginLeft = 200;
+      toolbarStyle.marginLeft = 200;
     }
     return (
       <div>
         <div style={{ overflowY: 'hidden', height: '100vh' }}>
-          <Topbar style={contentStyle} handleLogout={this.props.handleLogout} />
+          <Topbar style={toolbarStyle} handleLogout={this.props.handleLogout} />
           {/* <Topbar style={contentStyle} /> */}
           <div style={contentStyle}>
             {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
             predfined panel widths; with onupdate, resizing doesn't work, b/c
             panel keeps renewing, stuck in an inf loop */}
-            <PanelGroup
-              borderColor="black"
-              // panelWidths={[
-              //   { size: 400, minSize: 200, resize: 'stretch' },
-              //   { size: 400, minSize: 200, resize: 'stretch' },
-              //   { size: 200, minSize: 100, resize: 'stretch' },
-              // ]}
-              onUpdate={this.onUpdate}
-            >
+            <SplitterLayout percentage secondaryInitialSize={60}>
               <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
                 <ImageViewer />
                 <br />
@@ -183,13 +182,28 @@ class Main extends Component {
                   </div>
                 </Paper>
               </div>
+              <SplitterLayout percentage secondaryInitialSize={33}>
+                <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
+                  {midPanel}
+                </div>
+                <div style={{ flex: 1, overflowY: 'scroll', height: '100vh' }}>
+                  {this.showSetting(setting)}
+                </div>
+              </SplitterLayout>
+            </SplitterLayout>
+            {/* <PanelGroup
+              borderColor="black"
+              onUpdate={this.onUpdate}
+            >
+              <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
+              </div>
               <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
                 {midPanel}
               </div>
               <div style={{ flex: 1, overflowY: 'scroll', height: '100vh' }}>
                 {this.showSetting(setting)}
               </div>
-            </PanelGroup>
+            </PanelGroup> */}
             {/* <Layout /> */}
           </div>
           <SideMenu

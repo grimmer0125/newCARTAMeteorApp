@@ -43,7 +43,7 @@ class SessionUI extends Component {
 
   render() {
     const { sessionID } = this.props;
-    const buttonLabel = !this.state.watching ? 'GetScreen' : 'StopWatch';
+    const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
     return (
       <div>
         <TextField

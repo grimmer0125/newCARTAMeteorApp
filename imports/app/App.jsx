@@ -19,6 +19,9 @@ import actions from './actions';
 const store = configureStore();
 injectTapEventPlugin();
 
+import SplitterLayout from '../splitterLayout/components/SplitterLayout';
+
+import LayoutWrapper from '../example-ui/LayoutWrapper';
 
 // import { grey400 } from 'material-ui/styles/colors';
 
@@ -65,6 +68,23 @@ class App extends Component {
       }
     });
   }
+
+  drage2ndeHandler = (first, second, third) => {
+    console.log('drage2nd handler:', first, ';second:', second, ';third:', third);
+  }
+
+  drage1stHandler = (first, second, third) => {
+    console.log('drage1st handler:', first, ';second:', second, ';third:', third);
+  }
+
+  resizeHandler = (first, second, third) => {
+    console.log('mount handler:', first, ';second:', second, ';third:', third);
+  }
+
+  resizeHandler = (first, second, third) => {
+    console.log('resize handler:', first, ';second:', second, ';third:', third);
+  }
+
   render() {
     console.log('LOGGED IN STATE: ', this.state.loggedIn);
     // if (!this.state.loggedIn && (Meteor.user() !== null)) {
@@ -78,18 +98,35 @@ class App extends Component {
     //     </Provider>
     //   );
     // }
+
     return (
       <Provider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>
           <div>
-            <div className="layout-row-end-center ">
+            <div>
+              hello world
+            </div>
+            <LayoutWrapper
+              firstPercentage={40}
+              secondPercentage={40}
+              mountHandler={this.mountHandler}
+              resizeHandler={this.resizeHandler}
+              drage1stHandler={this.drage1stHandler}
+              drage2ndHandler={this.drage2ndHandler}
+            >
+              <div>Pane 1:40</div>
+              <div>Pane 2:40</div>
+              <div>Pane 3:20</div>
+            </LayoutWrapper>
+
+            {/* <div className="layout-row-end-center ">
               <SessionUI />
             </div>
             {
               (this.state.loggedIn || Meteor.user() !== null) ?
                 <Main handleLogout={this.handleLogout} />
                 : <Login handleLogin={this.handleLogin} />
-            }
+            } */}
           </div>
         </MuiThemeProvider>
       </Provider>

@@ -37,6 +37,9 @@ class SplitterLayout extends React.Component {
     let secondaryPaneSize;
     if (typeof this.props.secondaryInitialSize !== 'undefined') {
       secondaryPaneSize = this.props.secondaryInitialSize;
+      const containerRect = this.container.getBoundingClientRect();
+
+      console.log('grimmer componentDidMount:', secondaryPaneSize, 'container_width/total_width:', containerRect.width);
     } else {
       const containerRect = this.container.getBoundingClientRect();
       let splitterRect;
@@ -50,7 +53,9 @@ class SplitterLayout extends React.Component {
         left: containerRect.left + ((containerRect.width - splitterRect.width) / 2),
         top: containerRect.top + ((containerRect.height - splitterRect.height) / 2)
       }, false);
+      console.log('grimmer componentDidMount:', secondaryPaneSize, 'container_width:', containerRect.width);
     }
+
     this.setState({ secondaryPaneSize });
   }
 
@@ -89,6 +94,7 @@ class SplitterLayout extends React.Component {
       secondaryPaneSize = totalSize - splitterSize - offset;
     }
     let primaryPaneSize = totalSize - splitterSize - secondaryPaneSize;
+    console.log('getSecondaryPaneSize, total size:', totalSize, ';primarysize:', primaryPaneSize, '; sec:', secondaryPaneSize);
     if (this.props.percentage) {
       secondaryPaneSize = (secondaryPaneSize * 100) / totalSize;
       primaryPaneSize = (primaryPaneSize * 100) / totalSize;
@@ -113,6 +119,8 @@ class SplitterLayout extends React.Component {
         left: splitterRect.left,
         top: splitterRect.top
       }, false);
+
+      console.log('grimmer handleResize:', secondaryPaneSize, 'container_width:', containerRect.width);
       this.setState({ secondaryPaneSize });
     }
   }
@@ -126,6 +134,8 @@ class SplitterLayout extends React.Component {
         top: e.clientY
       }, true);
       clearSelection();
+
+      console.log('grimmer handleMouseMove:', secondaryPaneSize, 'container_width:', containerRect.width);
       this.setState({ secondaryPaneSize });
     }
   }

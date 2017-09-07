@@ -14,6 +14,7 @@ function Pane(props) {
   } else {
     classes += ' layout-pane-primary';
   }
+  console.log('grimmer size:', style.width);
   return (
     <div className={classes} style={style}>{props.children}</div>
   );

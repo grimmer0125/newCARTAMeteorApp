@@ -20,13 +20,16 @@ export function setupMongoListeners(collection, dispatch, handler) {
 
 export function mongoUpsert(collection, newDocObject, actionType) {
   newDocObject.actionType = actionType;
-  const docs = collection.find().fetch();
+  const sessionID = SessionManager.getSuitableSession();
+  const docs = collection.find({ sessionID }).fetch();
   if (docs.length > 0) {
+    console.log('collection update');
     const doc = docs[0];
     const docID = doc._id;
     collection.update(docID, { $set: newDocObject });
   } else {
-    newDocObject.sessionID = SessionManager.get();
+    console.log('collection insert');
+    newDocObject.sessionID = sessionID;
     const docID = collection.insert(newDocObject);
   }
 }

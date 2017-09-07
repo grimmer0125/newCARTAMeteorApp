@@ -10,6 +10,15 @@ const useOtherSession = (sessionID) => {
 
 const getOtherSession = () => Session.get('otherSessionID');
 
+const getSuitableSession = () => {
+  const otherSession = Session.get('otherSessionID');
+  if (otherSession) {
+    return otherSession;
+  }
+
+  return Session.get('selfSessionID');
+};
+
 const stopUsingOtherSession = () => {
   console.log('stop usingg session');
   Session.set('otherSessionID', null);
@@ -21,6 +30,7 @@ const SessionManager = {
   getOtherSession,
   useOtherSession,
   stopUsingOtherSession,
+  getSuitableSession,
 };
 
 export default SessionManager;

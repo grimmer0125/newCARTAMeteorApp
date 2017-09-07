@@ -67,7 +67,7 @@ function queryServerFileList() {
 
     // 2. send command if it becomes true.
     // TODO need to send Seesion id ? Server knows client's session. Do we need to check this on server side? (Seesion change case)
-    Meteor.call('sendCommand', Commands.REQUEST_FILE_LIST, params, (error, result) => {
+    Meteor.call('sendCommand', Commands.REQUEST_FILE_LIST, params, SessionManager.getSuitableSession(), (error, result) => {
       console.log('get open file browser result:', result);
     });
   };
@@ -92,7 +92,7 @@ function selectFileToOpen(path) {
     const parameter = `id:${controllerID},data:${path}`;
     console.log('inject file parameter, become:', parameter);
 
-    Meteor.call('sendCommand', Commands.SELECT_FILE_TO_OPEN, parameter, (error, result) => {
+    Meteor.call('sendCommand', Commands.SELECT_FILE_TO_OPEN, parameter, SessionManager.getSuitableSession(), (error, result) => {
       console.log('get select file result:', result);
     });
   };

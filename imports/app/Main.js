@@ -130,7 +130,7 @@ class Main extends Component {
     return (
       <div>
         <div style={{ overflowY: 'hidden', height: '100vh' }}>
-          <Topbar style={toolbarStyle} handleLogout={this.props.handleLogout} />
+          <Topbar style={toolbarStyle} />
           {/* <Topbar style={contentStyle} /> */}
           <div style={contentStyle}>
             {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
@@ -210,6 +210,7 @@ class Main extends Component {
             expandToTrue={this.expandToTrue}
             handleExpand={this.handleExpand}
             expand={this.state.expand}
+            handleLogout={this.props.handleLogout}
           />
         </div>
       </div>

@@ -99,6 +99,7 @@ class Login extends Component {
   }
   render() {
     const logo = 'https://raw.githubusercontent.com/CARTAvis/deploytask/master/carta-distro/etc/carta.png';
+    const google = <img src="/images/google.png" alt="" style={{ height: '35px', width: '35px', marginLeft: 0 }} />;
     const loginForm = (
       <form onSubmit={this.handleSubmit}>
         <TextField
@@ -128,12 +129,12 @@ class Login extends Component {
         <Divider />
         <RaisedButton
           onClick={this.handleGoogleSignIn}
-          // icon={<FontIcon className="fa-google-plus-square" />}
+          icon={google}
           label="sign in with google"
-          backgroundColor="#1976D2"
-          fullWidth
+          // dd4b39
+          backgroundColor="#dd4b39"
           labelColor="#FFFFFF"
-          style={{ marginTop: '10px' }}
+          style={{ marginLeft: '20%', marginTop: '10px' }}
         /><br />
         <FlatButton
           hoverColor="none"

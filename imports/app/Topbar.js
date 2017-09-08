@@ -29,9 +29,6 @@ export default class Topbar extends Component {
       anchorEl: event.currentTarget,
     });
   };
-  handleLogout = () => {
-    this.props.handleLogout();
-  }
   handleLocal = () => {
     // if local is set and remote isn't, don't do anything when local is clicked
     if (this.state.localDisabled && !this.state.remoteDisabled) {
@@ -57,13 +54,12 @@ export default class Topbar extends Component {
     return (
       <div>
         <Toolbar style={this.props.style}>
-          <ToolbarGroup firstChild>
+          <ToolbarGroup>
             <div className="layout-row-end-center ">
               <SessionUI />
             </div>
           </ToolbarGroup>
           <ToolbarGroup lastChild>
-            <RaisedButton label="sign out" onClick={this.handleLogout} />
             <RaisedButton label="Local" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleLocal} disabled={this.state.localDisabled} />
             <ToolbarSeparator style={{ margin: 0 }} />
             <RaisedButton label="Remote" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleRemote} disabled={this.state.remoteDisabled} />

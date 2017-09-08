@@ -7,6 +7,7 @@ import NavNext from 'material-ui/svg-icons/image/navigate-next';
 import NavBefore from 'material-ui/svg-icons/image/navigate-before';
 import Backspace from 'material-ui/svg-icons/hardware/keyboard-backspace';
 import Folder from 'material-ui/svg-icons/file/folder';
+import Run from 'material-ui/svg-icons/maps/directions-run';
 
 import FileBrowser from '../fileBrowser/FileBrowser';
 
@@ -27,7 +28,9 @@ export default class SideMenu extends Component {
   handleToggle = () => {
     this.props.handleExpand();
   }
-
+  handleLogout = () => {
+    this.props.handleLogout();
+  }
   handleOpenFiles = () => {
     this.props.expandToTrue();
     this.setState({
@@ -48,6 +51,7 @@ export default class SideMenu extends Component {
     const menu = (
       <div>
         <MenuItemMUI style={{ overflowX: 'hidden' }} onClick={this.handleOpenFiles} primaryText="Files" leftIcon={<Folder />} />
+        <MenuItemMUI style={{ overflowX: 'hidden' }} onClick={this.handleLogout} primaryText="Sign out" leftIcon={<Run />} />
         {
           this.props.expand ?
             <IconButton style={buttonStyle2}>

@@ -3,15 +3,19 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import actions from './actions';
+import People from 'material-ui/svg-icons/social/people';
+import IconButton from 'material-ui/IconButton';
+import Popover from 'material-ui/Popover';
 
 const style = {
   margin: 12,
+  marginLeft: '50%',
 };
 
 class SessionUI extends Component {
   constructor(props) {
     super(props);
-    this.state = { watching: false, sessionText: '' };
+    this.state = { watching: false, sessionText: '', open: false };
   }
 
   handleChange = (event) => {
@@ -20,7 +24,21 @@ class SessionUI extends Component {
       sessionText: event.target.value,
     });
   }
+  handleTouchTap = (event) => {
+    // This prevents ghost click.
+    event.preventDefault();
 
+    this.setState({
+      open: true,
+      anchorEl: event.currentTarget,
+    });
+  };
+
+  handleRequestClose = () => {
+    this.setState({
+      open: false,
+    });
+  };
   switchWatchMode = () => {
     // if(this.state.watching || this.state.sessionText) {
     //   this.setState({watching: !this.state.watching});
@@ -46,13 +64,30 @@ class SessionUI extends Component {
     const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
     return (
       <div>
-        <TextField
-          value={this.state.sessionText}
-          hintText="Input Shared Screen's SessionID"
-          onChange={this.handleChange}
-        />
-        <RaisedButton onTouchTap={this.switchWatchMode} label={buttonLabel} style={style} />
-        SelfSessionID: {sessionID}
+        <IconButton>
+          <People onTouchTap={this.handleTouchTap} />
+        </IconButton>
+        <Popover
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+          onRequestClose={this.handleRequestClose}
+          style={{ width: '300px', height: '180px' }}
+        >
+          <TextField
+            value={this.state.sessionText}
+            hintText="Input Shared Screen's SessionID"
+            onChange={this.handleChange}
+            style={{ padding: '10px', paddingTop: 0 }}
+          /><br />
+          <RaisedButton onTouchTap={this.switchWatchMode} label={buttonLabel} style={style} />
+          <br />
+          <p style={{ textAlign: 'center' }}>
+            My Session ID: <br />
+            {sessionID}
+          </p>
+        </Popover>
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
-import { Images } from '../api/Images';
+import { ImageViewers } from '../api/ImageViewers';
 import { Responses } from '../api/Responses';
 
 // command response part:
@@ -31,8 +31,8 @@ function turnOnWatching(watchingSessionID) {
       console.log('filebrowserui subscribes OK: !!!', SessionManager.get());
     });
 
-    otherSubHandleImage = Meteor.subscribe('images', SessionManager.getOtherSession(), () => {
-      console.log('images subscribes OK !!!');
+    otherSubHandleImage = Meteor.subscribe('imageviewers', SessionManager.getOtherSession(), () => {
+      console.log('imageviewers subscribes OK !!!');
     });
   };
 }
@@ -60,8 +60,8 @@ function subscribeNonCommandCollections() {
     console.log('filebrowserui subscribes OK: !!!');
   });
 
-  Meteor.subscribe('images', SessionManager.get(), () => {
-    console.log('images subscribes OK !!!');
+  Meteor.subscribe('imageviewers', SessionManager.get(), () => {
+    console.log('imageviewers subscribes OK !!!');
   });
 }
 

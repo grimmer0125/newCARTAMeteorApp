@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Responses } from '../imports/api/Responses';
 import '../imports/api/FileBrowsers';
-import '../imports/api/Images';
+import '../imports/api/ImageViewers';
 
 import ChannelClient from '../imports/api/ChannelClient';
 import Commands from '../imports/api/Commands';

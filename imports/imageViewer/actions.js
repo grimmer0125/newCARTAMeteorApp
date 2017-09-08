@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
-import { Images } from '../api/Images';
+import { ImageViewers } from '../api/ImageViewers';
 import Commands from '../api/Commands';
 // redux part
 const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
@@ -28,7 +28,7 @@ function reflectMongoImageAddToStore(imageData) {
 
 function prepareImageViewer() {
   return (dispatch) => {
-    setupMongoListeners(Images, dispatch, reflectMongoImageAddToStore);
+    setupMongoListeners(ImageViewers, dispatch, reflectMongoImageAddToStore);
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
@@ -52,7 +52,7 @@ export function parseReigsterViewResp(result) {
   const controllerID = result;
 
   // step1: save controllerID to mongodb
-  mongoUpsert(Images, { controllerID }, RESPONSE_REGISTER_IMAGEVIEWER);
+  mongoUpsert(ImageViewers, { controllerID }, RESPONSE_REGISTER_IMAGEVIEWER);
 
   // step2
   const viewName = `${controllerID}/view`;
@@ -70,7 +70,7 @@ export function parseImageToMongo(buffer) {
     console.log('image url string size:', url.length);
 
     console.log('parseImageToMongo');
-    mongoUpsert(Images, { imageURL: url }, GET_IMAGE);
+    mongoUpsert(ImageViewers, { imageURL: url }, GET_IMAGE);
   } else {
     console.log('get dummy image response');
   }

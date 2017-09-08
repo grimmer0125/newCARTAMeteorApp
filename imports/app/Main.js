@@ -18,6 +18,8 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItemMUI from 'material-ui/MenuItem';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-contextmenu/public/styles.5bb557.css';
+
+
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
 // import Layout from './Layout';
@@ -60,8 +62,10 @@ class Main extends Component {
 
   // define callback
   onUpdate = (array) => {
-    // console.log('pannelgroup change: ', array);
+    console.log('pannelgroup change: ', array);
     const newWidth = array[1].size;
+    console.log('pannelgroup change2: ', newWidth);
+
     // console.log('new width:', newWidth);
     this.setState({ secondColumnWidth: newWidth });
     // use 2nd column's width
@@ -127,6 +131,21 @@ class Main extends Component {
       contentStyle.marginLeft = 200;
       toolbarStyle.marginLeft = 200;
     }
+
+    // <div>
+    //   hello world
+    // </div>
+    // <div>
+    //   <SplitterLayout percentage secondaryInitialSize={60}>
+    //     <div>Pane 1</div>
+    //     {/* 2nd level should setupt primaryindex=1, otherwise we can not get initial size*/}
+    //     <SplitterLayout percentage primaryIndex={1} secondaryInitialSize={67}>
+    //       <div>Pane 2:66</div>
+    //       <div>Pane 3:33</div>
+    //     </SplitterLayout>
+    //   </SplitterLayout>
+    // </div>
+
     return (
       <div>
         <div style={{ overflowY: 'hidden', height: '100vh' }}>

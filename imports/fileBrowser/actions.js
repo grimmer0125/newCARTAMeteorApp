@@ -8,7 +8,7 @@ import { FileBrowsers } from '../api/FileBrowsers';
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
 
-import { setupMongoListeners, mongoUpsert } from '../api/MongoHelper';
+import { mongoUpsert } from '../api/MongoHelper';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
@@ -39,20 +39,21 @@ export function parseFileList(data) {
 // }
 
 // NOTE: follow https://github.com/acdlite/flux-standard-action
-function receiveUIChange(ui) {
-  return {
-    type: FILEBROWSER_CHANGE,
-    payload: {
-      ui,
-    },
-  };
-}
+// function receiveUIChange(data) {
+//   return {
+//     type: FILEBROWSER_CHANGE,
+//     payload: {
+//       data,
+//     },
+//   };
+// }
 
-function prepareFileBrowser() {
-  return (dispatch) => {
-    setupMongoListeners(FileBrowsers, dispatch, receiveUIChange);
-  };
-}
+// function prepareFileBrowser() {
+//   return (dispatch) => {
+//     // setupMongoReduxListeners(FileBrowsers, dispatch, FILEBROWSER_CHANGE);
+//     //    setupMongoReduxListeners(FileBrowsers, dispatch, receiveUIChange);
+//   };
+// }
 
 function queryServerFileList() {
   return (dispatch, getState) => {
@@ -99,7 +100,7 @@ function selectFileToOpen(path) {
 }
 
 const actions = {
-  prepareFileBrowser,
+  // prepareFileBrowser,
   // closeFileBrowser,
   queryServerFileList,
   selectFileToOpen,

@@ -3,33 +3,31 @@ import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
 import { ImageViewers } from '../api/ImageViewers';
 import Commands from '../api/Commands';
-// redux part
-const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
 
 // only for saving action history in mongo
 const RESPONSE_REGISTER_IMAGEVIEWER = 'RESPONSE_REGISTER_IMAGEVIEWER';
 const GET_IMAGE = 'GET_IMAGE';
 
+// redux part
+const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
 export const Actions = {
   IMAGEVIEWER_CHANGE,
 };
 
-import { setupMongoListeners, mongoUpsert } from '../api/MongoHelper';
+import { mongoUpsert } from '../api/MongoHelper';
 
-function reflectMongoImageAddToStore(imageData) {
-  console.log('reflect image:', imageData);
-  return {
-    type: IMAGEVIEWER_CHANGE,
-    payload: {
-      imageData,
-    },
-  };
-}
+// function reflectMongoImageAddToStore(data) {
+//   console.log('reflect image:', data);
+//   return {
+//     type: IMAGEVIEWER_CHANGE,
+//     payload: {
+//       data,
+//     },
+//   };
+// }
 
-function prepareImageViewer() {
+function setuptImageViewer() {
   return (dispatch) => {
-    setupMongoListeners(ImageViewers, dispatch, reflectMongoImageAddToStore);
-
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
     // var pathDict = skel.widgets.Path.getInstance();
@@ -66,10 +64,11 @@ export function parseReigsterViewResp(result) {
 
 export function parseImageToMongo(buffer) {
   if (buffer) {
+    console.log('parseImageToMongo');
+
     const url = `data:image/jpeg;base64,${buffer}`;
     console.log('image url string size:', url.length);
 
-    console.log('parseImageToMongo');
     mongoUpsert(ImageViewers, { imageURL: url }, GET_IMAGE);
   } else {
     console.log('get dummy image response');
@@ -77,7 +76,7 @@ export function parseImageToMongo(buffer) {
 }
 
 const actions = {
-  prepareImageViewer,
+  setuptImageViewer,
 };
 
 export default actions;

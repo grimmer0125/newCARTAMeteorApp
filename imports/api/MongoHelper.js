@@ -1,18 +1,47 @@
 import SessionManager from '../api/SessionManager';
 
-export function setupMongoListeners(collection, dispatch, handler) {
+
+// // NOTE: follow https://github.com/acdlite/flux-standard-action
+// function receiveUIChange(data) {
+//   return {
+//     type: FILEBROWSER_CHANGE,
+//     payload: {
+//       data,
+//     },
+//   };
+// }
+
+// const genericActionCreator = (data) => {
+//   return {
+//     type: actionType,
+//     payload:{
+//       data,
+//     },
+//   };
+// };
+
+
+// TODO prevent same collection registering twice
+export function setupMongoReduxListeners(collection, dispatch, actionType) {
+  const actionCreator = data => ({
+    type: actionType,
+    payload: {
+      data,
+    },
+  });
+
   const collectionObservationHandle = collection.find().observe({
     added(newDoc) {
-      dispatch(handler(newDoc));
+      dispatch(actionCreator(newDoc));
     },
     changed(newDoc, oldDoc) {
-      dispatch(handler(newDoc));
+      dispatch(actionCreator(newDoc));
     },
     removed(oldDocument) {
       const documents = collection.find().fetch();
       if (documents.length > 0) {
         const doc = documents[0];
-        dispatch(handler(doc));
+        dispatch(actionCreator(doc));
       }
     },
   });

@@ -14,7 +14,7 @@ class ImageViewer extends Component {
   constructor(props) {
     super(props);
 
-    this.props.dispatch(actions.prepareImageViewer());
+    this.props.dispatch(actions.setuptImageViewer());
   }
 
   render() {

@@ -4,7 +4,7 @@ const imageController = (state = { imageURL: '' }, action) => {
   switch (action.type) {
     case Actions.IMAGEVIEWER_CHANGE:
       console.log('INSIDE imageController REDUCER');
-      return { ...state, ...action.payload.imageData };
+      return action.payload.data;
     default:
       return state;
   }

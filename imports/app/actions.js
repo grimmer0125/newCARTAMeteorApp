@@ -2,15 +2,17 @@ import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
 import { ImageViewers } from '../api/ImageViewers';
+import { FileBrowsers } from '../api/FileBrowsers';
 import { Responses } from '../api/Responses';
 
 // command response part:
-import { parseFileList } from '../fileBrowser/actions';
-import { parseImageToMongo, parseReigsterViewResp } from '../imageViewer/actions';
+import { parseFileList, Actions as filebrowserActions } from '../fileBrowser/actions';
+import { parseImageToMongo, parseReigsterViewResp, Actions as imageViewerActions } from '../imageViewer/actions';
+
+import { setupMongoReduxListeners } from '../api/MongoHelper';
 
 import Commands from '../api/Commands';
 
-// TODO move consts to a file
 const GET_SESSIONID = 'GET_SESSIONID';
 
 export const Actions = {
@@ -54,7 +56,7 @@ function turnOffWatching() {
   };
 }
 
-function subscribeNonCommandCollections() {
+function subscribeNonCommandCollections(dispatch) {
   // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty, subscribing will fail
   Meteor.subscribe('filebrowserui', SessionManager.get(), () => {
     console.log('filebrowserui subscribes OK: !!!');
@@ -63,6 +65,9 @@ function subscribeNonCommandCollections() {
   Meteor.subscribe('imageviewers', SessionManager.get(), () => {
     console.log('imageviewers subscribes OK !!!');
   });
+
+  setupMongoReduxListeners(ImageViewers, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
+  setupMongoReduxListeners(FileBrowsers, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
 }
 
 function handleCommandResponse(resp) {
@@ -101,7 +106,8 @@ function waitForCommandResponses() {
         console.log('commandResponse subscribes OK !!!');
       });
 
-      subscribeNonCommandCollections();
+      subscribeNonCommandCollections(dispatch);
+
 
       // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more
       // e.g. https://gist.github.com/aaronthorp/06b67c171fde6d1ef317

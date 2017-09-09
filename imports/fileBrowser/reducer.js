@@ -6,7 +6,7 @@ const testFileList = {
   files: [{ name: 'apple.fits', type: 'fits' }],
 };
 
-const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, action) => {
+const FileBrowserDB = (state = { fileBrowserOpened: false, ...testFileList }, action) => {
   switch (action.type) {
     case Actions.FILEBROWSER_CHANGE: {
       console.log('fileBrowser action:', action);
@@ -18,7 +18,7 @@ const fileBrowserUI = (state = { fileBrowserOpened: false, ...testFileList }, ac
 };
 
 const fileReducer = {
-  fileBrowserUI,
+  FileBrowserDB,
 };
 
 export default fileReducer;

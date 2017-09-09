@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 // import '../imports/api/methods';
 
 import { Responses } from '../imports/api/Responses';
-import '../imports/api/FileBrowsers';
-import '../imports/api/ImageViewers';
+import '../imports/api/FileBrowserDB';
+import '../imports/api/ImageController';
 
 import ChannelClient from '../imports/api/ChannelClient';
 import Commands from '../imports/api/Commands';

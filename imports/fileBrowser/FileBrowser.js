@@ -115,10 +115,10 @@ class FileBrowser extends Component {
 }
 
 const mapStateToProps = state => ({
-  files: state.fileBrowserUI.files,
-  rootDir: state.fileBrowserUI.rootDir,
-  // browserOpened: state.fileBrowserUI.fileBrowserOpened,
-  selectedFile: state.fileBrowserUI.selectedFile,
+  files: state.FileBrowserDB.files,
+  rootDir: state.FileBrowserDB.rootDir,
+  // browserOpened: state.FileBrowserDB.fileBrowserOpened,
+  selectedFile: state.FileBrowserDB.selectedFile,
 });
 
 // TODO use the below way to use simplified methods

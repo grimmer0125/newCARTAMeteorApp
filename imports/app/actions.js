@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
-import { ImageViewers } from '../api/ImageViewers';
-import { FileBrowsers } from '../api/FileBrowsers';
+import { ImageController } from '../api/ImageController';
+import { FileBrowserDB } from '../api/FileBrowserDB';
 import { Responses } from '../api/Responses';
 
 // command response part:
@@ -29,12 +29,12 @@ function turnOnWatching(watchingSessionID) {
 
     console.log('use other session:', SessionManager.getOtherSession());
 
-    otherSubHnadleFile = Meteor.subscribe('filebrowserui', SessionManager.getOtherSession(), () => {
-      console.log('filebrowserui subscribes OK: !!!', SessionManager.get());
+    otherSubHnadleFile = Meteor.subscribe('filebrowserdb', SessionManager.getOtherSession(), () => {
+      console.log('filebrowserdb subscribes OK: !!!', SessionManager.get());
     });
 
-    otherSubHandleImage = Meteor.subscribe('imageviewers', SessionManager.getOtherSession(), () => {
-      console.log('imageviewers subscribes OK !!!');
+    otherSubHandleImage = Meteor.subscribe('imagecontroller', SessionManager.getOtherSession(), () => {
+      console.log('imagecontroller subscribes OK !!!');
     });
   };
 }
@@ -58,16 +58,16 @@ function turnOffWatching() {
 
 function subscribeNonCommandCollections(dispatch) {
   // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty, subscribing will fail
-  Meteor.subscribe('filebrowserui', SessionManager.get(), () => {
-    console.log('filebrowserui subscribes OK: !!!');
+  Meteor.subscribe('filebrowserdb', SessionManager.get(), () => {
+    console.log('filebrowserdb subscribes OK: !!!');
   });
 
-  Meteor.subscribe('imageviewers', SessionManager.get(), () => {
-    console.log('imageviewers subscribes OK !!!');
+  Meteor.subscribe('imagecontroller', SessionManager.get(), () => {
+    console.log('imagecontroller subscribes OK !!!');
   });
 
-  setupMongoReduxListeners(ImageViewers, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
-  setupMongoReduxListeners(FileBrowsers, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
+  setupMongoReduxListeners(ImageController, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
+  setupMongoReduxListeners(FileBrowserDB, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
 }
 
 function handleCommandResponse(resp) {
@@ -148,7 +148,7 @@ function waitForCommandResponses() {
       // Tracker.autorun(() => {
       //   // 1st time ok, 2nd insert fail, so becomes back to zero.
       //   // local write still get this callback.
-      //   const uidata = FileBrowsers.find().fetch();
+      //   const uidata = FileBrowserDB.find().fetch();
       //
       //   console.log('get ui data change from db:', uidata.length);
       //   // if (uidata.length > 0) {

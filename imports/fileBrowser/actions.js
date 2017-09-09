@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 
 // import '../api/methods';
-import { FileBrowsers } from '../api/FileBrowsers';
+import { FileBrowserDB } from '../api/FileBrowserDB';
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
 
@@ -30,12 +30,12 @@ export const Actions = {
 export function parseFileList(data) {
   const fileList = { files: data.dir, rootDir: data.name };
 
-  mongoUpsert(FileBrowsers, fileList, GET_FILELIST);
+  mongoUpsert(FileBrowserDB, fileList, GET_FILELIST);
 }
 
 // export function updateFileBrowserToMongo(Open) {
 //   console.log('updateFileBrowserToMongo');
-//   mongoUpsert(FileBrowsers, { fileBrowserOpened: Open }, OPEN_FILEBROWSER);
+//   mongoUpsert(FileBrowserDB, { fileBrowserOpened: Open }, OPEN_FILEBROWSER);
 // }
 
 // NOTE: follow https://github.com/acdlite/flux-standard-action
@@ -50,8 +50,8 @@ export function parseFileList(data) {
 
 // function prepareFileBrowser() {
 //   return (dispatch) => {
-//     // setupMongoReduxListeners(FileBrowsers, dispatch, FILEBROWSER_CHANGE);
-//     //    setupMongoReduxListeners(FileBrowsers, dispatch, receiveUIChange);
+//     // setupMongoReduxListeners(FileBrowserDB, dispatch, FILEBROWSER_CHANGE);
+//     //    setupMongoReduxListeners(FileBrowserDB, dispatch, receiveUIChange);
 //   };
 // }
 
@@ -75,7 +75,7 @@ function queryServerFileList() {
 }
 function selectFile(index) {
   return (dispatch, getState) => {
-    mongoUpsert(FileBrowsers, { selectedFile: index }, SELECT_FILE);
+    mongoUpsert(FileBrowserDB, { selectedFile: index }, SELECT_FILE);
   };
 }
 // function closeFileBrowser() {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
-import { ImageViewers } from '../api/ImageViewers';
+import { ImageController } from '../api/ImageController';
 import Commands from '../api/Commands';
 
 // only for saving action history in mongo
@@ -50,7 +50,7 @@ export function parseReigsterViewResp(result) {
   const controllerID = result;
 
   // step1: save controllerID to mongodb
-  mongoUpsert(ImageViewers, { controllerID }, RESPONSE_REGISTER_IMAGEVIEWER);
+  mongoUpsert(ImageController, { controllerID }, RESPONSE_REGISTER_IMAGEVIEWER);
 
   // step2
   const viewName = `${controllerID}/view`;
@@ -69,7 +69,7 @@ export function parseImageToMongo(buffer) {
     const url = `data:image/jpeg;base64,${buffer}`;
     console.log('image url string size:', url.length);
 
-    mongoUpsert(ImageViewers, { imageURL: url }, GET_IMAGE);
+    mongoUpsert(ImageController, { imageURL: url }, GET_IMAGE);
   } else {
     console.log('get dummy image response');
   }

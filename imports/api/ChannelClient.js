@@ -36,25 +36,24 @@ export default class ChannelClient {
       const xx = new QWebChannel(this.socket, (channel) => {
         this.QConnector = channel.objects.QConnector;
 
-
         // start to setup the connection to cpp side.
         // connector.connect();
         // QtConnector.stateChangedSignal.connect
         // // listen for changes to the state
-        this.QConnector.stateChangedSignal.connect((key, val) => {
-          try {
-            // TODO we will not use this channle for new CARTA. hard to maintain.
-            // console.log('grimmer state changed:', key, ';val:', val);
-            // const st = getOrCreateState(key);
-            // // save the value
-            // st.value = val;
-            // // now go through all callbacks and call them
-            // st.callbacks.callEveryone(st.value);
-          } catch (error) {
-            console.error('Caught error in state callback ', error);
-            console.trace();
-          }
-        });
+        // this.QConnector.stateChangedSignal.connect((key, val) => {
+        //   try {
+        //     // TODO we will not use this channle for new CARTA. hard to maintain.
+        //     // console.log('grimmer state changed:', key, ';val:', val);
+        //     // const st = getOrCreateState(key);
+        //     // // save the value
+        //     // st.value = val;
+        //     // // now go through all callbacks and call them
+        //     // st.callbacks.callEveryone(st.value);
+        //   } catch (error) {
+        //     console.error('Caught error in state callback ', error);
+        //     console.trace();
+        //   }
+        // });
 
         // listen for command results callbacks and always invoke the top callback
         // in the list
@@ -133,12 +132,11 @@ export default class ChannelClient {
     if (this.QConnector) {
       this.QConnector.jsSendCommandSlot(sessionID, cmd, params);
     }
-    // QtConnector.jsUpdateViewSlot(this.m_viewName, th
   }
 
   setupImageViewerSize(sessionID, viewName, width, height) {
     if (this.QConnector) {
-      this.QConnector.jsUpdateViewSlot(sessionID, viewName, width, height);
+      this.QConnector.jsUpdateViewSizeSlot(sessionID, viewName, width, height);
     }
   }
 }

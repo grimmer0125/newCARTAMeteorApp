@@ -26,7 +26,6 @@
 .splitter-layout > .layout-splitter {
   flex: 0 0 auto;
   width: 4px;
-  height: 100%;
   cursor: col-resize;
   background-color: #ccc;
 }

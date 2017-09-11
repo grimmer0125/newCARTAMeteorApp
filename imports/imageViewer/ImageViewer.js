@@ -7,7 +7,7 @@ import actions from './actions';
 
 const browserStyle = {
   width: 637,
-  height: 677,
+  height: 477,
 };
 
 class ImageViewer extends Component {

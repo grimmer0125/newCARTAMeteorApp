@@ -2,7 +2,7 @@ import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
 // import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
-import SplitterLayout from 'react-splitter-layout';
+// import SplitterLayout from 'react-splitter-layout';
 import LayoutWrapper from '../example-ui/LayoutWrapper';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
@@ -18,6 +18,8 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItemMUI from 'material-ui/MenuItem';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-contextmenu/public/styles.5bb557.css';
+
+import SplitterLayout from '../splitterLayout/components/SplitterLayout';
 
 
 // import attachment from 'material-ui/svg-icons/file/attachment';
@@ -147,12 +149,15 @@ class Main extends Component {
         </ContextMenu>
       </div>
     );
-    if (expanded) {
-      contentStyle.marginLeft = 180;
-      toolbarStyle.width = 'calc(100% + 118px)';
-    }
+    // if (expanded) {
+    //   contentStyle.marginLeft = 180;
+    //   toolbarStyle.width = 'calc(100% + 118px)';
+    // }
     return (
-      <div>
+      <div className="layout-row">
+        {/* <div style={{ width: 200, backgroundColor: 'yellow' }}>
+          test
+        </div> */}
         <SideMenu
           expandToTrue={this.expandToTrue}
           handleExpand={this.handleExpand}
@@ -161,11 +166,16 @@ class Main extends Component {
         />
 
         {/* <Topbar style={contentStyle} /> */}
-        <div style={contentStyle}>
+        <div className="layout-fill">
           {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
             predfined panel widths; with onupdate, resizing doesn't work, b/c
             panel keeps renewing, stuck in an inf loop */}
           <Topbar style={toolbarStyle} />
+          {/* <SplitterLayout>
+            <div>Pane 1</div>
+            <div>Pane 2</div>
+          </SplitterLayout> */}
+
           <LayoutWrapper
             firstPercentage={40}
             secondPercentage={40}
@@ -175,8 +185,6 @@ class Main extends Component {
             drage2ndeHandler={this.drage2ndeHandler}
             onUpdate={this.onUpdate}
           >
-            {/* <SplitterLayout percentage secondaryInitialSize={60}> */}
-            {/* <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}> */}
             <div>
               <ImageViewer />
               <br />
@@ -229,6 +237,7 @@ class Main extends Component {
               {this.showSetting(setting)}
             </div>
           </LayoutWrapper>
+
           {/* <PanelGroup
               borderColor="black"
               onUpdate={this.onUpdate}

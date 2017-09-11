@@ -53,7 +53,6 @@ class Main extends Component {
 
     this.state = {
       ...this.state,
-      secondColumnWidth: 400,
       expand: false,
       value: 3,
       setting: '',
@@ -91,6 +90,9 @@ class Main extends Component {
     }
     this.setState({ setting: type });
   }
+  onUpdate = (second) => {
+    this.setState({ secondColumnWidth: second });
+  }
   showSetting = (setting) => {
     console.log('INSIDE SHOWSETTING!!');
     // console.log('SETTING TO BE SHOWN: ', setting);
@@ -114,22 +116,24 @@ class Main extends Component {
   resizeHandler = (first, second, third) => {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
+
   render() {
     const string = 'Image';
     const label = <div>{string}<br /><sub>image 0</sub></div>;
-    const contentStyle = { marginLeft: 65 };
+    const contentStyle = {
+      marginLeft: 65,
+    };
     const toolbarStyle = {
       backgroundColor: '#EEEEEE',
-      margin: 0,
       bottom: 0,
-      maxWidth: '100vw',
+      width: '100%',
     };
     const expanded = this.state.expand;
     const setting = this.state.setting;
     const midPanel = (
       <div>
         <ContextMenuTrigger id="menu" holdToDisplay={1000}>
-          <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} />
+          <MyFirstGrid ref="grid" width={this.state.secondColumnWidth * 0.93} setSetting={this.setSetting} />
           {/* <MyFirstGrid ref="grid" /> */}
         </ContextMenuTrigger>
         <ContextMenu id="menu">
@@ -145,16 +149,17 @@ class Main extends Component {
     );
     if (expanded) {
       contentStyle.marginLeft = 180;
-      toolbarStyle.width = '90vw';
+      toolbarStyle.width = 'calc(100% + 118px)';
     }
     return (
       <div>
-        {/* <SideMenu
+        <SideMenu
           expandToTrue={this.expandToTrue}
           handleExpand={this.handleExpand}
           expand={this.state.expand}
           handleLogout={this.props.handleLogout}
-        /> */}
+        />
+
         {/* <Topbar style={contentStyle} /> */}
         <div style={contentStyle}>
           {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
@@ -167,14 +172,15 @@ class Main extends Component {
             mountHandler={this.mountHandler}
             resizeHandler={this.resizeHandler}
             drage1stHandler={this.drage1stHandler}
-            drage2ndHandler={this.drage2ndHandler}
+            drage2ndeHandler={this.drage2ndeHandler}
+            onUpdate={this.onUpdate}
           >
             {/* <SplitterLayout percentage secondaryInitialSize={60}> */}
             {/* <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}> */}
             <div>
-              {/* <ImageViewer /> */}
+              <ImageViewer />
               <br />
-              {/* <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
+              <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
                 <Tabs>
                   <Tab label={label} />
                   <Tab label="Channel" />
@@ -214,19 +220,14 @@ class Main extends Component {
                     <PlayForward />
                   </IconButton>
                 </div>
-              </Paper> */}
+              </Paper>
             </div>
-            {/* <SplitterLayout percentage secondaryInitialSize={33}> */}
-            {/* <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}> */}
             <div>
               {midPanel}
             </div>
-            {/* <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}> */}
-            <div>
+            <div style={{ backgroundColor: 'blue', height: 200 }}>
               {this.showSetting(setting)}
             </div>
-            {/* </SplitterLayout>
-            </SplitterLayout> */}
           </LayoutWrapper>
           {/* <PanelGroup
               borderColor="black"

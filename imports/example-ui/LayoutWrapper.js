@@ -32,8 +32,8 @@ class LayoutWrapper extends React.Component {
     this.setupNewSize();
 
     // TODO callback
-    if (this.props.drage2ndHandler) {
-      this.props.drage2ndHandler(this.firstColumnSize, this.secondColumnSize, this.thirdColumnSize);
+    if (this.props.drage2ndeHandler) {
+      this.props.drage2ndeHandler(this.firstColumnSize, this.secondColumnSize, this.thirdColumnSize);
     }
   };
 
@@ -69,7 +69,7 @@ class LayoutWrapper extends React.Component {
 
     this.secondColumnSize.width = secondBlockWidth - splitterWidth - this.thirdColumnSize.width;
     this.secondColumnSize.height = this.firstContainerSize.height;
-
+    this.props.onUpdate(this.secondColumnSize.width);
     console.log('1st:', this.firstColumnSize.width);
     console.log('2nd:', this.secondColumnSize.width);
     console.log('3rd:', this.thirdColumnSize.width);

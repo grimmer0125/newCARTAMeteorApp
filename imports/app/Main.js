@@ -3,7 +3,7 @@ import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
 // import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
 import SplitterLayout from 'react-splitter-layout';
-
+import LayoutWrapper from '../example-ui/LayoutWrapper';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -99,14 +99,30 @@ class Main extends Component {
       else if (setting === 'Histogram') return <HistogramSettings />;
     }
   }
+  drage2ndeHandler = (first, second, third) => {
+    console.log('drage2nd handler:', first, ';second:', second, ';third:', third);
+  }
 
+  drage1stHandler = (first, second, third) => {
+    console.log('drage1st handler:', first, ';second:', second, ';third:', third);
+  }
+
+  resizeHandler = (first, second, third) => {
+    console.log('mount handler:', first, ';second:', second, ';third:', third);
+  }
+
+  resizeHandler = (first, second, third) => {
+    console.log('resize handler:', first, ';second:', second, ';third:', third);
+  }
   render() {
     const string = 'Image';
     const label = <div>{string}<br /><sub>image 0</sub></div>;
     const contentStyle = { marginLeft: 65 };
     const toolbarStyle = {
-      marginLeft: 65,
       backgroundColor: '#EEEEEE',
+      margin: 0,
+      bottom: 0,
+      maxWidth: '100vw',
     };
     const expanded = this.state.expand;
     const setting = this.state.setting;
@@ -128,89 +144,91 @@ class Main extends Component {
       </div>
     );
     if (expanded) {
-      contentStyle.marginLeft = 200;
-      toolbarStyle.marginLeft = 200;
+      contentStyle.marginLeft = 180;
+      toolbarStyle.width = '90vw';
     }
-
-    // <div>
-    //   hello world
-    // </div>
-    // <div>
-    //   <SplitterLayout percentage secondaryInitialSize={60}>
-    //     <div>Pane 1</div>
-    //     {/* 2nd level should setupt primaryindex=1, otherwise we can not get initial size*/}
-    //     <SplitterLayout percentage primaryIndex={1} secondaryInitialSize={67}>
-    //       <div>Pane 2:66</div>
-    //       <div>Pane 3:33</div>
-    //     </SplitterLayout>
-    //   </SplitterLayout>
-    // </div>
-
     return (
       <div>
-        <div style={{ overflowY: 'hidden', height: '100vh' }}>
-          <Topbar style={toolbarStyle} />
-          {/* <Topbar style={contentStyle} /> */}
-          <div style={contentStyle}>
-            {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
+        {/* <SideMenu
+          expandToTrue={this.expandToTrue}
+          handleExpand={this.handleExpand}
+          expand={this.state.expand}
+          handleLogout={this.props.handleLogout}
+        /> */}
+        {/* <Topbar style={contentStyle} /> */}
+        <div style={contentStyle}>
+          {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
             predfined panel widths; with onupdate, resizing doesn't work, b/c
             panel keeps renewing, stuck in an inf loop */}
-            <SplitterLayout percentage secondaryInitialSize={60}>
-              <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
-                <ImageViewer />
-                <br />
-                <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
-                  <Tabs>
-                    <Tab label={label} />
-                    <Tab label="Channel" />
-                    <Tab label="Stokes" />
-                  </Tabs>
-                  <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
-                    <DropDownMenu value={1} underlineStyle={{ color: 'black' }}>
-                      <MenuItemMUI value={1} primaryText="Image 0" />
-                    </DropDownMenu>
-                    <p>&#8804; 3</p>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
-                    <div style={{ marginTop: '15px' }}>
-                      <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={0} />
-                    </div>
-                    <div>
-                      <Slider sliderStyle={{ width: '500px', left: '10px', height: '2px' }} step={1} min={0} max={3} value={3} />
-                    </div>
-                    <div style={{ marginLeft: '30px', marginTop: '15px' }}>
-                      <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={3} />
-                    </div>
-                  </div>
-                  <div style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', height: '50%', margin: 'auto', width: '40%' }}>
-                    <IconButton style={{ transform: 'rotate(180deg)' }}>
-                      <PlayForward />
-                    </IconButton>
-                    <IconButton>
-                      <SkipPrev />
-                    </IconButton>
-                    <IconButton>
-                      <Stop />
-                    </IconButton>
-                    <IconButton>
-                      <SkipNext />
-                    </IconButton>
-                    <IconButton>
-                      <PlayForward />
-                    </IconButton>
-                  </div>
-                </Paper>
-              </div>
-              <SplitterLayout percentage secondaryInitialSize={33}>
-                <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
-                  {midPanel}
+          <Topbar style={toolbarStyle} />
+          <LayoutWrapper
+            firstPercentage={40}
+            secondPercentage={40}
+            mountHandler={this.mountHandler}
+            resizeHandler={this.resizeHandler}
+            drage1stHandler={this.drage1stHandler}
+            drage2ndHandler={this.drage2ndHandler}
+          >
+            {/* <SplitterLayout percentage secondaryInitialSize={60}> */}
+            {/* <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}> */}
+            <div>
+              {/* <ImageViewer /> */}
+              <br />
+              {/* <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
+                <Tabs>
+                  <Tab label={label} />
+                  <Tab label="Channel" />
+                  <Tab label="Stokes" />
+                </Tabs>
+                <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
+                  <DropDownMenu value={1} underlineStyle={{ color: 'black' }}>
+                    <MenuItemMUI value={1} primaryText="Image 0" />
+                  </DropDownMenu>
+                  <p>&#8804; 3</p>
                 </div>
-                <div style={{ flex: 1, overflowY: 'scroll', height: '100vh' }}>
-                  {this.showSetting(setting)}
+                <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
+                  <div style={{ marginTop: '15px' }}>
+                    <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={0} />
+                  </div>
+                  <div>
+                    <Slider sliderStyle={{ width: '500px', left: '10px', height: '2px' }} step={1} min={0} max={3} value={3} />
+                  </div>
+                  <div style={{ marginLeft: '30px', marginTop: '15px' }}>
+                    <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={3} />
+                  </div>
                 </div>
-              </SplitterLayout>
-            </SplitterLayout>
-            {/* <PanelGroup
+                <div style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', height: '50%', margin: 'auto', width: '40%' }}>
+                  <IconButton style={{ transform: 'rotate(180deg)' }}>
+                    <PlayForward />
+                  </IconButton>
+                  <IconButton>
+                    <SkipPrev />
+                  </IconButton>
+                  <IconButton>
+                    <Stop />
+                  </IconButton>
+                  <IconButton>
+                    <SkipNext />
+                  </IconButton>
+                  <IconButton>
+                    <PlayForward />
+                  </IconButton>
+                </div>
+              </Paper> */}
+            </div>
+            {/* <SplitterLayout percentage secondaryInitialSize={33}> */}
+            {/* <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}> */}
+            <div>
+              {midPanel}
+            </div>
+            {/* <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}> */}
+            <div>
+              {this.showSetting(setting)}
+            </div>
+            {/* </SplitterLayout>
+            </SplitterLayout> */}
+          </LayoutWrapper>
+          {/* <PanelGroup
               borderColor="black"
               onUpdate={this.onUpdate}
             >
@@ -223,14 +241,7 @@ class Main extends Component {
                 {this.showSetting(setting)}
               </div>
             </PanelGroup> */}
-            {/* <Layout /> */}
-          </div>
-          <SideMenu
-            expandToTrue={this.expandToTrue}
-            handleExpand={this.handleExpand}
-            expand={this.state.expand}
-            handleLogout={this.props.handleLogout}
-          />
+          {/* <Layout /> */}
         </div>
       </div>
     );

@@ -2,14 +2,18 @@
   position: absolute;
   display: flex;
   flex-direction: row;
-  width: 100%;
-  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
   overflow: hidden;
+  /*bottom: 0;*/
 }
 
 .splitter-layout .layout-pane {
   position: relative;
+  margin-right: 0;
   flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
   overflow: auto;
 }
 

@@ -1,6 +1,8 @@
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
+import { Layer, Stage, Rect } from 'react-konva';
+
 // import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
 // import SplitterLayout from 'react-splitter-layout';
 import LayoutWrapper from '../example-ui/LayoutWrapper';
@@ -20,7 +22,6 @@ import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contex
 import 'react-contextmenu/public/styles.5bb557.css';
 
 import SplitterLayout from '../splitterLayout/components/SplitterLayout';
-
 
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
@@ -48,6 +49,11 @@ import SideMenu from './SideMenu';
 import ImageViewer from '../imageViewer/ImageViewer';
 import Topbar from './Topbar';
 
+let startX,
+  endX,
+  startY,
+  endY;
+let mouseIsDown = 0;
 // for storing and retrieving position and size coordinates
 class Main extends Component {
   constructor(props) {
@@ -60,7 +66,6 @@ class Main extends Component {
       setting: '',
     };
   }
-
   // define callback
   onUpdate = (array) => {
     console.log('pannelgroup change: ', array);
@@ -118,7 +123,77 @@ class Main extends Component {
   resizeHandler = (first, second, third) => {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
+  getMousePos = (canvas, event) => {
+    console.log('INSIDE getMousePos');
+    console.log('getMousePos CANVAS: ', canvas);
+    console.log('getMousePos EVENT: ', event);
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  }
+  onMouseDown = (event) => {
+    console.log('INSIDE mouseDown');
+    console.log('EVENT: ', event);
+    mouseIsDown = 1;
+    const pos = this.getMousePos(document.getElementById('canvas'), event);
+    console.log('MOUSE POSITION: ', pos);
+    endX = pos.x;
+    endY = pos.y;
+    startX = endX;
+    startY = endY;
+    this.drawRect();
+  }
+  onMouseMove = (event) => {
+    if (mouseIsDown === 1) {
+      const pos = this.getMousePos(document.getElementById('canvas'), event);
+      endX = pos.x;
+      endY = pos.y;
+      this.drawRect();
+    }
+  }
+  onMouseUp = (event) => {
+    if (mouseIsDown === 1) {
+      mouseIsDown = 0;
+      const pos = this.getMousePos(document.getElementById('canvas'), event);
+      endX = pos.x;
+      endY = pos.y;
+      this.drawRect();
+    }
+  }
+  drawRect = () => {
+    console.log('INSIDE drawRect');
+    const width = Math.abs(endX - startX);
+    const height = Math.abs(endY - startY);
+    const rect = (
+      <Rect
+        x={startX}
+        y={startY}
+        width={width}
+        height={height}
+        stroke="red"
+      />);
+    this.setState({ rect });
+  }
+  init = () => {
+    console.log('INSIDE init');
+    // const rect = new Rect({
+    //   x: 500,
+    //   y: 300,
+    //   width: 100,
+    //   height: 50,
+    //   stroke: 'red',
+    // });
+    document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
+    document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
+    document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
 
+    // if (this.layer !== null) {
+    //   console.log(this.layer.getLayer());
+    //   this.layer.getLayer().add(rect);
+    // }
+  }
   render() {
     const string = 'Image';
     const label = <div>{string}<br /><sub>image 0</sub></div>;
@@ -135,7 +210,7 @@ class Main extends Component {
     const midPanel = (
       <div>
         <ContextMenuTrigger id="menu" holdToDisplay={1000}>
-          <MyFirstGrid ref="grid" width={this.state.secondColumnWidth * 0.93} setSetting={this.setSetting} />
+          <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} />
           {/* <MyFirstGrid ref="grid" /> */}
         </ContextMenuTrigger>
         <ContextMenu id="menu">
@@ -167,15 +242,7 @@ class Main extends Component {
 
         {/* <Topbar style={contentStyle} /> */}
         <div className="layout-fill">
-          {/* Note: onUpdate affects resizing. w/o onupdate, resizing works with
-            predfined panel widths; with onupdate, resizing doesn't work, b/c
-            panel keeps renewing, stuck in an inf loop */}
           <Topbar style={toolbarStyle} />
-          {/* <SplitterLayout>
-            <div>Pane 1</div>
-            <div>Pane 2</div>
-          </SplitterLayout> */}
-
           <LayoutWrapper
             firstPercentage={40}
             secondPercentage={40}
@@ -186,7 +253,15 @@ class Main extends Component {
             onUpdate={this.onUpdate}
           >
             <div>
-              <ImageViewer />
+              <div id="canvas">
+                <Stage id="stage" width={637} height={477}>
+                  <Layer id="layer" ref={(node) => { this.layer = node; }}>
+                    <ImageViewer />
+                    {this.state.rect}
+                  </Layer>
+                </Stage>
+              </div>
+              <RaisedButton label="rectangle" onClick={this.init} />
               <br />
               <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
                 <Tabs>
@@ -237,21 +312,6 @@ class Main extends Component {
               {this.showSetting(setting)}
             </div>
           </LayoutWrapper>
-
-          {/* <PanelGroup
-              borderColor="black"
-              onUpdate={this.onUpdate}
-            >
-              <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
-              </div>
-              <div style={{ flex: 2, overflowY: 'scroll', height: '100vh' }}>
-                {midPanel}
-              </div>
-              <div style={{ flex: 1, overflowY: 'scroll', height: '100vh' }}>
-                {this.showSetting(setting)}
-              </div>
-            </PanelGroup> */}
-          {/* <Layout /> */}
         </div>
       </div>
     );

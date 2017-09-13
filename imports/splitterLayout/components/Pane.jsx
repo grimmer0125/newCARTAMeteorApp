@@ -14,7 +14,7 @@ function Pane(props) {
   } else {
     classes += ' layout-pane-primary';
   }
-  console.log('grimmer size:', style.width);
+  // console.log('grimmer size:', style.width);
   return (
     <div className={classes} style={style}>{props.children}</div>
   );
@@ -27,8 +27,8 @@ Pane.propTypes = {
   percentage: React.PropTypes.bool,
   children: React.PropTypes.oneOfType([
     React.PropTypes.arrayOf(React.PropTypes.node),
-    React.PropTypes.node
-  ])
+    React.PropTypes.node,
+  ]),
 };
 
 Pane.defaultProps = {
@@ -36,7 +36,7 @@ Pane.defaultProps = {
   primary: false,
   size: 0,
   percentage: false,
-  children: []
+  children: [],
 };
 
 export default Pane;

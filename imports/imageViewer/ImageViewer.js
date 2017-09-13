@@ -15,16 +15,19 @@ const browserStyle = {
 class ImageViewer extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       image: null,
     };
-      
+
     this.props.dispatch(actions.setuptImageViewer());
   }
-  componentWillUpdate = () => {
-    console.log('INSIDE componentWillUpdate');
+
+  // previous: willUpdate
+  componentWillReceiveProps = (nextProps) => {
+    console.log('INSIDE componentWillReceiveProps');
     const image = new window.Image();
-    image.src = this.props.imageURL;
+    image.src = nextProps.imageURL;
     image.onload = () => {
       this.setState({ image });
     };

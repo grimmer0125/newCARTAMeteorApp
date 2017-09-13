@@ -41,7 +41,11 @@ export function setupMongoReduxListeners(collection, dispatch, actionType) {
       const documents = collection.find().fetch();
       if (documents.length > 0) {
         const doc = documents[0];
-        dispatch(actionCreator(doc));
+        // for watching the shared sessioni from python
+        // which may manually remove images on client. special case
+        if (!SessionManager.getOtherSession()) {
+          dispatch(actionCreator(doc));
+        }
       }
     },
   });
@@ -52,12 +56,12 @@ export function mongoUpsert(collection, newDocObject, actionType) {
   const sessionID = SessionManager.getSuitableSession();
   const docs = collection.find({ sessionID }).fetch();
   if (docs.length > 0) {
-    console.log('collection update');
+    console.log('update collection, action:', actionType);
     const doc = docs[0];
     const docID = doc._id;
     collection.update(docID, { $set: newDocObject });
   } else {
-    console.log('collection insert');
+    console.log('insert collection, action:', actionType);
     newDocObject.sessionID = sessionID;
     const docID = collection.insert(newDocObject);
   }

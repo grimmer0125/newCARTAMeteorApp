@@ -55,7 +55,7 @@ export function parseReigsterViewResp(result) {
   // step2
   const viewName = `${controllerID}/view`;
   const width = 637; // TODO same as the experimental setting in ImageViewer, change later
-  const height = 677;
+  const height = 477;
 
   Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
     console.log('get setupViewSize dummy result:', result);

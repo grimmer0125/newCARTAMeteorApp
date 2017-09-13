@@ -3,18 +3,27 @@ import { Meteor } from 'meteor/meteor';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+<<<<<<< HEAD
 import { connect } from 'react-redux';
+
+import React from 'react';
+=======
 import React, { Component } from 'react';
+>>>>>>> julie
+// import React, { Component } from 'react';
+
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
 // import ImageViewer from '../imageViewer/ImageViewer';
 // import FileBrowser from '../fileBrowser/FileBrowser';
 import Main from './Main';
+<<<<<<< HEAD
+import SessionUI from './SessionUI';
 
-import Login from './Login';
+=======
+import Login from './Login.jsx';
+>>>>>>> julie
 import actions from './actions';
-// import Carousel from './Carousel';
-import NotificationSystem from 'react-notification-system';
 
 const store = configureStore();
 injectTapEventPlugin();
@@ -44,6 +53,38 @@ const muiTheme = getMuiTheme({
   // },
 });
 
+<<<<<<< HEAD
+const App = () => (
+  <Provider store={store}>
+    <MuiThemeProvider muiTheme={muiTheme}>
+      <div>
+        <div className="layout-row-end-center ">
+          <SessionUI />
+        </div>
+
+        <Main />
+        {/* <ImageViewer /> */}
+      </div>
+    </MuiThemeProvider>
+  </Provider>
+);
+
+=======
+// const App = () => (
+//   <Provider store={store}>
+//     <MuiThemeProvider muiTheme={muiTheme}>
+//       <div>
+//         <Login />
+//       </div>
+//     </MuiThemeProvider>
+//   </Provider>
+// );
+// Name = React.createClass({
+//
+//   render() {
+//     return <App user={this.data.currentUser} />;
+//   },
+// });
 class App extends Component {
   constructor(props) {
     super(props);
@@ -60,25 +101,24 @@ class App extends Component {
     Meteor.logout((err) => {
       if (err) {
         console.log(err);
-        this.refs.notificationSystem.addNotification({
-          title: 'Sign out Failure',
-          message: 'Sign out failed. Try again.',
-          level: 'error',
-          autoDismiss: 4,
-        });
       } else {
-        this.refs.notificationSystem.addNotification({
-          title: 'Logout Failure',
-          message: 'Sign out failed. Try again.',
-          level: 'error',
-          autoDismiss: 4,
-        });
         this.setState({ loggedIn: false });
       }
     });
   }
   render() {
     console.log('LOGGED IN STATE: ', this.state.loggedIn);
+    // if (!this.state.loggedIn && (Meteor.user() !== null)) {
+    //   return (
+    //     <Provider store={store}>
+    //       <MuiThemeProvider muiTheme={muiTheme}>
+    //         <div>
+    //           <Login handleLogin={this.handleLogin} />
+    //         </div>
+    //       </MuiThemeProvider>
+    //     </Provider>
+    //   );
+    // }
     return (
       <Provider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>
@@ -88,15 +128,43 @@ class App extends Component {
                 <Main handleLogout={this.handleLogout} />
                 : <Login handleLogin={this.handleLogin} />
             }
-            {/* <Carousel /> */}
-            <NotificationSystem ref="notificationSystem" />
           </div>
         </MuiThemeProvider>
       </Provider>
     );
   }
 }
+>>>>>>> julie
 store.dispatch(actions.waitForCommandResponses());
 
 
 export default App;
+// export default class App extends Component {
+//   render() {
+//     return (
+//       <Provider store={store}>
+//         <MuiThemeProvider muiTheme={muiTheme}>
+//           <FileBrowser />
+//         </MuiThemeProvider>
+//       </Provider>
+//     );
+//
+//     // return (
+//     //   <div className="container">
+//     //   </div>
+//     // );
+//   }
+// }
+
+// App.propTypes = {
+//   tasks: PropTypes.array.isRequired,
+// };
+
+// export default createContainer(() => {
+//   let test = Tasks.find({}, { sort: { createdAt: -1 } }).fetch();
+//   console.log("task:", test);
+//   console.log("task num:", test.length);
+//   return {
+//     tasks: test,
+//   };
+// }, App);

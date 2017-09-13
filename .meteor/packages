@@ -24,3 +24,5 @@ msavin:mongol
 session
 accounts-ui
 accounts-password
+accounts-google
+service-configuration

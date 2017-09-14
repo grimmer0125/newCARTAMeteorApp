@@ -27,6 +27,18 @@
             "sourceMaps": true,
             "protocol": "inspector",
             "port": 5959
-        }
+        },
+        {
+			"name": "Attach to Meteor 1.5 Server with meteor debug --debug-port 5959",
+			"type": "node",
+			"request": "attach",
+			"port": 5959,
+			"address": "localhost",
+			"restart": true,
+			"sourceMaps": true,
+			"outDir": "${workspaceRoot}/.meteor/local/build/programs/server",
+			"localRoot": "${workspaceRoot}",
+			"remoteRoot": null
+		}
     ]
 }

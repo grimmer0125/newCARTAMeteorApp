@@ -39,7 +39,7 @@ class SplitterLayout extends React.Component {
     if (typeof this.props.secondaryInitialSize !== 'undefined') {
       secondaryPaneSize = this.props.secondaryInitialSize;
 
-      console.log('grimmer componentDidMount:', secondaryPaneSize);
+      console.log('in splitter grimmer componentDidMount :', secondaryPaneSize);
     } else {
       const containerRect = this.container.getBoundingClientRect();
       let splitterRect;
@@ -69,11 +69,33 @@ class SplitterLayout extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    // compare Props and nextProps
+    console.log('in splitter grimmer componentWillReceiveProps, props:', this.props.secondaryInitialSize);
+    console.log('next props:', nextProps.secondaryInitialSize);
+
+    if (this.props.secondaryInitialSize && nextProps.secondaryInitialSize) {
+      // similar to componentDidMount
+      // 或是一樣但是處於非moving狀態, 問題是mouseup後, 之後還會被call
+      if (this.props.secondaryInitialSize != nextProps.secondaryInitialSize) {
+        console.log('assign new percentile after this layout shows, and whatever it ever changes its percentile by moving splitter or not');
+        this.setState({ secondaryPaneSize: nextProps.secondaryInitialSize });
+      }
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('in splitter grimmer shouldComponentUpdate, props:', this.props.secondaryInitialSize);
+    console.log('next props:', nextProps.secondaryInitialSize);
+    return true;
+  }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('mouseup', this.handleMouseUp);
     document.removeEventListener('mousemove', this.handleMouseMove);
   }
+
 
   getSecondaryPaneSize(containerRect, splitterRect, clientPosition, offsetMouse) {
     let totalSize;
@@ -152,6 +174,7 @@ class SplitterLayout extends React.Component {
   }
 
   handleMouseMove(e) {
+    console.log('in splitter, mouse move');
     if (this.state.resizing) {
       const containerRect = this.container.getBoundingClientRect();
       const splitterRect = this.splitter.getBoundingClientRect();
@@ -177,15 +200,22 @@ class SplitterLayout extends React.Component {
   }
 
   handleSplitterMouseDown() {
+    console.log('in splitter, mouse down');
+
     clearSelection();
     this.setState({ resizing: true });
   }
 
+
   handleMouseUp() {
+    console.log('in splitter, mouse up');
+
     this.setState({ resizing: false });
   }
 
   render() {
+    console.log('in splitter grimmer render', this.state.secondaryPaneSize);
+
     let containerClasses = 'splitter-layout';
     if (this.props.customClassName) {
       containerClasses += ` ${this.props.customClassName}`;

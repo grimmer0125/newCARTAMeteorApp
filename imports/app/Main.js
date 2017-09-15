@@ -60,10 +60,11 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      ...this.state,
       expand: false,
       value: 3,
       setting: '',
+      firstColumn: 40,
+      secondColumn: 40,
     };
   }
   // define callback
@@ -83,7 +84,10 @@ class Main extends Component {
   handleChange = (event, index, value) => this.setState({ value });
 
   handleExpand = () => {
-    this.setState({ expand: !this.state.expand });
+    console.log('grimmer test !!!!');
+    this.setState({ firstColumn: 20, secondColumn: 40 });
+
+    //    this.setState({ expand: !this.state.expand });
   }
   expandToTrue = () => {
     this.setState({ expand: true });
@@ -244,8 +248,8 @@ class Main extends Component {
         <div className="layout-fill">
           <Topbar style={toolbarStyle} />
           <LayoutWrapper
-            firstPercentage={40}
-            secondPercentage={40}
+            firstPercentage={this.state.firstColumn}
+            secondPercentage={this.state.secondColumn}
             mountHandler={this.mountHandler}
             resizeHandler={this.resizeHandler}
             drage1stHandler={this.drage1stHandler}

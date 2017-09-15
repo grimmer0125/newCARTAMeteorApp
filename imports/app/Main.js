@@ -208,6 +208,7 @@ class Main extends Component {
         stroke="red"
         draggable
         listening
+        key={startX + offsetX + startY + offsetY}
         ref={(node) => { this.rect = node; }}
       />
       // </div>

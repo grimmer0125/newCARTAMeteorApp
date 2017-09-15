@@ -49,11 +49,12 @@ import SideMenu from './SideMenu';
 import ImageViewer from '../imageViewer/ImageViewer';
 import Topbar from './Topbar';
 
-let startX,
-  endX,
-  startY,
-  endY;
+let startX;
+let endX;
+let startY;
+let endY;
 let mouseIsDown = 0;
+const count = 0;
 // for storing and retrieving position and size coordinates
 class Main extends Component {
   constructor(props) {
@@ -64,6 +65,8 @@ class Main extends Component {
       expand: false,
       value: 3,
       setting: '',
+      regionArray: [],
+      arr: [],
     };
   }
   // define callback
@@ -160,39 +163,74 @@ class Main extends Component {
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
+      document.getElementById('canvas').removeEventListener('mousedown', this.onMouseDown);
+      document.getElementById('canvas').removeEventListener('mousemove', this.onMouseMove);
+      document.getElementById('canvas').removeEventListener('mouseup', this.onMouseUp);
     }
+  }
+  // callback for drag coordinates; currently only works on the most recent rectangle
+  onDragShape = () => {
+    this.rect.on('dragstart', () => {
+      console.log('x: ', this.rect.getAttrs().x, ' y: ', this.rect.getAttrs().y);
+    });
+    this.rect.on('dragmove', () => {
+      console.log('x: ', this.rect.getAttrs().x, ' y: ', this.rect.getAttrs().y);
+    });
+    this.rect.on('dragend', () => {
+      console.log('x: ', this.rect.getAttrs().x, ' y: ', this.rect.getAttrs().y);
+    });
+  }
+  delete = (target) => {
+    console.log('IN DELETE');
+    if (this.state.regionArray.length === 1) {
+      this.setState({ regionArray: [] });
+    } else {
+      const arr = this.state.regionArray.filter(item => item !== target);
+      this.setState({ regionArray: arr });
+    }
+    console.log('AFTER ARR: ', this.state.regionArray);
   }
   drawRect = () => {
     console.log('INSIDE drawRect');
-    const width = Math.abs(endX - startX);
-    const height = Math.abs(endY - startY);
+    const w = endX - startX;
+    const h = endY - startY;
+    const offsetX = (w < 0) ? w : 0;
+    const offsetY = (h < 0) ? h : 0;
+    const width = Math.abs(w);
+    const height = Math.abs(h);
     const rect = (
+      // <div>
       <Rect
-        x={startX}
-        y={startY}
+        x={startX + offsetX}
+        y={startY + offsetY}
         width={width}
         height={height}
         stroke="red"
-      />);
-    this.setState({ rect });
+        draggable
+        listening
+        ref={(node) => { this.rect = node; }}
+      />
+      // </div>
+    );
+    if (mouseIsDown === 1) {
+      this.setState({ rect });
+    } else if (mouseIsDown === 0) {
+      this.setState({ regionArray: this.state.regionArray.concat(rect) });
+      // count += 1;
+      // console.log('COUNT: ', count);
+      console.log('CURR ARR: ', this.state.regionArray);
+      this.rect.on('click', () => {
+        console.log('RECT: ', rect);
+        console.log('THIS.RECT: ', this.rect);
+        this.delete(rect);
+      });
+    }
   }
   init = () => {
     console.log('INSIDE init');
-    // const rect = new Rect({
-    //   x: 500,
-    //   y: 300,
-    //   width: 100,
-    //   height: 50,
-    //   stroke: 'red',
-    // });
     document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
     document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
     document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
-
-    // if (this.layer !== null) {
-    //   console.log(this.layer.getLayer());
-    //   this.layer.getLayer().add(rect);
-    // }
   }
   render() {
     const string = 'Image';
@@ -211,7 +249,6 @@ class Main extends Component {
       <div>
         <ContextMenuTrigger id="menu" holdToDisplay={1000}>
           <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} />
-          {/* <MyFirstGrid ref="grid" /> */}
         </ContextMenuTrigger>
         <ContextMenu id="menu">
           <SubMenu title="Layout">
@@ -257,11 +294,15 @@ class Main extends Component {
                 <Stage id="stage" width={637} height={477}>
                   <Layer id="layer" ref={(node) => { this.layer = node; }}>
                     <ImageViewer />
-                    {this.state.rect}
+                    {(mouseIsDown === 1) ? this.state.rect : false}
+                    {/* {this.state.regionArray.map(item => item.rect)} */}
+                    {this.state.regionArray}
                   </Layer>
                 </Stage>
               </div>
               <RaisedButton label="rectangle" onClick={this.init} />
+              <RaisedButton label="delete" onClick={this.delete} />
+              {/* <RaisedButton label="drag" onClick={this.onDragShape} /> */}
               <br />
               <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
                 <Tabs>

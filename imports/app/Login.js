@@ -19,9 +19,12 @@ class Login extends Component {
       ...this.state,
       username: '',
       password: '',
+      newPwd: '',
       signUp: false,
-      errorTextUser: '',
-      errorTextPwd: '',
+      errorTextUserLogin: '',
+      errorTextPwdLogin: '',
+      errorTextUserSignup: '',
+      errorTextPwdSignup: '',
     };
   }
   _notificationSystem: null
@@ -29,47 +32,65 @@ class Login extends Component {
     event.preventDefault();
     const username = this.state.username;
     const password = this.state.password;
-    if (!username) {
-      this.setState({ errorTextUser: 'Enter a username' });
+    // console.log('SIGN IN CLICKED, EVENT: ', username, 'WITH PWD: ', password);
+    Meteor.loginWithPassword(username, password, (err) => {
+      if (err) {
+        console.log(err.reason);
+        if (!username) {
+          this.setState({
+            errorTextUserLogin: 'Enter a username',
+          });
+        } else if (err.reason === 'User not found') {
+          this.setState({ errorTextUserLogin: 'Enter a valid username' });
+        } else if (err.reason === 'Incorrect password') {
+          if (!password) {
+            this.setState({ errorTextPwdLogin: 'Enter a password' });
+          } else {
+            this.setState({ errorTextPwdLogin: 'Wrong password. Try again.' });
+          }
+        }
+      } else {
+        console.log('SIGN IN SUCCESS');
+        this.props.handleLogin();
+      }
+    });
+  }
+  handleSubmitSignup = (event) => {
+    event.preventDefault();
+    console.log('ABOUT TO SIGN UP');
+    const confirmPwd = this.state.confirmPwd;
+    const newUser = this.state.newUser;
+    const newPwd = this.state.newPwd;
+    if (!newUser) {
+      this.setState({
+        errorTextUserSignup: 'Enter a username',
+      });
+      return;
+    } else if (!newPwd) {
+      this.setState({ errorTextPwdSignup: 'Enter a password' });
+      return;
+    } else if (!confirmPwd) {
+      this.setState({ errorTextConfirmPwdSignup: 'Confirm password' });
+      return;
+    } else if (confirmPwd !== newPwd) {
+      this.setState({
+        errorTextConfirmPwdSignup: 'Wrong password. Confirm again.',
+      });
       return;
     }
-    if (this.state.signUp) {
-      console.log('ABOUT TO SIGN UP');
-      Accounts.createUser({
-        username,
-        password,
-      }, (err) => {
-        if (err) {
-          console.log(err.reason);
-          if (!password) {
-            this.setState({ errorTextPwd: 'Enter a password' });
-          } else if (err.reason === 'Username already exists.') {
-            this.setState({ errorTextUser: err.reason });
-          }
-        } else {
-          this.props.handleLogin();
+    Accounts.createUser({
+      username: newUser,
+      password: newPwd,
+    }, (err) => {
+      if (err) {
+        console.log(err.reason);
+        if (err.reason === 'Username already exists.') {
+          this.setState({ errorTextUserSignup: err.reason });
         }
-      });
-    } else {
-      console.log('SIGN IN CLICKED, EVENT: ', username, 'WITH PWD: ', password);
-      Meteor.loginWithPassword(username, password, (err) => {
-        if (err) {
-          console.log(err.reason);
-          if (err.reason === 'User not found') {
-            this.setState({ errorTextUser: 'Enter a valid username' });
-          } else if (err.reason === 'Incorrect password') {
-            if (!password) {
-              this.setState({ errorTextPwd: 'Enter a password' });
-            } else {
-              this.setState({ errorTextPwd: 'Wrong password. Try again.' });
-            }
-          }
-        } else {
-          console.log('SIGN IN SUCCESS');
-          this.props.handleLogin();
-        }
-      });
-    }
+      } else {
+        this.props.handleLogin();
+      }
+    });
   }
   handleGoogleSignIn = () => {
     Meteor.loginWithGoogle((err) => {
@@ -86,16 +107,36 @@ class Login extends Component {
       username: event.target.value,
     });
   }
+  handleNewUsername = (event) => {
+    this.setState({
+      newUser: event.target.value,
+    });
+  }
   handlePassword = (event) => {
     this.setState({
       password: event.target.value,
+    });
+  }
+  handleNewPassword = (event) => {
+    this.setState({
+      newPwd: event.target.value,
+    });
+  }
+  handleConfirmPwd = (event) => {
+    this.setState({
+      confirmPwd: event.target.value,
     });
   }
   handleSignup = () => {
     this.setState({ signUp: true });
   }
   navBack = () => {
-    this.setState({ signUp: false });
+    this.setState({
+      signUp: false,
+      newUser: '',
+      newPwd: '',
+      confirmPwd: '',
+    });
   }
   render() {
     const logo = 'https://raw.githubusercontent.com/CARTAvis/deploytask/master/carta-distro/etc/carta.png';
@@ -104,7 +145,7 @@ class Login extends Component {
       <form onSubmit={this.handleSubmit}>
         <TextField
           style={{ marginLeft: '30px' }}
-          errorText={this.state.errorTextUser}
+          errorText={this.state.errorTextUserLogin}
           name="username"
           value={this.state.username}
           onChange={this.handleUsername}
@@ -112,7 +153,7 @@ class Login extends Component {
         /><br />
         <TextField
           style={{ marginLeft: '30px' }}
-          errorText={this.state.errorTextPwd}
+          errorText={this.state.errorTextPwdLogin}
           floatingLabelText="Password"
           name="password"
           value={this.state.password}
@@ -147,22 +188,31 @@ class Login extends Component {
       </form>
     );
     const signupForm = (
-      <form onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmitSignup}>
         <TextField
           style={{ marginLeft: '30px' }}
-          name="username"
-          errorText={this.state.errorTextUser}
-          value={this.state.username}
-          onChange={this.handleUsername}
-          floatingLabelText="Username"
+          name="new username"
+          errorText={this.state.errorTextUserSignup}
+          value={this.state.newUser || ''}
+          onChange={this.handleNewUsername}
+          floatingLabelText="Create username"
         /><br />
         <TextField
           style={{ marginLeft: '30px' }}
-          floatingLabelText="Password"
-          name="password"
-          errorText={this.state.errorTextPwd}
-          value={this.state.password}
-          onChange={this.handlePassword}
+          floatingLabelText="Create password"
+          name="new password"
+          value={this.state.newPwd}
+          errorText={this.state.errorTextPwdSignup}
+          onChange={this.handleNewPassword}
+          type="password"
+        /><br />
+        <TextField
+          style={{ marginLeft: '30px' }}
+          floatingLabelText="Confirm password"
+          name="confirm password"
+          value={this.state.confirmPwd || ''}
+          errorText={this.state.errorTextConfirmPwdSignup}
+          onChange={this.handleConfirmPwd}
           type="password"
         /><br />
         <IconButton style={{ marginLeft: '10px' }}>

@@ -11,21 +11,21 @@ const browserStyle = {
   width: 637,
   height: 477,
 };
-
+let image = null;
 class ImageViewer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.state,
       image: null,
     };
     this.props.dispatch(actions.prepareImageViewer());
   }
-  componentWillUpdate = () => {
+  componentWillReceiveProps = (nextProps) => {
     console.log('INSIDE componentWillUpdate');
-    const image = new window.Image();
-    image.src = this.props.imageURL;
+    image = new window.Image();
+    image.src = nextProps.imageURL;
     image.onload = () => {
+      console.log('IMAGE ONLOAD');
       this.setState({ image });
     };
   }

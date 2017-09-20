@@ -1,10 +1,9 @@
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
-import { Layer, Stage, Rect } from 'react-konva';
-
-// import PanelGroup from 'react-panelgroup/lib/PanelGroup.js';
-// import SplitterLayout from 'react-splitter-layout';
+import update from 'immutability-helper';
+import _ from 'lodash';
+import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import LayoutWrapper from '../example-ui/LayoutWrapper';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
@@ -20,15 +19,6 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItemMUI from 'material-ui/MenuItem';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-contextmenu/public/styles.5bb557.css';
-
-import SplitterLayout from '../splitterLayout/components/SplitterLayout';
-
-// import attachment from 'material-ui/svg-icons/file/attachment';
-
-// import Layout from './Layout';
-
-// import Splitter from 'm-react-splitters';
-// import 'm-react-splitters/lib/splitters.css';
 
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
@@ -54,19 +44,20 @@ let endX;
 let startY;
 let endY;
 let mouseIsDown = 0;
-const count = 0;
 // for storing and retrieving position and size coordinates
 class Main extends Component {
   constructor(props) {
     super(props);
-
+    this.regions = [];
     this.state = {
-      ...this.state,
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
       expand: false,
       value: 3,
       setting: '',
       regionArray: [],
-      arr: [],
     };
   }
   // define callback
@@ -91,6 +82,9 @@ class Main extends Component {
   expandToTrue = () => {
     this.setState({ expand: true });
   }
+  onUpdate = (second) => {
+    this.setState({ secondColumnWidth: second });
+  }
   setSetting = (type) => {
     console.log('THE RECEIVED TYPE: ', type);
     if (type === 'Profiler') {
@@ -99,9 +93,6 @@ class Main extends Component {
       console.log('WILL LOAD HISTOGRAM SETTING');
     }
     this.setState({ setting: type });
-  }
-  onUpdate = (second) => {
-    this.setState({ secondColumnWidth: second });
   }
   showSetting = (setting) => {
     console.log('INSIDE SHOWSETTING!!');
@@ -127,9 +118,9 @@ class Main extends Component {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
   getMousePos = (canvas, event) => {
-    console.log('INSIDE getMousePos');
-    console.log('getMousePos CANVAS: ', canvas);
-    console.log('getMousePos EVENT: ', event);
+    // console.log('INSIDE getMousePos');
+    // console.log('getMousePos CANVAS: ', canvas);
+    // console.log('getMousePos EVENT: ', event);
     const rect = canvas.getBoundingClientRect();
     return {
       x: event.clientX - rect.left,
@@ -137,11 +128,11 @@ class Main extends Component {
     };
   }
   onMouseDown = (event) => {
-    console.log('INSIDE mouseDown');
-    console.log('EVENT: ', event);
+    // console.log('INSIDE mouseDown');
+    // console.log('EVENT: ', event);
     mouseIsDown = 1;
     const pos = this.getMousePos(document.getElementById('canvas'), event);
-    console.log('MOUSE POSITION: ', pos);
+    // console.log('MOUSE POSITION: ', pos);
     endX = pos.x;
     endY = pos.y;
     startX = endX;
@@ -169,24 +160,36 @@ class Main extends Component {
     }
   }
   // callback for drag coordinates; currently only works on the most recent rectangle
-  onDragShape = () => {
-    this.rect.on('dragstart', () => {
-      console.log('x: ', this.rect.getAttrs().x, ' y: ', this.rect.getAttrs().y);
+  onDragShape = (target) => {
+    console.log('ON DRAG SHAPE');
+    console.log(target);
+    target.on('dragstart', () => {
+      console.log('x: ', target.getAttrs().x, ' y: ', target.getAttrs().y);
     });
-    this.rect.on('dragmove', () => {
-      console.log('x: ', this.rect.getAttrs().x, ' y: ', this.rect.getAttrs().y);
+    target.on('dragmove', () => {
+      console.log('x: ', target.getAttrs().x, ' y: ', target.getAttrs().y);
     });
-    this.rect.on('dragend', () => {
-      console.log('x: ', this.rect.getAttrs().x, ' y: ', this.rect.getAttrs().y);
+    target.on('dragend', () => {
+      console.log('x: ', target.getAttrs().x, ' y: ', target.getAttrs().y);
     });
+  }
+  remove = () => {
+    // console.log('INDEX: ', index);
+    const tar = this.state.toDelete;
+    const attrs = tar.getAttrs();
+    this.delete({ x: attrs.x, y: attrs.y, w: attrs.width, h: attrs.height });
   }
   delete = (target) => {
     console.log('IN DELETE');
+    // console.log('TARGET; ', target);
     if (this.state.regionArray.length === 1) {
       this.setState({ regionArray: [] });
     } else {
-      const arr = this.state.regionArray.filter(item => item !== target);
-      this.setState({ regionArray: arr });
+      this.setState(prevState => ({
+        // regionArray: prevState.regionArray.filter(item => !_.isEqual(item, target)),
+        regionArray: prevState.regionArray.filter(item =>
+          item.x !== target.x && item.y !== target.y && item.w !== target.w && item.h !== target.h),
+      }));
     }
     console.log('AFTER ARR: ', this.state.regionArray);
   }
@@ -196,35 +199,29 @@ class Main extends Component {
     const h = endY - startY;
     const offsetX = (w < 0) ? w : 0;
     const offsetY = (h < 0) ? h : 0;
-    const width = Math.abs(w);
-    const height = Math.abs(h);
-    const rect = (
-      // <div>
-      <Rect
-        x={startX + offsetX}
-        y={startY + offsetY}
-        width={width}
-        height={height}
-        stroke="red"
-        draggable
-        listening
-        key={startX + offsetX + startY + offsetY}
-        ref={(node) => { this.rect = node; }}
-      />
-      // </div>
-    );
-    if (mouseIsDown === 1) {
-      this.setState({ rect });
-    } else if (mouseIsDown === 0) {
-      this.setState({ regionArray: this.state.regionArray.concat(rect) });
-      // count += 1;
-      // console.log('COUNT: ', count);
-      console.log('CURR ARR: ', this.state.regionArray);
-      this.rect.on('click', () => {
-        console.log('RECT: ', rect);
-        console.log('THIS.RECT: ', this.rect);
-        this.delete(rect);
-      });
+    // const width = Math.abs(w);
+    // const height = Math.abs(h);
+    this.setState({
+      x: startX + offsetX,
+      y: startY + offsetY,
+      width: Math.abs(w),
+      height: Math.abs(h),
+    });
+    if (mouseIsDown === 0) {
+      this.setShape();
+    }
+  }
+  setShape = () => {
+    if (mouseIsDown === 0) {
+      this.setState(prevState => ({
+        regionArray: prevState.regionArray.concat({
+          x: prevState.x,
+          y: prevState.y,
+          w: prevState.width,
+          h: prevState.height,
+          key: Math.floor(Math.random() * 10000),
+        }),
+      }));
     }
   }
   init = () => {
@@ -233,7 +230,120 @@ class Main extends Component {
     document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
     document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
   }
+  setClicked = (event) => {
+    console.log('EVENT: ', event.target);
+    this.setState({
+      toDelete: event.target,
+    });
+    // this.onDragShape(event.target);
+  }
+  reshape = (newW, newH, newX, newY, index) => {
+    console.log('IN RESHAPE');
+    const arr = this.state.regionArray;
+    // console.log('y: ', newY);
+    // console.log('CURR ARR: ', arr);
+    const newArray = update(arr[index],
+      { x: { $set: newX }, y: { $set: newY }, w: { $set: newW }, h: { $set: newH },
+      });
+    const data = update(arr, { $splice: [[index, 1, newArray]] });
+    // console.log('AFTER ARR: ', data);
+    process.nextTick(() => {
+      this.setState({
+        regionArray: data,
+      });
+    });
+  }
+
+  // assignCircleRef = (node) => {
+  //
+  // }
+
+  addAnchor = (item, index) => {
+    // console.log('ITEM: ', item);
+    const anchors = (
+      <Group>
+        <Circle
+          x={item.x}
+          y={item.y}
+          stroke="#666"
+          fill="#ddd"
+          strokeWidth={2}
+          radius={8}
+          draggable
+        />
+        <Circle
+          x={item.x + item.w}
+          y={item.y}
+          stroke="#666"
+          fill="#ddd"
+          strokeWidth={2}
+          radius={8}
+          draggable
+          ref={(node) => {
+            this.regions[item.key] = node;
+            if (this.regions[item.key]) {
+              // const topRight = this.regions[item.key].topRight;
+              this.regions[item.key].on('dragend', () => {
+                const x = this.regions[item.key].getAttrs().x;
+                const y = this.regions[item.key].getAttrs().y;
+                const newW = Math.abs(item.w - ((item.x + item.w) - x));
+                const newH = Math.abs(item.h - (y - item.y));
+                this.reshape(newW, newH, item.x, y, index);
+              });
+            }
+          }}
+        />
+        <Circle
+          x={item.x}
+          y={item.y + item.h}
+          stroke="#666"
+          fill="#ddd"
+          strokeWidth={2}
+          radius={8}
+          draggable
+        />
+        <Circle
+          x={item.x + item.w}
+          y={item.y + item.h}
+          stroke="#666"
+          fill="#ddd"
+          strokeWidth={2}
+          radius={8}
+          draggable
+        />
+      </Group>
+    );
+    const result = (
+      <Group key={item.key}>
+        <Rect
+          x={item.x}
+          y={item.y}
+          width={item.w}
+          height={item.h}
+          stroke="red"
+          draggable
+          listening
+          // key={index}
+          // ref={(node) => {
+          //   this.regions[item.key] = { shape: node, topRight: null };
+          //
+          //   if (this.rect[item.key]) {
+          //      this.rect[item.key].on('dragstart', () => {
+          //        console.log(`THIS.RECT[${item.key}]: `, this.rect[item.key]);
+          //        console.log('x: ', this.rect[item.key].getAttrs().x, ' y: ', this.rect[item.key].getAttrs().y);
+          //      });
+          //    }
+          //
+          // }}
+          onClick={this.setClicked}
+        />
+        {anchors}
+      </Group>
+    );
+    return result;
+  }
   render() {
+    console.log('IN RENDER');
     const string = 'Image';
     const label = <div>{string}<br /><sub>image 0</sub></div>;
     const contentStyle = {
@@ -262,15 +372,20 @@ class Main extends Component {
         </ContextMenu>
       </div>
     );
-    // if (expanded) {
-    //   contentStyle.marginLeft = 180;
-    //   toolbarStyle.width = 'calc(100% + 118px)';
-    // }
+    const rect = (
+      <Rect
+        x={this.state.x}
+        y={this.state.y}
+        width={this.state.width}
+        height={this.state.height}
+        stroke="red"
+        listening
+        key={this.state.x + this.state.y}
+      />
+    );
+    console.log('BEFORE RETURN');
     return (
       <div className="layout-row">
-        {/* <div style={{ width: 200, backgroundColor: 'yellow' }}>
-          test
-        </div> */}
         <SideMenu
           expandToTrue={this.expandToTrue}
           handleExpand={this.handleExpand}
@@ -295,15 +410,13 @@ class Main extends Component {
                 <Stage id="stage" width={637} height={477}>
                   <Layer id="layer" ref={(node) => { this.layer = node; }}>
                     <ImageViewer />
-                    {(mouseIsDown === 1) ? this.state.rect : false}
-                    {/* {this.state.regionArray.map(item => item.rect)} */}
-                    {this.state.regionArray}
+                    {(mouseIsDown === 1) ? rect : false}
+                    {this.state.regionArray.map((item, index) => this.addAnchor(item, index))}
                   </Layer>
                 </Stage>
               </div>
               <RaisedButton label="rectangle" onClick={this.init} />
-              <RaisedButton label="delete" onClick={this.delete} />
-              {/* <RaisedButton label="drag" onClick={this.onDragShape} /> */}
+              <RaisedButton label="delete" onClick={this.remove} />
               <br />
               <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
                 <Tabs>

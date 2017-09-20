@@ -280,8 +280,8 @@ class Main extends Component {
           radius={8}
           draggable
           ref={(node) => {
-            this.regions[item.key] = node;
-            if (this.regions[item.key]) {
+            if (node && !this.regions.hasOwnProperty(item.key)) {
+              this.regions[item.key] = node;
               // const topRight = this.regions[item.key].topRight;
               this.regions[item.key].on('dragend', () => {
                 const x = this.regions[item.key].getAttrs().x;

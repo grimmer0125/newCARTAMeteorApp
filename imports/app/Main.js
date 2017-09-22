@@ -49,10 +49,6 @@ class Main extends Component {
   constructor(props) {
     super(props);
     this.regions = [];
-    this.w = 0;
-    this.h = 0;
-    this.x = 0;
-    this.y = 0;
     this.state = {
       x: 0,
       y: 0,
@@ -234,10 +230,6 @@ class Main extends Component {
     });
   }
   addAnchor = (item, index) => {
-    this.w = item.w;
-    this.h = item.h;
-    this.x = item.x;
-    this.y = item.y;
     const anchors = (
       <Group>
         <Circle
@@ -252,11 +244,22 @@ class Main extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('topLeft')) {
               this.regions[item.key].topLeft = node;
               this.regions[item.key].topLeft.on('dragmove', () => {
-                console.log('WIDTH: ', item.w);
+                let itemX = 0;
+                let itemY = 0;
+                let itemW = 0;
+                let itemH = 0;
+                this.state.regionArray.forEach((obj) => {
+                  if (obj.key === item.key) {
+                    itemX = obj.x;
+                    itemY = obj.y;
+                    itemW = obj.w;
+                    itemH = obj.h;
+                  }
+                });
                 const x = this.regions[item.key].topLeft.getAttrs().x;
                 const y = this.regions[item.key].topLeft.getAttrs().y;
-                const newW = Math.abs((this.x + this.w) - x);
-                const newH = Math.abs((this.y + this.h) - y);
+                const newW = Math.abs((itemX + itemW) - x);
+                const newH = Math.abs((itemY + itemH) - y);
                 this.reshape(newW, newH, x, y, index);
               });
             }
@@ -274,11 +277,23 @@ class Main extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('topRight')) {
               this.regions[item.key].topRight = node;
               this.regions[item.key].topRight.on('dragmove', () => {
+                let itemX = 0;
+                let itemY = 0;
+                let itemW = 0;
+                let itemH = 0;
+                this.state.regionArray.forEach((obj) => {
+                  if (obj.key === item.key) {
+                    itemX = obj.x;
+                    itemY = obj.y;
+                    itemW = obj.w;
+                    itemH = obj.h;
+                  }
+                });
                 const x = this.regions[item.key].topRight.getAttrs().x;
                 const y = this.regions[item.key].topRight.getAttrs().y;
-                const newW = Math.abs(this.w - ((this.x + this.w) - x));
-                const newH = Math.abs((this.y + this.h) - y);
-                this.reshape(newW, newH, this.x, y, index);
+                const newW = Math.abs(itemW - ((itemX + itemW) - x));
+                const newH = Math.abs((itemY + itemH) - y);
+                this.reshape(newW, newH, itemX, y, index);
               });
             }
           }}
@@ -295,11 +310,23 @@ class Main extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('bottomLeft')) {
               this.regions[item.key].bottomLeft = node;
               this.regions[item.key].bottomLeft.on('dragmove', () => {
+                let itemX = 0;
+                let itemY = 0;
+                let itemW = 0;
+                let itemH = 0;
+                this.state.regionArray.forEach((obj) => {
+                  if (obj.key === item.key) {
+                    itemX = obj.x;
+                    itemY = obj.y;
+                    itemW = obj.w;
+                    itemH = obj.h;
+                  }
+                });
                 const x = this.regions[item.key].bottomLeft.getAttrs().x;
                 const y = this.regions[item.key].bottomLeft.getAttrs().y;
-                const newW = Math.abs((this.x + this.w) - x);
-                const newH = Math.abs(this.h - ((this.y + this.h) - y));
-                this.reshape(newW, newH, x, this.y, index);
+                const newW = Math.abs((itemX + itemW) - x);
+                const newH = Math.abs(itemH - ((itemY + itemH) - y));
+                this.reshape(newW, newH, x, itemY, index);
               });
             }
           }}
@@ -316,11 +343,23 @@ class Main extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('bottomRight')) {
               this.regions[item.key].bottomRight = node;
               this.regions[item.key].bottomRight.on('dragmove', () => {
+                let itemX = 0;
+                let itemY = 0;
+                let itemW = 0;
+                let itemH = 0;
+                this.state.regionArray.forEach((obj) => {
+                  if (obj.key === item.key) {
+                    itemX = obj.x;
+                    itemY = obj.y;
+                    itemW = obj.w;
+                    itemH = obj.h;
+                  }
+                });
                 const x = this.regions[item.key].bottomRight.getAttrs().x;
                 const y = this.regions[item.key].bottomRight.getAttrs().y;
-                const newW = Math.abs(this.w - ((this.x + this.w) - x));
-                const newH = Math.abs(this.h - ((this.y + this.h) - y));
-                this.reshape(newW, newH, this.x, this.y, index);
+                const newW = Math.abs(itemW - ((itemX + itemW) - x));
+                const newH = Math.abs(itemH - ((itemY + itemH) - y));
+                this.reshape(newW, newH, itemX, itemY, index);
               });
             }
           }}
@@ -340,11 +379,20 @@ class Main extends Component {
           ref={(node) => {
             if (node && !this.regions.hasOwnProperty(item.key)) {
               this.regions[item.key] = { shape: node };
+              this.regions[item.key].shape.on('dragmove', () => {
+                let itemW = 0;
+                let itemH = 0;
+                this.state.regionArray.forEach((obj) => {
+                  if (obj.key === item.key) {
+                    itemW = obj.w;
+                    itemH = obj.h;
+                  }
+                });
+                const x = this.regions[item.key].shape.getAttrs().x;
+                const y = this.regions[item.key].shape.getAttrs().y;
+                this.reshape(itemW, itemH, x, y, index);
+              });
             }
-          //    this.rect[item.key].on('dragstart', () => {
-          //      console.log(`THIS.RECT[${item.key}]: `, this.rect[item.key]);
-          //      console.log('x: ', this.rect[item.key].getAttrs().x, ' y: ', this.rect[item.key].getAttrs().y);
-          //    });
           }}
           onClick={this.setClicked}
         />

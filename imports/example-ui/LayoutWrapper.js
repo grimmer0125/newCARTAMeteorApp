@@ -114,7 +114,7 @@ class LayoutWrapper extends React.Component {
   // };
 
   render() {
-    console.log('in render');
+    // console.log('in render');
     const children = React.Children.toArray(this.props.children).slice(0, 3);
     let secondColumnPercentange = 0;
     let thirdColumnPercentange = 0;
@@ -133,12 +133,12 @@ class LayoutWrapper extends React.Component {
       if (children.length > 1) {
         // 2 or 3
         secondChild = children[1];
-        console.log('grimmer assign 2nd');
+        // console.log('grimmer assign 2nd');
 
         if (children.length > 2) {
           // 3 columns
           thirdCihld = children[2];
-          console.log('grimmer assign 3rd');
+          // console.log('grimmer assign 3rd');
         } else {
           // only 2 columns: special case
           if (this.props.firstPercentage && this.props.secondPercentage) {
@@ -170,16 +170,15 @@ class LayoutWrapper extends React.Component {
 
     let secondContent = null;
     if (secondColumnPercentange && thirdColumnPercentange) {
-      console.log('grimmer 1 - use 3rd percentage');
+      // console.log('grimmer 1 - use 3rd percentage');
       secondContent = ({ thirdCihld } ? (<SplitterLayout percentage resizeHandler={this.resize2ndLevel} drageHandler={this.drage2ndSplitterHandler} secondaryInitialSize={thirdColumnPercentange}>{secondChild}{thirdCihld}</SplitterLayout>) : { secondChild });
     } else {
-      console.log('grimmer 2');
-
+      // console.log('grimmer 2');
       secondContent = ({ thirdCihld } ? (<SplitterLayout percentage>{secondChild}{thirdCihld}</SplitterLayout>) : { secondChild });
     }
 
-    console.log('grimmer 2nd percentage,', secondColumnPercentange);
-    console.log('grimmer 3rd percentage,', thirdColumnPercentange);
+    // console.log('grimmer 2nd percentage,', secondColumnPercentange);
+    // console.log('grimmer 3rd percentage,', thirdColumnPercentange);
 
 
     return (

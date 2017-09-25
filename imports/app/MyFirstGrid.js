@@ -131,7 +131,6 @@ class MyFirstGrid extends Component {
     //   console.log("this.state does not exist in render");
     // }
     const width = this.props.width;
-    console.log('WIDTH RECEIVED BY GRID: ', width);
     return (
       <div style={{ minHeight: '100vh' }}>
         {/* <button onClick={this.onAddItem('none')}>Add Item</button> */}

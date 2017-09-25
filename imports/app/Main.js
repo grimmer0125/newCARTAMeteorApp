@@ -154,11 +154,22 @@ class Main extends Component {
             onUpdate={this.onUpdate}
           >
             <div>
-              <div id="canvas">
+              {/* <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <Region />
                 <Region />
                 <Region />
               </div>
+              <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <Region />
+                <Region />
+                <Region />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <Region />
+                <Region />
+                <Region />
+              </div> */}
+              <Region />
               <br />
               <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
                 <Tabs>

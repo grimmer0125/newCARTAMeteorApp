@@ -19,14 +19,14 @@ class Region extends Component {
       width: 0,
       height: 0,
       regionArray: [],
-      // showAnchors: false,
     };
   }
   onMouseDown = (event) => {
     // console.log('INSIDE mouseDown');
     // console.log('EVENT: ', event);
     mouseIsDown = 1;
-    const pos = this.getMousePos(document.getElementById('canvas'), event);
+    // const pos = this.getMousePos(document.getElementById('canvas'), event);
+    const pos = this.getMousePos(this.div, event);
     // console.log('MOUSE POSITION: ', pos);
     endX = pos.x;
     endY = pos.y;
@@ -36,7 +36,8 @@ class Region extends Component {
   }
   onMouseMove = (event) => {
     if (mouseIsDown === 1) {
-      const pos = this.getMousePos(document.getElementById('canvas'), event);
+      // const pos = this.getMousePos(document.getElementById('canvas'), event);
+      const pos = this.getMousePos(this.div, event);
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
@@ -45,13 +46,17 @@ class Region extends Component {
   onMouseUp = (event) => {
     if (mouseIsDown === 1) {
       mouseIsDown = 0;
-      const pos = this.getMousePos(document.getElementById('canvas'), event);
+      // const pos = this.getMousePos(document.getElementById('canvas'), event);
+      const pos = this.getMousePos(this.div, event);
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
-      document.getElementById('canvas').removeEventListener('mousedown', this.onMouseDown);
-      document.getElementById('canvas').removeEventListener('mousemove', this.onMouseMove);
-      document.getElementById('canvas').removeEventListener('mouseup', this.onMouseUp);
+      this.div.removeEventListener('mousedown', this.onMouseDown);
+      this.div.removeEventListener('mousemove', this.onMouseMove);
+      this.div.removeEventListener('mouseup', this.onMouseUp);
+      // document.getElementById('canvas').removeEventListener('mousedown', this.onMouseDown);
+      // document.getElementById('canvas').removeEventListener('mousemove', this.onMouseMove);
+      // document.getElementById('canvas').removeEventListener('mouseup', this.onMouseUp);
     }
   }
   getMousePos = (canvas, event) => {
@@ -78,16 +83,12 @@ class Region extends Component {
     }
   }
   init = () => {
-    document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
-    document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
-    document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
-  }
-  setClicked = (event) => {
-    console.log('EVENT: ', event);
-    this.setState({
-      toDelete: event.target,
-      // showAnchors: !this.state.showAnchors,
-    });
+    this.div.addEventListener('mousedown', this.onMouseDown);
+    this.div.addEventListener('mousemove', this.onMouseMove);
+    this.div.addEventListener('mouseup', this.onMouseUp);
+    // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
+    // document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
+    // document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
   }
   drawRect = () => {
     const w = endX - startX;
@@ -107,17 +108,18 @@ class Region extends Component {
     }
   }
   delete = () => {
-    // console.log('TARGET; ', target);
-    const tar = this.state.toDelete;
-    const attrs = tar.getAttrs();
-    const target = { x: attrs.x, y: attrs.y, w: attrs.width, h: attrs.height };
+    const target = this.state.toDelete;
+    // const attrs = target.getAttrs();
     if (this.state.regionArray.length === 1) {
       this.setState({ regionArray: [] });
     } else {
       this.setState(prevState => ({
         // regionArray: prevState.regionArray.filter(item => !_.isEqual(item, target)),
-        regionArray: prevState.regionArray.filter(item =>
-          item.x !== target.x && item.y !== target.y && item.w !== target.w && item.h !== target.h),
+        // regionArray: prevState.regionArray.filter(item =>
+        //   (item.x !== attrs.x) && (item.y !== attrs.y) &&
+        //   (item.w !== target.width) && (item.h !== target.height),
+        // ),
+        regionArray: prevState.regionArray.filter(item => item.key !== target),
       }));
     }
   }
@@ -133,7 +135,7 @@ class Region extends Component {
       });
     });
   }
-  addAnchor = (item, index) => {
+  addAnchor = (item) => {
     const anchors = (
       <Group>
         <Circle
@@ -152,19 +154,21 @@ class Region extends Component {
                 let itemY = 0;
                 let itemW = 0;
                 let itemH = 0;
-                this.state.regionArray.forEach((obj) => {
+                let i = 0;
+                this.state.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
                     itemW = obj.w;
                     itemH = obj.h;
+                    i = index;
                   }
                 });
                 const x = this.regions[item.key].topLeft.getAttrs().x;
                 const y = this.regions[item.key].topLeft.getAttrs().y;
                 const newW = Math.abs((itemX + itemW) - x);
                 const newH = Math.abs((itemY + itemH) - y);
-                this.reshape(newW, newH, x, y, index);
+                this.reshape(newW, newH, x, y, i);
               });
             }
           }}
@@ -185,19 +189,21 @@ class Region extends Component {
                 let itemY = 0;
                 let itemW = 0;
                 let itemH = 0;
-                this.state.regionArray.forEach((obj) => {
+                let i = 0;
+                this.state.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
                     itemW = obj.w;
                     itemH = obj.h;
+                    i = index;
                   }
                 });
                 const x = this.regions[item.key].topRight.getAttrs().x;
                 const y = this.regions[item.key].topRight.getAttrs().y;
                 const newW = Math.abs(itemW - ((itemX + itemW) - x));
                 const newH = Math.abs((itemY + itemH) - y);
-                this.reshape(newW, newH, itemX, y, index);
+                this.reshape(newW, newH, itemX, y, i);
               });
             }
           }}
@@ -218,19 +224,21 @@ class Region extends Component {
                 let itemY = 0;
                 let itemW = 0;
                 let itemH = 0;
-                this.state.regionArray.forEach((obj) => {
+                let i = 0;
+                this.state.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
                     itemW = obj.w;
                     itemH = obj.h;
+                    i = index;
                   }
                 });
                 const x = this.regions[item.key].bottomLeft.getAttrs().x;
                 const y = this.regions[item.key].bottomLeft.getAttrs().y;
                 const newW = Math.abs((itemX + itemW) - x);
                 const newH = Math.abs(itemH - ((itemY + itemH) - y));
-                this.reshape(newW, newH, x, itemY, index);
+                this.reshape(newW, newH, x, itemY, i);
               });
             }
           }}
@@ -251,19 +259,21 @@ class Region extends Component {
                 let itemY = 0;
                 let itemW = 0;
                 let itemH = 0;
-                this.state.regionArray.forEach((obj) => {
+                let i = 0;
+                this.state.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
                     itemW = obj.w;
                     itemH = obj.h;
+                    i = index;
                   }
                 });
                 const x = this.regions[item.key].bottomRight.getAttrs().x;
                 const y = this.regions[item.key].bottomRight.getAttrs().y;
                 const newW = Math.abs(itemW - ((itemX + itemW) - x));
                 const newH = Math.abs(itemH - ((itemY + itemH) - y));
-                this.reshape(newW, newH, itemX, itemY, index);
+                this.reshape(newW, newH, itemX, itemY, i);
               });
             }
           }}
@@ -288,22 +298,27 @@ class Region extends Component {
               this.regions[item.key].shape.on('dragmove', () => {
                 let itemW = 0;
                 let itemH = 0;
-                this.state.regionArray.forEach((obj) => {
+                let i = 0;
+                this.state.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemW = obj.w;
                     itemH = obj.h;
+                    i = index;
                   }
                 });
                 const x = this.regions[item.key].shape.getAttrs().x;
                 const y = this.regions[item.key].shape.getAttrs().y;
-                this.reshape(itemW, itemH, x, y, index);
+                this.reshape(itemW, itemH, x, y, i);
+              });
+              this.regions[item.key].shape.on('click', () => {
+                this.setState({
+                  toDelete: item.key,
+                });
               });
             }
           }}
-          onClick={this.setClicked}
         />
         {anchors}
-        {/* {this.state.showAnchors ? anchors : false} */}
       </Group>
     );
     return result;
@@ -322,21 +337,21 @@ class Region extends Component {
     );
     return (
       <div>
-        {/* <div id="canvas"> */}
-        <Stage
-          id="stage"
-          width={200}
-          height={200}
-        >
-          <Layer
-            id="layer"
+        <div ref={(node) => { this.div = node; }}>
+          <Stage
+            id="stage"
+            width={637}
+            height={477}
           >
-            {/* <ImageViewer /> */}
-            {(mouseIsDown === 1) ? rect : false}
-            {this.state.regionArray.map((item, index) => this.addAnchor(item, index))}
-          </Layer>
-        </Stage>
-        {/* </div> */}
+            <Layer
+              id="layer"
+            >
+              {/* <ImageViewer /> */}
+              {(mouseIsDown === 1) ? rect : false}
+              {this.state.regionArray.map(item => this.addAnchor(item))}
+            </Layer>
+          </Stage>
+        </div>
         <RaisedButton label="rectangle" onClick={this.init} />
         <RaisedButton label="delete" onClick={this.delete} />
       </div>

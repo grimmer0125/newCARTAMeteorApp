@@ -18,7 +18,7 @@ class ImageViewer extends Component {
     this.state = {
       image: null,
     };
-    this.props.dispatch(actions.prepareImageViewer());
+    this.props.dispatch(actions.setuptImageViewer());
   }
   componentWillReceiveProps = (nextProps) => {
     console.log('INSIDE componentWillUpdate');

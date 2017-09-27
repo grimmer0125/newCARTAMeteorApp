@@ -3,11 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
 import { ImageController } from '../api/ImageController';
 import { FileBrowserDB } from '../api/FileBrowserDB';
+import { RegionDB } from '../api/RegionDB';
 import { Responses } from '../api/Responses';
 
 // command response part:
 import { parseFileList, Actions as filebrowserActions } from '../fileBrowser/actions';
 import { parseImageToMongo, parseReigsterViewResp, Actions as imageViewerActions } from '../imageViewer/actions';
+import { Actions as regionActions } from '../region/actions';
 
 import { setupMongoReduxListeners } from '../api/MongoHelper';
 
@@ -21,6 +23,7 @@ export const Actions = {
 
 let otherSubHnadleFile = null;
 let otherSubHandleImage = null;
+let otherSubHandleRegion = null;
 
 function turnOnWatching(watchingSessionID) {
   return (dispatch) => {
@@ -32,9 +35,11 @@ function turnOnWatching(watchingSessionID) {
     otherSubHnadleFile = Meteor.subscribe('filebrowserdb', SessionManager.getOtherSession(), () => {
       console.log('filebrowserdb subscribes OK: !!!', SessionManager.get());
     });
-
     otherSubHandleImage = Meteor.subscribe('imagecontroller', SessionManager.getOtherSession(), () => {
       console.log('imagecontroller subscribes OK !!!');
+    });
+    otherSubHandleRegion = Meteor.subscribe('regiondb', SessionManager.getOtherSession(), () => {
+      console.log('regiondb subscribed!!!');
     });
   };
 }
@@ -53,6 +58,10 @@ function turnOffWatching() {
       console.log('stop image handle');
       otherSubHandleImage.stop();
     }
+    if (otherSubHandleRegion) {
+      console.log('stop region handle');
+      otherSubHandleRegion.stop();
+    }
   };
 }
 
@@ -66,8 +75,12 @@ function subscribeNonCommandCollections(dispatch) {
     console.log('imagecontroller subscribes OK !!!');
   });
 
+  Meteor.subscribe('regiondb', SessionManager.get(), () => {
+    console.log('regiondb subscribed!!');
+  });
   setupMongoReduxListeners(ImageController, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
   setupMongoReduxListeners(FileBrowserDB, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
+  setupMongoReduxListeners(RegionDB, dispatch, regionActions.REGION_CHANGE);
 }
 
 function handleCommandResponse(resp) {

@@ -1,34 +1,26 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import update from 'immutability-helper';
-// import _ from 'lodash';
-import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import RaisedButton from 'material-ui/RaisedButton';
+import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
+import actions from './actions';
+// import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
 
 let startX;
 let endX;
 let startY;
 let endY;
-let mouseIsDown = 0;
 class Region extends Component {
   constructor(props) {
     super(props);
     this.regions = [];
-    this.state = {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      regionArray: [],
-    };
+    this.rect = null;
   }
   onMouseDown = (event) => {
-    // console.log('INSIDE mouseDown');
-    // console.log('EVENT: ', event);
-    mouseIsDown = 1;
+    this.props.dispatch(actions.setMouseIsDown(1));
     // const pos = this.getMousePos(document.getElementById('canvas'), event);
     const pos = this.getMousePos(this.div, event);
-    // console.log('MOUSE POSITION: ', pos);
     endX = pos.x;
     endY = pos.y;
     startX = endX;
@@ -36,7 +28,7 @@ class Region extends Component {
     this.drawRect();
   }
   onMouseMove = (event) => {
-    if (mouseIsDown === 1) {
+    if (this.props.mouseIsDown === 1) {
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
       const pos = this.getMousePos(this.div, event);
       endX = pos.x;
@@ -45,8 +37,8 @@ class Region extends Component {
     }
   }
   onMouseUp = (event) => {
-    if (mouseIsDown === 1) {
-      mouseIsDown = 0;
+    if (this.props.mouseIsDown === 1) {
+      this.props.dispatch(actions.setMouseIsDown(0));
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
       const pos = this.getMousePos(this.div, event);
       endX = pos.x;
@@ -61,37 +53,24 @@ class Region extends Component {
     }
   }
   getMousePos = (canvas, event) => {
-    // console.log('INSIDE getMousePos');
-    // console.log('getMousePos CANVAS: ', canvas);
-    // console.log('getMousePos EVENT: ', event);
     const rect = canvas.getBoundingClientRect();
     return {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
     };
   }
-  setShape = (coordX, coordY, width, height) => {
-    if (mouseIsDown === 0) {
-      // this.setState(prevState => ({
-      //   regionArray: prevState.regionArray.concat({
-      //     x: prevState.x,
-      //     y: prevState.y,
-      //     w: prevState.width,
-      //     h: prevState.height,
-      //     key: Math.floor(Math.random() * 10000),
-      //   }),
-      // }));
-      this.setState(prevState => ({
-        regionArray: prevState.regionArray.concat({
-          x: coordX,
-          y: coordY,
-          w: width,
-          h: height,
-          key: Math.floor(Math.random() * 10000),
-        }),
-      }));
-    }
-  }
+  // setRegionArray = (coordX, coordY, width, height) => {
+  //   if (this.props.regionArray) {
+  //     this.regionArray = this.props.regionArray;
+  //   }
+  //   this.regionArray = this.regionArray.concat({
+  //     x: coordX,
+  //     y: coordY,
+  //     w: width,
+  //     h: height,
+  //     key: Math.floor(Math.random() * 10000),
+  //   });
+  // }
   init = () => {
     this.div.addEventListener('mousedown', this.onMouseDown);
     this.div.addEventListener('mousemove', this.onMouseMove);
@@ -105,45 +84,32 @@ class Region extends Component {
     const h = endY - startY;
     const offsetX = (w < 0) ? w : 0;
     const offsetY = (h < 0) ? h : 0;
-    // const width = Math.abs(w);
-    // const height = Math.abs(h);
-    if (mouseIsDown === 0) {
-      this.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h));
+
+    if (this.props.mouseIsDown === 0) {
+      // this.setRegionArray(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h));
+      this.props.dispatch(
+        // actions.setShape(this.regionArray),
+        actions.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
+      );
     } else {
-      this.setState({
-        x: startX + offsetX,
-        y: startY + offsetY,
-        width: Math.abs(w),
-        height: Math.abs(h),
-      });
+      this.props.dispatch(
+        actions.drawShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
+      );
     }
   }
   delete = () => {
     const target = this.state.toDelete;
-    // const attrs = target.getAttrs();
-    if (this.state.regionArray.length === 1) {
-      this.setState({ regionArray: [] });
-    } else {
-      this.setState(prevState => ({
-        // regionArray: prevState.regionArray.filter(item => !_.isEqual(item, target)),
-        // regionArray: prevState.regionArray.filter(item =>
-        //   (item.x !== attrs.x) && (item.y !== attrs.y) &&
-        //   (item.w !== target.width) && (item.h !== target.height),
-        // ),
-        regionArray: prevState.regionArray.filter(item => item.key !== target),
-      }));
-    }
+    this.props.dispatch(actions.remove(target));
   }
   reshape = (newW, newH, newX, newY, index) => {
-    const arr = this.state.regionArray;
-    const newArray = update(arr[index],
-      { x: { $set: newX }, y: { $set: newY }, w: { $set: newW }, h: { $set: newH },
-      });
-    const data = update(arr, { $splice: [[index, 1, newArray]] });
+    // this.regionArray = this.props.regionArray;
+    // const newArray = update(this.regionArray[index],
+    //   { x: { $set: newX }, y: { $set: newY }, w: { $set: newW }, h: { $set: newH },
+    //   });
+    // const data = update(this.regionArray, { $splice: [[index, 1, newArray]] });
     process.nextTick(() => {
-      this.setState({
-        regionArray: data,
-      });
+      // this.regionArray = data;
+      this.props.dispatch(actions.reshape(newW, newH, newX, newY, index));
     });
   }
   addAnchor = (item) => {
@@ -166,7 +132,7 @@ class Region extends Component {
                 let itemW = 0;
                 let itemH = 0;
                 let i = 0;
-                this.state.regionArray.forEach((obj, index) => {
+                this.props.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
@@ -196,12 +162,13 @@ class Region extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('topRight')) {
               this.regions[item.key].topRight = node;
               this.regions[item.key].topRight.on('dragmove', () => {
+                // console.log('resize');
                 let itemX = 0;
                 let itemY = 0;
                 let itemW = 0;
                 let itemH = 0;
                 let i = 0;
-                this.state.regionArray.forEach((obj, index) => {
+                this.props.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
@@ -236,7 +203,7 @@ class Region extends Component {
                 let itemW = 0;
                 let itemH = 0;
                 let i = 0;
-                this.state.regionArray.forEach((obj, index) => {
+                this.props.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
@@ -271,7 +238,7 @@ class Region extends Component {
                 let itemW = 0;
                 let itemH = 0;
                 let i = 0;
-                this.state.regionArray.forEach((obj, index) => {
+                this.props.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemX = obj.x;
                     itemY = obj.y;
@@ -307,10 +274,11 @@ class Region extends Component {
             if (node && !this.regions.hasOwnProperty(item.key)) {
               this.regions[item.key] = { shape: node };
               this.regions[item.key].shape.on('dragmove', () => {
+                // console.log('dragmove');
                 let itemW = 0;
                 let itemH = 0;
                 let i = 0;
-                this.state.regionArray.forEach((obj, index) => {
+                this.props.regionArray.forEach((obj, index) => {
                   if (obj.key === item.key) {
                     itemW = obj.w;
                     itemH = obj.h;
@@ -335,15 +303,16 @@ class Region extends Component {
     return result;
   }
   render() {
-    const rect = (
+    const { x, y, width, height } = this.props;
+    this.rect = (
       <Rect
-        x={this.state.x}
-        y={this.state.y}
-        width={this.state.width}
-        height={this.state.height}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
         stroke="red"
         listening
-        key={this.state.x + this.state.y}
+        key={x + y}
       />
     );
     return (
@@ -358,15 +327,24 @@ class Region extends Component {
               id="layer"
             >
               {/* <ImageViewer /> */}
-              {(mouseIsDown === 1) ? rect : false}
-              {this.state.regionArray.map(item => this.addAnchor(item))}
+              {(this.props.mouseIsDown === 1) ? this.rect : false}
+              {/* {this.state.regionArray.map(item => this.addAnchor(item))} */}
+              {this.props.regionArray ? this.props.regionArray.map(item => this.addAnchor(item)) : false}
             </Layer>
           </Stage>
+          <RaisedButton label="rectangle" onClick={this.init} />
+          <RaisedButton label="delete" onClick={this.delete} />
         </div>
-        <RaisedButton label="rectangle" onClick={this.init} />
-        <RaisedButton label="delete" onClick={this.delete} />
       </div>
     );
   }
 }
-export default Region;
+const mapStateToProps = state => ({
+  x: state.RegionDB.x,
+  y: state.RegionDB.y,
+  width: state.RegionDB.width,
+  height: state.RegionDB.height,
+  mouseIsDown: state.RegionDB.mouseIsDown,
+  regionArray: state.RegionDB.regionArray,
+});
+export default connect(mapStateToProps)(Region);

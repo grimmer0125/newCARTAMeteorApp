@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Responses } from '../imports/api/Responses';
 import '../imports/api/FileBrowserDB';
 import '../imports/api/ImageController';
+import '../imports/api/RegionDB';
 
 import ChannelClient from '../imports/api/ChannelClient';
 import Commands from '../imports/api/Commands';

@@ -33,9 +33,9 @@ import MyFirstGrid from './MyFirstGrid';
 import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import SideMenu from './SideMenu';
-import ImageViewer from '../imageViewer/ImageViewer';
 import Topbar from './Topbar';
-import Region from './Region';
+// import Region from './Region';
+import Region from '../region/Region';
 
 class Main extends Component {
   constructor(props) {

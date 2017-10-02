@@ -326,7 +326,7 @@ class Region extends Component {
             <Layer
               id="layer"
             >
-              {/* <ImageViewer /> */}
+              <ImageViewer />
               {(this.props.mouseIsDown === 1) ? this.rect : false}
               {/* {this.state.regionArray.map(item => this.addAnchor(item))} */}
               {this.props.regionArray ? this.props.regionArray.map(item => this.addAnchor(item)) : false}

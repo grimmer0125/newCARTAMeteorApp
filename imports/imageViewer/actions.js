@@ -74,7 +74,18 @@ export function parseImageToMongo(buffer) {
     console.log('get dummy image response');
   }
 }
-
+export function zoom(zoomCommand) {
+  return (dispatch, getState) => {
+    const controllerID = getState().imageController.controllerID;
+    console.log('controllerID: ', controllerID);
+    // console.log('STATE: ', getState());
+    const cmd = `${controllerID}:newzoom`;
+    const params = zoomCommand;
+    Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
+      console.log('get command dummy result:', result);
+    });
+  };
+}
 const actions = {
   setuptImageViewer,
 };

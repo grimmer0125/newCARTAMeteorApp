@@ -8,6 +8,8 @@ import Card from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
+import { zoom } from '../imageViewer/actions';
+
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
 
@@ -452,8 +454,13 @@ class Region extends Component {
       saveAsInput: event.target.value,
     });
   }
-  test = () => {
+  zoomIn = () => {
     console.log('ZOOM BUTTON CLICKED');
+    this.props.dispatch(zoom(-2));
+  }
+  zoomOut = () => {
+    console.log('ZOOM BUTTON CLICKED');
+    this.props.dispatch(zoom(2));
   }
   render() {
     const { x, y, width, height } = this.props;
@@ -511,13 +518,13 @@ class Region extends Component {
             </Layer>
           </Stage>
           <Card style={{ width: '24px' }} >
-            <button onClick={this.test} className="zoom" style={{ width: '24px' }}>
+            <button className="zoom" style={{ width: '24px' }}>
               <img style={{ width: '12px', height: '12px' }} src="/images/pan.png" alt="" />
             </button>
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-            <button onClick={this.test} className="zoom" style={{ width: '24px' }}>+</button>
+            <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-            <button onClick={this.test} className="zoom" style={{ width: '24px' }}>-</button>
+            <button onClick={this.zoomOut} className="zoom" style={{ width: '24px' }}>-</button>
           </Card>
           <br />
         </div>

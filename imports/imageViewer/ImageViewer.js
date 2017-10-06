@@ -21,14 +21,23 @@ class ImageViewer extends Component {
     this.props.dispatch(actions.setuptImageViewer());
   }
   componentWillReceiveProps = (nextProps) => {
-    console.log('INSIDE componentWillUpdate');
+    // console.log('INSIDE componentWillUpdate');
     image = new window.Image();
     image.src = nextProps.imageURL;
     image.onload = () => {
-      console.log('IMAGE ONLOAD');
+      // console.log('IMAGE ONLOAD');
       this.setState({ image });
     };
   }
+  // componentDidMount = () => {
+  //   // console.log('INSIDE componentWillUpdate');
+  //   image = new window.Image();
+  //   image.src = '/images/carta.png';
+  //   image.onload = () => {
+  //     // console.log('IMAGE ONLOAD');
+  //     this.setState({ image });
+  //   };
+  // }
   render() {
     return (
       // <Image
@@ -36,7 +45,20 @@ class ImageViewer extends Component {
       // />
       // <Paper style={browserStyle} zDepth={1} >
       // <Image image={this.state.image} />
-      <Image image={this.state.image} />
+      // <div>
+      <Image
+        width={637}
+        height={477}
+        image={this.state.image}
+        // ref={(node) => {
+        //   this.image = node;
+        //   if (this.image) {
+        //     this.image.moveToTop();
+        //   }
+        // }}
+        // opacity={0.5}
+      />
+      // </div>
       // </Paper>
     );
   }

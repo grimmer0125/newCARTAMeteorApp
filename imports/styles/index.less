@@ -3,9 +3,52 @@
 p {
     font-family: 'Roboto', Serif;
 }
+.zoom {
+  border: none;
+  background: none;
+  font-size: 18px;
+  position: relative;
+  overflow: hidden;
+}
+// #pan.zoom {
+//   background-image: url(/images/pan.png);
+//   height: 24px;
+//   background-repeat: no-repeat;
+// }
+.zoom:hover { background-color: #D3D3D3 }
+.zoom:focus {outline:0;}
+.zoom:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, .5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
 
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
 
-
+.zoom:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
 .layout-row-end-center {
   display: flex;
   justify-content: flex-end;

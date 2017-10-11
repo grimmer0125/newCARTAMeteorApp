@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import update from 'immutability-helper';
 import RaisedButton from 'material-ui/RaisedButton';
+import Popover from 'material-ui/Popover';
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
+import Card from 'material-ui/Card';
+import Divider from 'material-ui/Divider';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
+import { zoom } from '../imageViewer/actions';
+
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
+
+
+// import ImageViewer2 from '../imageViewer/ImageViewer2';
 
 let startX;
 let endX;
@@ -16,6 +25,12 @@ class Region extends Component {
     super(props);
     this.regions = [];
     this.rect = null;
+    this.flipY = false;
+    this.flipX = false;
+    this.state = {
+      open: false,
+      saveAsInput: '',
+    };
   }
   onMouseDown = (event) => {
     this.props.dispatch(actions.setMouseIsDown(1));
@@ -116,8 +131,8 @@ class Region extends Component {
     const anchors = (
       <Group>
         <Circle
-          x={item.x}
-          y={item.y}
+          x={this.flipX ? item.x + item.w : item.x}
+          y={this.flipY ? item.y + item.h : item.y}
           stroke="#666"
           fill="#ddd"
           strokeWidth={2}
@@ -127,6 +142,8 @@ class Region extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('topLeft')) {
               this.regions[item.key].topLeft = node;
               this.regions[item.key].topLeft.on('dragmove', () => {
+                const bottomLeftAttrs = this.regions[item.key].bottomLeft.getAttrs();
+                const topRightAttrs = this.regions[item.key].topRight.getAttrs();
                 let itemX = 0;
                 let itemY = 0;
                 let itemW = 0;
@@ -143,16 +160,43 @@ class Region extends Component {
                 });
                 const x = this.regions[item.key].topLeft.getAttrs().x;
                 const y = this.regions[item.key].topLeft.getAttrs().y;
-                const newW = Math.abs((itemX + itemW) - x);
-                const newH = Math.abs((itemY + itemH) - y);
-                this.reshape(newW, newH, x, y, i);
+                let newW = Math.abs((itemX + itemW) - x);
+                let newH = Math.abs((itemY + itemH) - y);
+                // flip to bottom left
+                if (bottomLeftAttrs.y < y && topRightAttrs.x > x) {
+                  if (!this.flipY) this.flipY = true;
+                  if (this.flipX) this.flipX = false;
+                  newH = Math.abs(itemH - ((itemY + itemH) - y));
+                  // newH = Math.abs(itemY - y);
+                  this.reshape(newW, newH, x, itemY, i);
+                } else if (topRightAttrs.x < x && bottomLeftAttrs.y > y) {
+                  // flip to top right
+                  if (!this.flipX) this.flipX = true;
+                  if (this.flipY) this.flipY = false;
+                  // newW = Math.abs(x - topRightAttrs.x);
+                  newW = Math.abs(itemW - ((itemX + itemW) - x));
+                  this.reshape(newW, newH, itemX, y, i);
+                  // this.reshape(newW, newH, topRightAttrs.x, y, i);
+                }
+                // should be bottomRight
+                else if (bottomLeftAttrs.y <= y && topRightAttrs.x <= x) {
+                  if (!this.flipX) this.flipX = true;
+                  if (!this.flipY) this.flipY = true;
+                  newH = Math.abs(y - itemY);
+                  newW = Math.abs(itemW - ((itemX + itemW) - x));
+                  this.reshape(newW, newH, itemX, itemY, i);
+                } else {
+                  if (this.flipY) this.flipY = false;
+                  if (this.flipX) this.flipX = false;
+                  this.reshape(newW, newH, x, y, i);
+                }
               });
             }
           }}
         />
         <Circle
-          x={item.x + item.w}
-          y={item.y}
+          x={this.flipX ? item.x : item.x + item.w}
+          y={this.flipY ? item.y + item.h : item.y}
           stroke="#666"
           fill="#ddd"
           strokeWidth={2}
@@ -162,6 +206,8 @@ class Region extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('topRight')) {
               this.regions[item.key].topRight = node;
               this.regions[item.key].topRight.on('dragmove', () => {
+                const bottomRightAttrs = this.regions[item.key].bottomRight.getAttrs();
+                const topLeftAttrs = this.regions[item.key].topLeft.getAttrs();
                 // console.log('resize');
                 let itemX = 0;
                 let itemY = 0;
@@ -179,16 +225,43 @@ class Region extends Component {
                 });
                 const x = this.regions[item.key].topRight.getAttrs().x;
                 const y = this.regions[item.key].topRight.getAttrs().y;
-                const newW = Math.abs(itemW - ((itemX + itemW) - x));
-                const newH = Math.abs((itemY + itemH) - y);
-                this.reshape(newW, newH, itemX, y, i);
+                let newW = Math.abs(itemW - ((itemX + itemW) - x));
+                let newH = Math.abs((itemY + itemH) - y);
+
+                // flip to bottom right
+                if (bottomRightAttrs.y < y && topLeftAttrs.x < x) {
+                  if (!this.flipY) this.flipY = true;
+                  if (this.flipX) this.flipX = false;
+                  // newH = Math.abs(y - itemY);
+                  newH = Math.abs(y - bottomRightAttrs.y);
+                  this.reshape(newW, newH, itemX, itemY, i);
+                } else if (topLeftAttrs.x > x && bottomRightAttrs.y > y) {
+                  // flip to top left
+                  if (!this.flipX) this.flipX = true;
+                  if (this.flipY) this.flipY = false;
+                  // newW = Math.abs(itemX - x);
+                  newW = Math.abs((itemX + itemW) - x);
+                  this.reshape(newW, newH, x, y, i);
+                }
+                // should be bottomLeft
+                else if (bottomRightAttrs.y <= y && topLeftAttrs.x >= x) {
+                  if (!this.flipX) this.flipX = true;
+                  if (!this.flipY) this.flipY = true;
+                  newW = Math.abs((itemX + itemW) - x);
+                  newH = Math.abs(itemH - ((itemY + itemH) - y));
+                  this.reshape(newW, newH, x, itemY, i);
+                } else {
+                  if (this.flipY) this.flipY = false;
+                  if (this.flipX) this.flipX = false;
+                  this.reshape(newW, newH, itemX, y, i);
+                }
               });
             }
           }}
         />
         <Circle
-          x={item.x}
-          y={item.y + item.h}
+          x={this.flipX ? item.x + item.w : item.x}
+          y={this.flipY ? item.y : item.y + item.h}
           stroke="#666"
           fill="#ddd"
           strokeWidth={2}
@@ -198,6 +271,8 @@ class Region extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('bottomLeft')) {
               this.regions[item.key].bottomLeft = node;
               this.regions[item.key].bottomLeft.on('dragmove', () => {
+                const topLeftAttrs = this.regions[item.key].topLeft.getAttrs();
+                const bottomRightAttrs = this.regions[item.key].bottomRight.getAttrs();
                 let itemX = 0;
                 let itemY = 0;
                 let itemW = 0;
@@ -214,16 +289,44 @@ class Region extends Component {
                 });
                 const x = this.regions[item.key].bottomLeft.getAttrs().x;
                 const y = this.regions[item.key].bottomLeft.getAttrs().y;
-                const newW = Math.abs((itemX + itemW) - x);
-                const newH = Math.abs(itemH - ((itemY + itemH) - y));
-                this.reshape(newW, newH, x, itemY, i);
+                let newW = Math.abs((itemX + itemW) - x);
+                let newH = Math.abs(itemH - ((itemY + itemH) - y));
+                // flip to top left
+                if (topLeftAttrs.y > y && bottomRightAttrs.x > x) {
+                  if (!this.flipY) this.flipY = true;
+                  if (this.flipX) this.flipX = false;
+                  newH = Math.abs((itemY + itemH) - y);
+                  // newH = Math.abs(itemY - y);
+                  this.reshape(newW, newH, x, y, i);
+                } else if (bottomRightAttrs.x < x && topLeftAttrs.y < y) {
+                  // flip to bottom right
+                  if (!this.flipX) this.flipX = true;
+                  if (this.flipY) this.flipY = false;
+                  newW = Math.abs(itemW - ((itemX + itemW) - x));
+                  // newW = Math.abs(x - bottomRightAttrs.x);
+                  // this.reshape(newW, newH, bottomRightAttrs.x, itemY, i);
+                  this.reshape(newW, newH, itemX, itemY, i);
+                }
+                // should be topRight
+                else if (topLeftAttrs.y >= y && bottomRightAttrs.x <= x) {
+                  if (!this.flipX) this.flipX = true;
+                  if (!this.flipY) this.flipY = true;
+                  newW = Math.abs(itemW - ((itemX + itemW) - x));
+                  // newW = Math.abs((itemX + itemW) - x);
+                  newH = Math.abs((itemY + itemH) - y);
+                  this.reshape(newW, newH, itemX, y, i);
+                } else {
+                  if (this.flipY) this.flipY = false;
+                  if (this.flipX) this.flipX = false;
+                  this.reshape(newW, newH, x, itemY, i);
+                }
               });
             }
           }}
         />
         <Circle
-          x={item.x + item.w}
-          y={item.y + item.h}
+          x={this.flipX ? item.x : item.x + item.w}
+          y={this.flipY ? item.y : item.y + item.h}
           stroke="#666"
           fill="#ddd"
           strokeWidth={2}
@@ -233,6 +336,8 @@ class Region extends Component {
             if (node && !this.regions[item.key].hasOwnProperty('bottomRight')) {
               this.regions[item.key].bottomRight = node;
               this.regions[item.key].bottomRight.on('dragmove', () => {
+                const topRightAttrs = this.regions[item.key].topRight.getAttrs();
+                const bottomLeftAttrs = this.regions[item.key].bottomLeft.getAttrs();
                 let itemX = 0;
                 let itemY = 0;
                 let itemW = 0;
@@ -249,9 +354,38 @@ class Region extends Component {
                 });
                 const x = this.regions[item.key].bottomRight.getAttrs().x;
                 const y = this.regions[item.key].bottomRight.getAttrs().y;
-                const newW = Math.abs(itemW - ((itemX + itemW) - x));
-                const newH = Math.abs(itemH - ((itemY + itemH) - y));
-                this.reshape(newW, newH, itemX, itemY, i);
+                // const newH = Math.abs(itemH - ((itemY + itemH) - y));
+                let newH = Math.abs(y - itemY);
+                let newW = Math.abs(itemW - ((itemX + itemW) - x));
+                // flip to top right
+                if (topRightAttrs.y > y && bottomLeftAttrs.x < x) {
+                  if (!this.flipY) this.flipY = true;
+                  if (this.flipX) this.flipX = false;
+                  // topRight height calc
+                  newH = Math.abs((itemY + itemH) - y);
+                  // newH = Math.abs(topRightAttrs.y - y);
+                  this.reshape(newW, newH, itemX, y, i);
+                } else if (bottomLeftAttrs.x > x && topRightAttrs.y < y) {
+                  // flip to bottom left
+                  if (!this.flipX) this.flipX = true;
+                  if (this.flipY) this.flipY = false;
+                  // bottomLeft width calc
+                  newW = Math.abs((itemX + itemW) - x);
+                  // newW = Math.abs(bottomLeftAttrs.x - x);
+                  this.reshape(newW, newH, x, itemY, i);
+                }
+                // after two flips in both directions, should become topLeft
+                else if (topRightAttrs.y >= y && bottomLeftAttrs.x >= x) {
+                  if (!this.flipX) this.flipX = true;
+                  if (!this.flipY) this.flipY = true;
+                  newH = Math.abs((itemY + itemH) - y);
+                  newW = Math.abs((itemX + itemW) - x);
+                  this.reshape(newW, newH, x, y, i);
+                } else {
+                  if (this.flipY) this.flipY = false;
+                  if (this.flipX) this.flipX = false;
+                  this.reshape(newW, newH, itemX, itemY, i);
+                }
               });
             }
           }}
@@ -302,6 +436,32 @@ class Region extends Component {
     );
     return result;
   }
+  handleTouchTap = (event) => {
+    // This prevents ghost click.
+    event.preventDefault();
+    this.setState({
+      open: true,
+      anchorEl: event.currentTarget,
+    });
+  };
+  handleRequestClose = () => {
+    this.setState({
+      open: false,
+    });
+  };
+  saveAs = (event) => {
+    this.setState({
+      saveAsInput: event.target.value,
+    });
+  }
+  zoomIn = () => {
+    console.log('ZOOM BUTTON CLICKED');
+    this.props.dispatch(zoom(-2));
+  }
+  zoomOut = () => {
+    console.log('ZOOM BUTTON CLICKED');
+    this.props.dispatch(zoom(2));
+  }
   render() {
     const { x, y, width, height } = this.props;
     this.rect = (
@@ -322,19 +482,77 @@ class Region extends Component {
             id="stage"
             width={637}
             height={477}
+            ref={(node) => {
+              this.stage = node;
+              // if (this.stage) {
+              //   const canvas = this.stage.node.toCanvas();
+              //   canvas.width = 1274;
+              //   canvas.height = 954;
+              //   canvas.style.width = '637px';
+              //   canvas.style.height = '477px';
+              //   canvas.getContext('2d').scale(2, 2);
+              // }
+            }}
           >
             <Layer
               id="layer"
+              ref={(node) => {
+                this.layer = node;
+                // if (this.layer) {
+                // this.layer.getCanvas().context._context.imageSmoothingQuality = 'high';
+                // console.log(this.layer.getContext().scale(1, 1));
+                // this.layer.getCanvas().setWidth(637);
+                // this.layer.getCanvas().setHeight(477);
+                // this.layer.getCanvas().getContext('2d').scale(2, 2);
+                // }
+                // console.log(this.layer.getCanvas());
+                // canvas.setWidth(1000);
+                // canvas.setHeight(500);
+                // canvas.setSize(637, 477);
+              }}
             >
               <ImageViewer />
+              {/* <ImageViewer2 /> */}
               {(this.props.mouseIsDown === 1) ? this.rect : false}
-              {/* {this.state.regionArray.map(item => this.addAnchor(item))} */}
               {this.props.regionArray ? this.props.regionArray.map(item => this.addAnchor(item)) : false}
             </Layer>
           </Stage>
-          <RaisedButton label="rectangle" onClick={this.init} />
-          <RaisedButton label="delete" onClick={this.delete} />
+          <Card style={{ width: '24px' }} >
+            <button className="zoom" style={{ width: '24px' }}>
+              <img style={{ width: '12px', height: '12px' }} src="/images/pan.png" alt="" />
+            </button>
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <button onClick={this.zoomOut} className="zoom" style={{ width: '24px' }}>-</button>
+          </Card>
+          <br />
         </div>
+        <RaisedButton label="rectangle" onClick={this.init} />
+        <RaisedButton label="delete" onClick={this.delete} />
+        <RaisedButton label="save" onClick={this.handleTouchTap} />
+        <Popover
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+          onRequestClose={this.handleRequestClose}
+        >
+          <TextField
+            floatingLabelText="Save as..."
+            onChange={this.saveAs}
+          /><br />
+          <FlatButton
+            type="submit"
+            label="Save"
+            primary
+            href={this.layer ? this.layer.getCanvas().toDataURL('image/jpeg', 1) : false}
+            // href={this.stage ? this.stage.node.toDataURL({ pixelRatio: 1, mimeType: 'image/jpeg', quality: 0.2 }) : false}
+            download={this.state.saveAsInput}
+            style={{ left: '65%' }}
+            // onClick={this.test}
+          />
+        </Popover>
       </div>
     );
   }

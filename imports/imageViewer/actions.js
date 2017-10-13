@@ -66,10 +66,10 @@ export function parseImageToMongo(buffer) {
   if (buffer) {
     console.log('parseImageToMongo');
 
-    const url = `data:image/jpeg;base64,${buffer}`;
-    console.log('image url string size:', url.length);
+    // const url = `data:image/jpeg;base64,${buffer}`;
+    console.log('image url string size:', buffer.length);
 
-    mongoUpsert(ImageController, { imageURL: url }, GET_IMAGE);
+    mongoUpsert(ImageController, { imageURL: buffer }, GET_IMAGE);
   } else {
     console.log('get dummy image response');
   }

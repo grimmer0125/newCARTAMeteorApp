@@ -23,7 +23,7 @@ class ImageViewer extends Component {
   componentWillReceiveProps = (nextProps) => {
     // console.log('INSIDE componentWillUpdate');
     image = new window.Image();
-    image.src = nextProps.imageURL;
+    image.src = `data:image/jpeg;base64,${nextProps.imageURL}`;
     image.onload = () => {
       // console.log('IMAGE ONLOAD');
       this.setState({ image });

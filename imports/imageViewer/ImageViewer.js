@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import actions from './actions';
 
 const browserStyle = {
-  width: 637,
+  width: 482,
   height: 477,
 };
 let image = null;
@@ -47,7 +47,7 @@ class ImageViewer extends Component {
       // <Image image={this.state.image} />
       // <div>
       <Image
-        width={637}
+        width={482}
         height={477}
         image={this.state.image}
         // ref={(node) => {

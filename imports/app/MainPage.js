@@ -171,7 +171,7 @@ class MainPage extends Component {
               </div> */}
               <Region />
               <br />
-              <Paper style={{ width: 637, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
+              <Paper style={{ width: 482, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
                 <Tabs>
                   <Tab label={label} />
                   <Tab label="Channel" />
@@ -188,7 +188,7 @@ class MainPage extends Component {
                     <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={0} />
                   </div>
                   <div>
-                    <Slider sliderStyle={{ width: '500px', left: '10px', height: '2px' }} step={1} min={0} max={3} value={3} />
+                    <Slider sliderStyle={{ width: '350px', left: '10px', height: '2px' }} step={1} min={0} max={3} value={3} />
                   </div>
                   <div style={{ marginLeft: '30px', marginTop: '15px' }}>
                     <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={3} />

@@ -480,7 +480,7 @@ class Region extends Component {
         <div ref={(node) => { this.div = node; }}>
           <Stage
             id="stage"
-            width={637}
+            width={482}
             height={477}
             ref={(node) => {
               this.stage = node;
@@ -488,7 +488,7 @@ class Region extends Component {
               //   const canvas = this.stage.node.toCanvas();
               //   canvas.width = 1274;
               //   canvas.height = 954;
-              //   canvas.style.width = '637px';
+              //   canvas.style.width = '482px';
               //   canvas.style.height = '477px';
               //   canvas.getContext('2d').scale(2, 2);
               // }
@@ -501,14 +501,14 @@ class Region extends Component {
                 // if (this.layer) {
                 // this.layer.getCanvas().context._context.imageSmoothingQuality = 'high';
                 // console.log(this.layer.getContext().scale(1, 1));
-                // this.layer.getCanvas().setWidth(637);
+                // this.layer.getCanvas().setWidth(482);
                 // this.layer.getCanvas().setHeight(477);
                 // this.layer.getCanvas().getContext('2d').scale(2, 2);
                 // }
                 // console.log(this.layer.getCanvas());
                 // canvas.setWidth(1000);
                 // canvas.setHeight(500);
-                // canvas.setSize(637, 477);
+                // canvas.setSize(482, 477);
               }}
             >
               <ImageViewer />

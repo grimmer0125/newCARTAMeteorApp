@@ -10,7 +10,7 @@ import Run from 'material-ui/svg-icons/maps/directions-run';
 
 import FileBrowser from '../fileBrowser/FileBrowser';
 
-const openWidth = 170;
+const openWidth = 220;
 const closeWidth = 56;
 
 export default class SideMenu extends Component {

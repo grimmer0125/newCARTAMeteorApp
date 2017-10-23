@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import configureStore from './configureStore';
 // import ImageViewer from '../imageViewer/ImageViewer';
 // import FileBrowser from '../fileBrowser/FileBrowser';
-import Main from './Main';
+import MainPage from './MainPage';
 
 import Login from './Login';
 import actions from './actions';
@@ -85,7 +85,7 @@ class App extends Component {
           <div>
             {
               (this.state.loggedIn || Meteor.user() !== null) ?
-                <Main handleLogout={this.handleLogout} />
+                <MainPage handleLogout={this.handleLogout} />
                 : <Login handleLogin={this.handleLogin} />
             }
             {/* <Carousel /> */}

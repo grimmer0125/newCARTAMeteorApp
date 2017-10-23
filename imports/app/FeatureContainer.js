@@ -32,7 +32,7 @@ function saveToLS(key, value) {
   }
 }
 
-class MyFirstGrid extends Component {
+class FeatureContainer extends Component {
   mixins: [PureRenderMixin]
   constructor(props) {
     super(props);
@@ -152,4 +152,4 @@ class MyFirstGrid extends Component {
   }
 }
 
-export default MyFirstGrid;
+export default FeatureContainer;

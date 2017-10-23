@@ -29,7 +29,7 @@ import 'react-contextmenu/public/styles.5bb557.css';
 
 // import actions from './actions';
 
-import MyFirstGrid from './MyFirstGrid';
+import FeatureContainer from './FeatureContainer';
 import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import SideMenu from './SideMenu';
@@ -37,7 +37,7 @@ import Topbar from './Topbar';
 // import Region from './Region';
 import Region from '../region/Region';
 
-class Main extends Component {
+class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -120,7 +120,7 @@ class Main extends Component {
     const midPanel = (
       <div>
         <ContextMenuTrigger id="menu" holdToDisplay={1000}>
-          <MyFirstGrid ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} />
+          <FeatureContainer ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} />
         </ContextMenuTrigger>
         <ContextMenu id="menu">
           <SubMenu title="Layout">
@@ -226,7 +226,7 @@ class Main extends Component {
   }
 }
 
-export default Main;
+export default MainPage;
 
 /* TODO: export function mapDispatchToProps(dispatch)
  return bindActionCreators({

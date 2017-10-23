@@ -109,7 +109,7 @@ Meteor.methods({
         console.log('use specified sessionID to forward,', sessionID);
         client.sendCommand(sessionID, cmd, params);
       } else {
-        console.log('use server knownn session to forwared:', this.connection.id);
+        console.log('use server known session to forwared:', this.connection.id);
         client.sendCommand(this.connection.id, cmd, params);
       }
       return '';

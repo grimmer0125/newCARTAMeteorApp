@@ -1,6 +1,10 @@
 import { Session } from 'meteor/session';
 
-const get = () => Session.get('selfSessionID');
+const get = () => {
+  const session = Session.get('selfSessionID');
+  console.log('SessionManager get:', session);
+  return session;
+};
 const set = sessionID => Session.set('selfSessionID', sessionID);
 
 const useOtherSession = (sessionID) => {
@@ -15,6 +19,8 @@ const getSuitableSession = () => {
   if (otherSession) {
     return otherSession;
   }
+
+  console.log('SessionManager getSuitableSession:', Session.get('selfSessionID'));
 
   return Session.get('selfSessionID');
 };

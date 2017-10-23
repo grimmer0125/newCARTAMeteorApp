@@ -15,7 +15,7 @@ import PlayForward from 'material-ui/svg-icons/av/play-arrow';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItemMUI from 'material-ui/MenuItem';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
-import 'react-contextmenu/public/styles.5bb557.css';
+import 'react-contextmenu/public/styles.css';
 
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';

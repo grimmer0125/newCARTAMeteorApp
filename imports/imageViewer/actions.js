@@ -39,6 +39,7 @@ function setuptImageViewer() {
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
+    console.log('send register ImageViewer');
     Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
       console.log('get command dummy result:', result);
     });

@@ -5,6 +5,7 @@ import { Responses } from '../imports/api/Responses';
 import '../imports/api/FileBrowserDB';
 import '../imports/api/ImageController';
 import '../imports/api/RegionDB';
+import '../imports/api/HistogramDB';
 
 import ChannelClient from '../imports/api/ChannelClient';
 import Commands from '../imports/api/Commands';

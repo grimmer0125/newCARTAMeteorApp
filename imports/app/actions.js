@@ -4,14 +4,16 @@ import SessionManager from '../api/SessionManager';
 import { ImageController } from '../api/ImageController';
 import { FileBrowserDB } from '../api/FileBrowserDB';
 import { RegionDB } from '../api/RegionDB';
+import { HistogramDB } from '../api/HistogramDB';
 import { Responses } from '../api/Responses';
 
 // command response part:
 import { parseFileList, Actions as filebrowserActions } from '../fileBrowser/actions';
 import { parseImageToMongo, parseReigsterViewResp, Actions as imageViewerActions } from '../imageViewer/actions';
 import { Actions as regionActions } from '../region/actions';
-
 import { setupMongoReduxListeners } from '../api/MongoHelper';
+
+import { parseReigsterHistogramResp, Actions as histogramActions } from '../histogram/actions';
 
 import Commands from '../api/Commands';
 
@@ -40,6 +42,10 @@ function turnOnWatching(watchingSessionID) {
     });
     otherSubHandleRegion = Meteor.subscribe('regiondb', SessionManager.getOtherSession(), () => {
       console.log('regiondb subscribed!!!');
+    });
+
+    otherSubHandleHistogram = Meteor.subscribe('histogramdb', SessionManager.getOtherSession(), () => {
+      console.log('histogramdb subscribed!!!');
     });
   };
 }
@@ -78,9 +84,15 @@ function subscribeNonCommandCollections(dispatch) {
   Meteor.subscribe('regiondb', SessionManager.get(), () => {
     console.log('regiondb subscribed!!');
   });
+
+  Meteor.subscribe('histogramdb', SessionManager.get(), () => {
+    console.log('histogramndb subscribed!!');
+  });
+
   setupMongoReduxListeners(ImageController, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
   setupMongoReduxListeners(FileBrowserDB, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
   setupMongoReduxListeners(RegionDB, dispatch, regionActions.REGION_CHANGE);
+  setupMongoReduxListeners(HistogramDB, dispatch, histogramActions.HISTOGRAM_CHANGE);
 }
 
 function handleCommandResponse(resp) {
@@ -96,8 +108,13 @@ function handleCommandResponse(resp) {
     console.log(resp);
     parseImageToMongo(resp.buffer);
   } else if (resp.cmd === Commands.REGISTER_IMAGEVIEWER) {
+    // histogram 跟imageViewer會分不出來 !!!!
+
+    // if (true) {
     console.log('response is REGISTER_IMAGEVIEWER:');
     parseReigsterViewResp(resp.data);
+  } else if (resp.cmd === Commands.GET_DEFAULT_HISTOGRAM_ID) {
+    parseReigsterHistogramResp(resp.data);
   }
 }
 

@@ -10,8 +10,8 @@ const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 // const ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
 const ReactGridLayout = require('react-grid-layout');
 // ResponsiveReactGridLayout = WidthProvider(ResponsiveReactGridLayout);
-import Histogram from './Histogram';
-import Profiler from './Profiler';
+import Histogram from '../histogram/Histogram';
+import Profiler from '../profiler/Profiler';
 // import FileBrowser from '../fileBrowser/FileBrowser';
 
 function getFromLS(key) {

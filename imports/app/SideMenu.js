@@ -18,7 +18,6 @@ export default class SideMenu extends Component {
     super(props);
 
     this.state = {
-      ...this.state,
       width: 56,
       openFiles: false,
       openBrowser: false,

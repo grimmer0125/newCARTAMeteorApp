@@ -103,7 +103,8 @@ function handleCommandResponse(resp) {
 
 function waitForCommandResponses() {
   return (dispatch) => {
-    console.log('waitForCommandResponses');
+    console.log('waitForCommandResponses, reset session to null');
+    SessionManager.set(null);
 
     Meteor.call('getSessionId', (err, sessionID) => {
       console.log('getSessionId return:', sessionID);

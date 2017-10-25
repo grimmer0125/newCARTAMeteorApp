@@ -4,8 +4,6 @@ import SessionManager from '../api/SessionManager';
 import { HistogramDB } from '../api/HistogramDB';
 import Commands from '../api/Commands';
 
-const RESPONSE_DEFAULT_HISTOGRAM_ID = 'RESPONSE_DEFAULT_HISTOGRAM_ID';
-
 // redux part
 const HISTOGRAM_CHANGE = 'HISTOGRAM_CHANGE';
 export const Actions = {
@@ -34,13 +32,13 @@ function setupHistogram() {
   };
 }
 
-export function parseReigsterHistogramResp(result) {
+export function parseReigsterHistogramResp(cmd, result) {
   console.log('grimmer got register histogram-view command response:', result);
   const histogramID = result;
   //  grimmer got register histogram-view command response: /CartaObjects/c145
 
   // step1: save controllerID to mongodb
-  mongoUpsert(HistogramDB, { histogramID }, RESPONSE_DEFAULT_HISTOGRAM_ID);
+  mongoUpsert(HistogramDB, { histogramID }, `Resp_${cmd}`);
 
   // step2
   // const viewName = `${controllerID}/view`;

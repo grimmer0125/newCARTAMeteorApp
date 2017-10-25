@@ -6,15 +6,15 @@ import { mongoUpsert } from '../api/MongoHelper';
 
 const REGION_CHANGE = 'REGION_CHANGE';
 
+export const Actions = {
+  REGION_CHANGE,
+};
+
 const DRAW = 'DRAW';
 const SET_MOUSE = 'SET_MOUSE';
 const SET_SHAPE = 'SET_SHAPE';
 const RESHAPE = 'RESHAPE';
 const DELETE = 'DELETE';
-
-export const Actions = {
-  REGION_CHANGE,
-};
 
 function drawShape(coordX, coordY, width, height) {
   return (dispatch, getState) => {

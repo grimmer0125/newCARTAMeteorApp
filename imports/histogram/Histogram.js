@@ -18,7 +18,7 @@ class Histogram extends Component {
 }
 
 const mapStateToProps = state => ({
-  data: state.histogramDB.data,
+  data: state.HistogramDB.data,
 });
 
 export default connect(mapStateToProps)(Histogram);

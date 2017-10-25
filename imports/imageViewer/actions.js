@@ -5,7 +5,7 @@ import { ImageController } from '../api/ImageController';
 import Commands from '../api/Commands';
 
 // only for saving action history in mongo
-const RESPONSE_REGISTER_IMAGEVIEWER = 'RESPONSE_REGISTER_IMAGEVIEWER';
+// const RESPONSE_REGISTER_IMAGEVIEWER = 'RESPONSE_REGISTER_IMAGEVIEWER';
 const GET_IMAGE = 'GET_IMAGE';
 
 // redux part
@@ -46,12 +46,12 @@ function setuptImageViewer() {
   };
 }
 
-export function parseReigsterViewResp(result) {
+export function parseReigsterViewResp(cmd, result) {
   console.log('grimmer got register view command response');
   const controllerID = result;
 
   // step1: save controllerID to mongodb
-  mongoUpsert(ImageController, { controllerID }, RESPONSE_REGISTER_IMAGEVIEWER);
+  mongoUpsert(ImageController, { controllerID }, `Resp_${cmd}`);
 
   // step2
   const viewName = `${controllerID}/view`;
@@ -77,7 +77,7 @@ export function parseImageToMongo(buffer) {
 }
 export function zoom(zoomCommand) {
   return (dispatch, getState) => {
-    const controllerID = getState().imageController.controllerID;
+    const controllerID = getState().ImageController.controllerID;
     console.log('controllerID: ', controllerID);
     // console.log('STATE: ', getState());
     const cmd = `${controllerID}:newzoom`;

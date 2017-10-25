@@ -12,14 +12,14 @@ import { mongoUpsert } from '../api/MongoHelper';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
-// only for saving action history in mongo
-const SELECT_FILE = 'SELECT_FILE';
-const GET_FILELIST = 'GET_FILELIST';
-const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
-
 export const Actions = {
   FILEBROWSER_CHANGE,
 };
+
+// only for saving action history in mongo
+const SELECT_FILE = 'SELECT_FILE';
+const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
+
 
 // export const fileBrowserCloseAction = createAction(FILEBROWSER_CLOSE);
 
@@ -27,10 +27,10 @@ export const Actions = {
 // Normal Redux way: a action will affect 1 or more than 1 reducers. (compare previous and current diff/payload)logic are there.
 // Current way: logic are how to change mongodb, in AsyncActionCreator, **Action files.
 
-export function parseFileList(data) {
+export function parseFileList(cmd, data) {
   const fileList = { files: data.dir, rootDir: data.name };
 
-  mongoUpsert(FileBrowserDB, fileList, GET_FILELIST);
+  mongoUpsert(FileBrowserDB, fileList, `Resp_${cmd}`);
 }
 
 // export function updateFileBrowserToMongo(Open) {
@@ -89,7 +89,7 @@ function selectFileToOpen(path) {
     const state = getState();
 
     // get controllerID
-    const controllerID = state.imageController.controllerID;
+    const controllerID = state.ImageController.controllerID;
     const parameter = `id:${controllerID},data:${path}`;
     console.log('inject file parameter, become:', parameter);
 

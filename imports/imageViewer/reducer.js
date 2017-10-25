@@ -1,6 +1,6 @@
 import { Actions } from './actions';
 
-const imageController = (state = { imageURL: '' }, action) => {
+const ImageController = (state = { imageURL: '' }, action) => {
   switch (action.type) {
     case Actions.IMAGEVIEWER_CHANGE:
       console.log('INSIDE imageController REDUCER');
@@ -11,7 +11,7 @@ const imageController = (state = { imageURL: '' }, action) => {
 };
 
 const imageReducer = {
-  imageController,
+  ImageController,
 };
 
 export default imageReducer;

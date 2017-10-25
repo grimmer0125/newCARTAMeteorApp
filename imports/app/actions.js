@@ -102,7 +102,7 @@ function handleCommandResponse(resp) {
     console.log('response is REQUEST_FILE_LIST:');
     console.log(resp);
 
-    parseFileList(resp.data);
+    parseFileList(resp.cmd, resp.data);
   } else if (resp.cmd === Commands.SELECT_FILE_TO_OPEN) {
     console.log('response is SELECT_FILE_TO_OPEN(get image):');
     console.log(resp);
@@ -112,9 +112,9 @@ function handleCommandResponse(resp) {
 
     // if (true) {
     console.log('response is REGISTER_IMAGEVIEWER:');
-    parseReigsterViewResp(resp.data);
+    parseReigsterViewResp(resp.cmd, resp.data);
   } else if (resp.cmd === Commands.GET_DEFAULT_HISTOGRAM_ID) {
-    parseReigsterHistogramResp(resp.data);
+    parseReigsterHistogramResp(resp.cmd, resp.data);
   }
 }
 

@@ -6,11 +6,11 @@ import { Actions } from './actions';
 //   // files: [{ name: 'apple.fits', type: 'fits' }],
 // };
 
-const histogramDB = (state = { data: {} }, action) => {
+const HistogramDB = (state = { data: {} }, action) => {
   switch (action.type) {
-    case Actions.FILEBROWSER_CHANGE: {
-      // return action.payload.data;
-      return state;
+    case Actions.HISTOGRAM_CHANGE: {
+      console.log('histogramDB action:', action);
+      return action.payload.data;
     }
     default:
       return state;
@@ -18,7 +18,7 @@ const histogramDB = (state = { data: {} }, action) => {
 };
 
 const histogramReducer = {
-  histogramDB,
+  HistogramDB,
 };
 
 export default histogramReducer;

@@ -65,7 +65,7 @@ class ImageViewer extends Component {
 }
 
 const mapStateToProps = state => ({
-  imageURL: state.imageController.imageURL,
+  imageURL: state.ImageController.imageURL,
 });
 
 export default connect(mapStateToProps)(ImageViewer);

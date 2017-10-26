@@ -32,9 +32,13 @@ function setuptImageViewer() {
 
     console.log('send register ImageViewer');
 
-    api.instance().sendCommand(cmd, params, (resp) => {
-      parseReigsterViewResp(resp);
-    });
+    // api.instance().sendCommand(cmd, params, (resp) => {
+    //   parseReigsterViewResp(resp);
+    // });
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        parseReigsterViewResp(resp);
+      });
   };
 }
 

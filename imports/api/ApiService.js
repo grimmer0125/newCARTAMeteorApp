@@ -11,11 +11,29 @@ export default class ApiService {
     this.time = new Date();
     this.callbacks = [];
 
+    const p1 = new Promise(
+
+      (resolve, reject) => {
+        console.log('try to resolve'); // will show first , then aaa
+        resolve(100);
+      }
+    );
+
+    console.log('in ApiService');
+    // We define what to do when the promise is resolved/fulfilled with the then() call,
+    // and the catch() method defines what to do if the promise is rejected.
+    p1.then((s) => {
+      console.log('p1 then result:', s);
+    });
+
+    console.log('bbb');
+
     return instance;
   }
 
   static instance() {
     if (!instance) {
+      console.log("new ApiService");
       instance = new ApiService();
     }
 
@@ -29,6 +47,30 @@ export default class ApiService {
   }
 
   sendCommand(cmd, params, handler = null) {
+
+
+    const id = cmd + params;
+
+    // return a promise
+    const self = this;
+    // resolver,
+    const p1 = new Promise(
+      ((resolve, reject) => {
+      // this.sendTestRequest(resolve);
+        // self.callback = resolve;
+
+        if (handler) {
+          console.log('send command with handler');
+          self.callbacks.push({ id, callback: handler, resolve });
+        } else {
+          console.log('send command without handler');
+          self.callbacks.push({ id, callback: null, resolve });
+        }
+
+        // save this resolve, then call it when we get the command's response.
+        // do something, e.g. self.socket.emit broadcast messages
+      }));
+
     Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
       if (error) {
         console.log('get meteor command response err:', error);
@@ -37,15 +79,7 @@ export default class ApiService {
       console.log('send a command to meteor server ok:', result);
     });
 
-    const id = cmd + params;
-
-    if (handler) {
-      console.log('send command with handler');
-      this.callbacks.push({ id, callback: handler });
-    } else {
-      console.log('send command without handler');
-      this.callbacks.push({ id, callback: null });
-    }
+    return p1;
   }
 
   consumeResponse(resp) {
@@ -58,7 +92,7 @@ export default class ApiService {
     }
 
     const target = resp.cmd + resp.parameter;
-    let callback = null;
+    let match = null;
     console.log('target:', target);
 
     const len = this.callbacks.length;
@@ -66,7 +100,7 @@ export default class ApiService {
       const obj = this.callbacks[i];
       if (obj.id === target) {
         console.log('bingo');
-        callback = obj.callback;
+        match = obj;
         // this.callbacks.shift();
         this.callbacks.splice(i, 1);
 
@@ -76,9 +110,15 @@ export default class ApiService {
 
     console.log('callback count:', this.callbacks.length);
 
-    if (callback) {
-      console.log('callback:', target);
-      callback(resp);
+    if (match) {
+      console.log('callback:', match.id);
+      if(match.callback) {
+        match.callback(resp);
+      }
+
+      if(match.resolve) {
+        match.resolve(resp);
+      }
     }
   }
 

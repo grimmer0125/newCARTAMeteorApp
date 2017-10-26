@@ -9,7 +9,7 @@ import { Responses } from '../api/Responses';
 
 // command response part:
 import { parseFileList, Actions as filebrowserActions } from '../fileBrowser/actions';
-import { parseImageToMongo, parseReigsterViewResp, Actions as imageViewerActions } from '../imageViewer/actions';
+import { parseImageToMongo, parseSelectFileResp, parseReigsterViewResp, Actions as imageViewerActions } from '../imageViewer/actions';
 import { Actions as regionActions } from '../region/actions';
 import { setupMongoReduxListeners } from '../api/MongoHelper';
 
@@ -104,7 +104,11 @@ function handleCommandResponse(resp) {
 
     parseFileList(resp.cmd, resp.data);
   } else if (resp.cmd === Commands.SELECT_FILE_TO_OPEN) {
-    console.log('response is SELECT_FILE_TO_OPEN(get image):');
+    // console.log(resp);
+    // parseImageToMongo(resp.buffer);
+    parseSelectFileResp();
+  } else if (resp.pushedImage) {
+    console.log('get server pushed image):');
     console.log(resp);
     parseImageToMongo(resp.buffer);
   } else if (resp.cmd === Commands.REGISTER_IMAGEVIEWER) {

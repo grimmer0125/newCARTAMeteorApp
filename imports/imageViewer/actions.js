@@ -63,6 +63,10 @@ export function parseReigsterViewResp(cmd, result) {
   });
 }
 
+export function parseSelectFileResp() {
+  console.log('response is SELECT_FILE_TO_OPEN:, in parseSelectFileResp');
+}
+
 export function parseImageToMongo(buffer) {
   if (buffer) {
     console.log('parseImageToMongo');

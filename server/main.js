@@ -40,7 +40,7 @@ const insertResponse = Meteor.bindEnvironment((resp) => {
 
 function handleCalculationServerImage(sessionID, viewName, buffer) {
   console.log('get image from WebSocket Server, len:', buffer.length);
-  insertResponse({ sessionID, cmd: Commands.SELECT_FILE_TO_OPEN, buffer });
+  insertResponse({ sessionID, pushedImage: true, buffer });
 }
 
 // CARTA Commands Order:

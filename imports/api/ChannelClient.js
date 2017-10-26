@@ -29,6 +29,15 @@ export default class ChannelClient {
     };
     this.socket.onerror = (error) => {
       console.error(`web channel error: ${error}`);
+
+      if (this.socket) {
+        // console.log('terminate socket');
+        this.socket.terminate();
+      }
+      this.socket = null;
+
+      console.log('try to re-connect in 5s');
+      setTimeout(this.createConnection.bind(this), 5000);
     };
 
     this.socket.onopen = () => {

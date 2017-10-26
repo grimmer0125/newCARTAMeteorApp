@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
 import { HistogramDB } from '../api/HistogramDB';
 import Commands from '../api/Commands';
+import api from '../api/ApiService';
 
 // redux part
 const HISTOGRAM_CHANGE = 'HISTOGRAM_CHANGE';
@@ -20,60 +21,30 @@ function setupHistogram() {
     // var regCmd = pathDict.getCommandRegisterView();
     // 'pluginId:ImageViewer,index:0';
 
-    const cmd = Commands.GET_DEFAULT_HISTOGRAM_ID; // '/CartaObjects/ViewManager:registerView';
+    const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
     const params = 'pluginId:Histogram,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
     console.log('send register Histogram');
-    Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
-      console.log('get command dummy result:', result);
+
+    api.instance().sendCommand(cmd, params, (resp) => {
+      console.log('get register histogram result:', resp);
+
+      parseReigsterHistogramResp(resp);
     });
   };
 }
 
-export function parseReigsterHistogramResp(cmd, result) {
-  console.log('grimmer got register histogram-view command response:', result);
-  const histogramID = result;
+export function parseReigsterHistogramResp(resp) {
+  const { cmd, data } = resp;
+  console.log('grimmer got register histogram-view command response:', data);
+  const histogramID = data;
   //  grimmer got register histogram-view command response: /CartaObjects/c145
 
-  // step1: save controllerID to mongodb
+  // save histogramID to mongodb
   mongoUpsert(HistogramDB, { histogramID }, `Resp_${cmd}`);
-
-  // step2
-  // const viewName = `${controllerID}/view`;
-  // const width = 482; // TODO same as the experimental setting in ImageViewer, change later
-  // const height = 477;
-  //
-  // Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
-  //   console.log('get setupViewSize dummy result:', result);
-  // });
 }
-//
-// export function parseImageToMongo(buffer) {
-//   if (buffer) {
-//     console.log('parseImageToMongo');
-//
-//     // const url = `data:image/jpeg;base64,${buffer}`;
-//     console.log('image url string size:', buffer.length);
-//
-//     mongoUpsert(ImageController, { imageURL: buffer }, GET_IMAGE);
-//   } else {
-//     console.log('get dummy image response');
-//   }
-// }
-// export function zoom(zoomCommand) {
-//   return (dispatch, getState) => {
-//     const controllerID = getState().imageController.controllerID;
-//     console.log('controllerID: ', controllerID);
-//     // console.log('STATE: ', getState());
-//     const cmd = `${controllerID}:newzoom`;
-//     const params = zoomCommand;
-//     Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
-//       console.log('get command dummy result:', result);
-//     });
-//   };
-// }
 
 const actions = {
   setupHistogram,

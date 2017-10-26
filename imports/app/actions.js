@@ -8,14 +8,14 @@ import { HistogramDB } from '../api/HistogramDB';
 import { Responses } from '../api/Responses';
 
 // command response part:
-import { parseFileList, Actions as filebrowserActions } from '../fileBrowser/actions';
-import { parseImageToMongo, parseSelectFileResp, parseReigsterViewResp, Actions as imageViewerActions } from '../imageViewer/actions';
+import { Actions as filebrowserActions } from '../fileBrowser/actions';
+import { Actions as imageViewerActions } from '../imageViewer/actions';
 import { Actions as regionActions } from '../region/actions';
 import { setupMongoReduxListeners } from '../api/MongoHelper';
 
-import { parseReigsterHistogramResp, Actions as histogramActions } from '../histogram/actions';
+import { Actions as histogramActions } from '../histogram/actions';
 
-import Commands from '../api/Commands';
+import api from '../api/ApiService';
 
 const GET_SESSIONID = 'GET_SESSIONID';
 
@@ -98,28 +98,7 @@ function subscribeNonCommandCollections(dispatch) {
 function handleCommandResponse(resp) {
   console.log('get response:');
 
-  if (resp.cmd === Commands.REQUEST_FILE_LIST) {
-    console.log('response is REQUEST_FILE_LIST:');
-    console.log(resp);
-
-    parseFileList(resp.cmd, resp.data);
-  } else if (resp.cmd === Commands.SELECT_FILE_TO_OPEN) {
-    // console.log(resp);
-    // parseImageToMongo(resp.buffer);
-    parseSelectFileResp();
-  } else if (resp.pushedImage) {
-    console.log('get server pushed image):');
-    console.log(resp);
-    parseImageToMongo(resp.buffer);
-  } else if (resp.cmd === Commands.REGISTER_IMAGEVIEWER) {
-    // histogram 跟imageViewer會分不出來 !!!!
-
-    // if (true) {
-    console.log('response is REGISTER_IMAGEVIEWER:');
-    parseReigsterViewResp(resp.cmd, resp.data);
-  } else if (resp.cmd === Commands.GET_DEFAULT_HISTOGRAM_ID) {
-    parseReigsterHistogramResp(resp.cmd, resp.data);
-  }
+  api.instance().consumeResponse(resp);
 }
 
 function waitForCommandResponses() {
@@ -174,7 +153,7 @@ function waitForCommandResponses() {
             Responses.remove(newDoc._id);
           // NOTE:
           // 1. Responses.remove({}); // Not permitted. Untrusted code may only remove documents by ID.
-          // 2. tracker way does not need nextTickt to remove. Current osbserveration will throw exception if no tick
+          // 2. tracker way () does not need nextTickt to remove. Current osbserveration will throw exception if no tick
           });
         },
       });

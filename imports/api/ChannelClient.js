@@ -67,10 +67,10 @@ export default class ChannelClient {
         // listen for command results callbacks and always invoke the top callback
         // in the list
         // the command results always arrive in the same order they were sent
-        this.QConnector.jsCommandResultsSignal.connect((sessionID, cmd, result) => {
+        this.QConnector.jsCommandResultsSignal.connect((sessionID, cmd, result, parameter) => {
           try {
             if (this.receiveHandler) {
-              this.receiveHandler(sessionID, cmd, result);
+              this.receiveHandler(sessionID, cmd, result, parameter);
             }
             // if (m_commandCallbacks.length < 1) {
             //   console.warn('Received command results but no callbacks for this!!!');

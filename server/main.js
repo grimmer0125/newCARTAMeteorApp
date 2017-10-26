@@ -51,7 +51,8 @@ function handleCalculationServerImage(sessionID, viewName, buffer) {
 // reset zoom level, c14, -> TODO Not done
 // get image  (real), c14
 
-function handleCalculationServerMessage(sessionID, cmd, result) {
+// sessionID, cmd, data, parameter
+function handleCalculationServerMessage(sessionID, cmd, result, parameter) {
   console.log('get message from WebSocket Server, len:', result.length);
 
   let data = null;
@@ -63,7 +64,7 @@ function handleCalculationServerMessage(sessionID, cmd, result) {
     data = result;
     console.log('the response from cpp -> js is string:', data);
   }
-  insertResponse({ sessionID, cmd, data });
+  insertResponse({ sessionID, cmd, data, parameter });
 }
 
 let client = null;

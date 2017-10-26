@@ -22,3 +22,8 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(Histogram);
+
+
+// import {a, b a, c } from a.js
+//
+// import testtest from a.js

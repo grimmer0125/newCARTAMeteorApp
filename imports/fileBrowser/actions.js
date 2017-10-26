@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { FileBrowserDB } from '../api/FileBrowserDB';
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
+import api from '../api/ApiService';
 
 import { mongoUpsert } from '../api/MongoHelper';
 
@@ -27,11 +28,6 @@ const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 // Normal Redux way: a action will affect 1 or more than 1 reducers. (compare previous and current diff/payload)logic are there.
 // Current way: logic are how to change mongodb, in AsyncActionCreator, **Action files.
 
-export function parseFileList(cmd, data) {
-  const fileList = { files: data.dir, rootDir: data.name };
-
-  mongoUpsert(FileBrowserDB, fileList, `Resp_${cmd}`);
-}
 
 // export function updateFileBrowserToMongo(Open) {
 //   console.log('updateFileBrowserToMongo');
@@ -55,6 +51,13 @@ export function parseFileList(cmd, data) {
 //   };
 // }
 
+function parseFileList(resp) {
+  const { cmd, data } = resp;
+  const fileList = { files: data.dir, rootDir: data.name };
+
+  mongoUpsert(FileBrowserDB, fileList, `Resp_${cmd}`);
+}
+
 function queryServerFileList() {
   return (dispatch, getState) => {
     // 1. send to mongodb to sync UI
@@ -68,8 +71,8 @@ function queryServerFileList() {
 
     // 2. send command if it becomes true.
     // TODO need to send Seesion id ? Server knows client's session. Do we need to check this on server side? (Seesion change case)
-    Meteor.call('sendCommand', Commands.REQUEST_FILE_LIST, params, SessionManager.getSuitableSession(), (error, result) => {
-      console.log('get open file browser result:', result);
+    api.instance().sendCommand(Commands.REQUEST_FILE_LIST, params, (resp) => {
+      parseFileList(resp);
     });
   };
 }
@@ -93,8 +96,8 @@ function selectFileToOpen(path) {
     const parameter = `id:${controllerID},data:${path}`;
     console.log('inject file parameter, become:', parameter);
 
-    Meteor.call('sendCommand', Commands.SELECT_FILE_TO_OPEN, parameter, SessionManager.getSuitableSession(), (error, result) => {
-      console.log('get select file result:', result);
+    api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, parameter, (resp) => {
+      console.log('response is SELECT_FILE_TO_OPEN:', resp);
     });
   };
 }

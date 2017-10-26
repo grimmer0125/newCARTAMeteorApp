@@ -3,9 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
 import { ImageController } from '../api/ImageController';
 import Commands from '../api/Commands';
+import api from '../api/ApiService';
 
 // only for saving action history in mongo
-// const RESPONSE_REGISTER_IMAGEVIEWER = 'RESPONSE_REGISTER_IMAGEVIEWER';
+// const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
 const GET_IMAGE = 'GET_IMAGE';
 
 // redux part
@@ -16,16 +17,6 @@ export const Actions = {
 
 import { mongoUpsert } from '../api/MongoHelper';
 
-// function reflectMongoImageAddToStore(data) {
-//   console.log('reflect image:', data);
-//   return {
-//     type: IMAGEVIEWER_CHANGE,
-//     payload: {
-//       data,
-//     },
-//   };
-// }
-
 function setuptImageViewer() {
   return (dispatch) => {
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
@@ -34,21 +25,25 @@ function setuptImageViewer() {
     // var regCmd = pathDict.getCommandRegisterView();
     // 'pluginId:ImageViewer,index:0';
 
-    const cmd = Commands.REGISTER_IMAGEVIEWER; // '/CartaObjects/ViewManager:registerView';
+    const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
     const params = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
     console.log('send register ImageViewer');
-    Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
-      console.log('get command dummy result:', result);
+
+    api.instance().sendCommand(cmd, params, (resp) => {
+      parseReigsterViewResp(resp);
     });
   };
 }
 
-export function parseReigsterViewResp(cmd, result) {
+export function parseReigsterViewResp(resp) {
+  const { cmd, data } = resp;
+  console.log('get register response:', resp.cmd, 'data:', resp.data);
+
   console.log('grimmer got register view command response');
-  const controllerID = result;
+  const controllerID = data;
 
   // step1: save controllerID to mongodb
   mongoUpsert(ImageController, { controllerID }, `Resp_${cmd}`);
@@ -58,13 +53,7 @@ export function parseReigsterViewResp(cmd, result) {
   const width = 482; // TODO same as the experimental setting in ImageViewer, change later
   const height = 477;
 
-  Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
-    console.log('get setupViewSize dummy result:', result);
-  });
-}
-
-export function parseSelectFileResp() {
-  console.log('response is SELECT_FILE_TO_OPEN:, in parseSelectFileResp');
+  api.instance().setupViewSize(viewName, width, height);
 }
 
 export function parseImageToMongo(buffer) {
@@ -86,8 +75,9 @@ export function zoom(zoomCommand) {
     // console.log('STATE: ', getState());
     const cmd = `${controllerID}:newzoom`;
     const params = zoomCommand;
-    Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
-      console.log('get command dummy result:', result);
+
+    api.instance().sendCommand(cmd, params, (resp) => {
+      console.log('get set zoom result:', resp);
     });
   };
 }

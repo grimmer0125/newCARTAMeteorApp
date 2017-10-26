@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { RegionDB } from '../api/RegionDB';
 import SessionManager from '../api/SessionManager';
 import { mongoUpsert } from '../api/MongoHelper';
+import api from '../api/ApiService';
 
 const REGION_CHANGE = 'REGION_CHANGE';
 
@@ -15,6 +16,13 @@ const SET_MOUSE = 'SET_MOUSE';
 const SET_SHAPE = 'SET_SHAPE';
 const RESHAPE = 'RESHAPE';
 const DELETE = 'DELETE';
+
+function setupRegion() {
+  return (dispatch) => {
+
+    api.instance().setupMongoRedux(dispatch, 'regiondb', RegionDB, REGION_CHANGE);
+  };
+}
 
 function drawShape(coordX, coordY, width, height) {
   return (dispatch, getState) => {
@@ -71,6 +79,7 @@ function reshape(newW, newH, newX, newY, index) {
 }
 
 const actions = {
+  setupRegion,
   drawShape,
   setMouseIsDown,
   setShape,

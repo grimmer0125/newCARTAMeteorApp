@@ -34,19 +34,20 @@ function turnOnWatching(watchingSessionID) {
 
     console.log('use other session:', SessionManager.getOtherSession());
 
-    otherSubHnadleFile = Meteor.subscribe('filebrowserdb', SessionManager.getOtherSession(), () => {
-      console.log('filebrowserdb subscribes OK: !!!', SessionManager.get());
-    });
-    otherSubHandleImage = Meteor.subscribe('imagecontroller', SessionManager.getOtherSession(), () => {
-      console.log('imagecontroller subscribes OK !!!');
-    });
-    otherSubHandleRegion = Meteor.subscribe('regiondb', SessionManager.getOtherSession(), () => {
-      console.log('regiondb subscribed!!!');
-    });
-
-    otherSubHandleHistogram = Meteor.subscribe('histogramdb', SessionManager.getOtherSession(), () => {
-      console.log('histogramdb subscribed!!!');
-    });
+    // otherSubHnadleFile = Meteor.subscribe('filebrowserdb', SessionManager.getOtherSession(), () => {
+    //   console.log('filebrowserdb subscribes OK: !!!', SessionManager.get());
+    // });
+    // otherSubHandleImage = Meteor.subscribe('imagecontroller', SessionManager.getOtherSession(), () => {
+    //   console.log('imagecontroller subscribes OK !!!');
+    // });
+    // otherSubHandleRegion = Meteor.subscribe('regiondb', SessionManager.getOtherSession(), () => {
+    //   console.log('regiondb subscribed!!!');
+    // });
+    //
+    // otherSubHandleHistogram = Meteor.subscribe('histogramdb', SessionManager.getOtherSession(), () => {
+    //   console.log('histogramdb subscribed!!!');
+    // });
+    api.instance().subscribeOtherPeopleDB();
   };
 }
 
@@ -54,45 +55,48 @@ function turnOffWatching() {
   return (dispatch) => {
     SessionManager.stopUsingOtherSession();
 
-    // unsubscribe
-    if (otherSubHnadleFile) {
-      console.log('stop file handle');
-      otherSubHnadleFile.stop();
-    }
+    api.instance().unscribeOtherPeopleDB();
 
-    if (otherSubHandleImage) {
-      console.log('stop image handle');
-      otherSubHandleImage.stop();
-    }
-    if (otherSubHandleRegion) {
-      console.log('stop region handle');
-      otherSubHandleRegion.stop();
-    }
+    // unsubscribe
+    // if (otherSubHnadleFile) {
+    //   console.log('stop file handle');
+    //   otherSubHnadleFile.stop();
+    // }
+    //
+    // if (otherSubHandleImage) {
+    //   console.log('stop image handle');
+    //   otherSubHandleImage.stop();
+    // }
+    // if (otherSubHandleRegion) {
+    //   console.log('stop region handle');
+    //   otherSubHandleRegion.stop();
+    // }
   };
 }
 
 function subscribeNonCommandCollections(dispatch) {
   // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty, subscribing will fail
-  Meteor.subscribe('filebrowserdb', SessionManager.get(), () => {
-    console.log('filebrowserdb subscribes OK: !!!');
-  });
 
-  Meteor.subscribe('imagecontroller', SessionManager.get(), () => {
-    console.log('imagecontroller subscribes OK !!!');
-  });
+  // Meteor.subscribe('filebrowserdb', SessionManager.get(), () => {
+  //   console.log('filebrowserdb subscribes OK: !!!');
+  // });
 
-  Meteor.subscribe('regiondb', SessionManager.get(), () => {
-    console.log('regiondb subscribed!!');
-  });
+  // Meteor.subscribe('imagecontroller', SessionManager.get(), () => {
+  //   console.log('imagecontroller subscribes OK !!!');
+  // });
 
-  Meteor.subscribe('histogramdb', SessionManager.get(), () => {
-    console.log('histogramndb subscribed!!');
-  });
+  // Meteor.subscribe('regiondb', SessionManager.get(), () => {
+  //   console.log('regiondb subscribed!!');
+  // });
 
-  setupMongoReduxListeners(ImageController, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
-  setupMongoReduxListeners(FileBrowserDB, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
-  setupMongoReduxListeners(RegionDB, dispatch, regionActions.REGION_CHANGE);
-  setupMongoReduxListeners(HistogramDB, dispatch, histogramActions.HISTOGRAM_CHANGE);
+  // Meteor.subscribe('histogramdb', SessionManager.get(), () => {
+  //   console.log('histogramndb subscribed!!');
+  // });
+
+  // setupMongoReduxListeners(ImageController, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
+  // setupMongoReduxListeners(FileBrowserDB, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
+  // setupMongoReduxListeners(RegionDB, dispatch, regionActions.REGION_CHANGE);
+  // setupMongoReduxListeners(HistogramDB, dispatch, histogramActions.HISTOGRAM_CHANGE);
 }
 
 function handleCommandResponse(resp) {
@@ -120,7 +124,9 @@ function waitForCommandResponses() {
         console.log('commandResponse subscribes OK !!!');
       });
 
-      subscribeNonCommandCollections(dispatch);
+      api.instance().setupAllDB();
+      // subscribeNonCommandCollections(dispatch);
+
 
 
       // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more

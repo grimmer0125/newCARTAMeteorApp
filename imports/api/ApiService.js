@@ -1,32 +1,34 @@
 import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
+import { setupMongoReduxListeners } from '../api/MongoHelper';
 
 let instance = null;
 
 import { parseImageToMongo } from '../imageViewer/actions';
 
-
 export default class ApiService {
   constructor() {
     this.time = new Date();
     this.callbacks = [];
+    this.dblist = [];
+    this.waitSubDBlist = [];
 
-    const p1 = new Promise(
-
-      (resolve, reject) => {
-        console.log('try to resolve'); // will show first , then aaa
-        resolve(100);
-      }
-    );
-
-    console.log('in ApiService');
-    // We define what to do when the promise is resolved/fulfilled with the then() call,
-    // and the catch() method defines what to do if the promise is rejected.
-    p1.then((s) => {
-      console.log('p1 then result:', s);
-    });
-
-    console.log('bbb');
+    // const p1 = new Promise(
+    //
+    //   (resolve, reject) => {
+    //     console.log('try to resolve'); // will show first , then aaa
+    //     resolve(100);
+    //   }
+    // );
+    //
+    // console.log('in ApiService');
+    // // We define what to do when the promise is resolved/fulfilled with the then() call,
+    // // and the catch() method defines what to do if the promise is rejected.
+    // p1.then((s) => {
+    //   console.log('p1 then result:', s);
+    // });
+    //
+    // console.log('bbb');
 
     return instance;
   }
@@ -46,8 +48,59 @@ export default class ApiService {
     });
   }
 
-  sendCommand(cmd, params, handler = null) {
+  setupMongoRedux(dispatch, mongoSetName, collection, actionType){
 
+    for (const db of this.dblist) {
+      if( db.mongoSetName === mongoSetName) {
+        console.log("do not setup same mongo twice:", db.mongoSetName);
+        return;
+      }
+    }
+
+    setupMongoReduxListeners(collection, dispatch, actionType);
+    if (SessionManager.get()) {
+      console.log("directly setup subscribtioin:", mongoSetName);
+      Meteor.subscribe(mongoSetName, SessionManager.get(), () => {
+        console.log(mongoSetName +' subscribes OK: !!!');
+      });
+    } else {
+      this.waitSubDBlist.push({mongoSetName, collection, actionType});
+    }
+    this.dblist.push({mongoSetName, collection, actionType});
+  }
+
+  subscribeOtherPeopleDB(){
+    for (const db of this.dblist) {
+      db.handler = Meteor.subscribe(db.mongoSetName, SessionManager.getOtherSession(), () => {
+        console.log(db.mongoSetName +' subscribe other people OK: !!!');
+      });
+    }
+  }
+
+  unscribeOtherPeopleDB() {
+    for (const db of this.dblist) {
+      // db.handler = Meteor.subscribe(db.mongoSetName, SessionManager.getOtherSession(), () => {
+      //   console.log(db.mongoSetName +' subscribe other people OK: !!!');
+      // });
+      if(db.handler) {
+        console.log("stop other:", db.mongoSetName);
+        db.handler.stop();
+        db.handler = null;
+      }
+    }
+  }
+
+  setupAllDB(dispatch) {
+    for (const db of this.waitSubDBlist) {
+      Meteor.subscribe(db.mongoSetName, SessionManager.get(), () => {
+        console.log(db.mongoSetName +' subscribes2 OK: !!!');
+      });
+    }
+
+    this.waitSubDBlist.length = 0;
+  }
+
+  sendCommand(cmd, params, handler = null) {
 
     const id = cmd + params;
 

@@ -44,12 +44,13 @@ const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 //   };
 // }
 
-// function prepareFileBrowser() {
-//   return (dispatch) => {
-//     // setupMongoReduxListeners(FileBrowserDB, dispatch, FILEBROWSER_CHANGE);
-//     //    setupMongoReduxListeners(FileBrowserDB, dispatch, receiveUIChange);
-//   };
-// }
+function setupFileBrowser() {
+  return (dispatch) => {
+    api.instance().setupMongoRedux(dispatch, 'filebrowserdb', FileBrowserDB, FILEBROWSER_CHANGE);
+    // setupMongoReduxListeners(FileBrowserDB, dispatch, FILEBROWSER_CHANGE);
+    //    setupMongoReduxListeners(FileBrowserDB, dispatch, receiveUIChange);
+  };
+}
 
 function parseFileList(resp) {
   const { cmd, data } = resp;
@@ -103,7 +104,7 @@ function selectFileToOpen(path) {
 }
 
 const actions = {
-  // prepareFileBrowser,
+  setupFileBrowser,
   // closeFileBrowser,
   queryServerFileList,
   selectFileToOpen,

@@ -84,14 +84,29 @@ class FileBrowser extends Component {
   render() {
     const { browserOpened, files, selectedFile } = this.props;
     const fileItems = files.map((file, index) => {
-      if (file.type === 'fits') {
-        return (
-          // key is needed for ui array operation react, value is for selectableList of material-ui
-          <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="/images/fits.png" />} />
-        );
+      let iconSrc;
+      switch (file.type) {
+        case 'fits':
+          iconSrc = 'fits.png';
+          break;
+        case 'image':
+          iconSrc = 'casa.png';
+          break;
+        case 'miriad':
+          iconSrc = 'miriad.png';
+          break;
+        case 'reg':
+          iconSrc = 'region_ds9.png';
+          break;
+        case 'crtf':
+          iconSrc = 'region_casa.png';
+          break;
+        default:
+          return null;
       }
+
       return (
-        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src="/images/casa.png" />} />
+        <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={`images/${iconSrc}`} />} />
       );
     });
 

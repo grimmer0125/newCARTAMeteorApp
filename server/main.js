@@ -42,7 +42,11 @@ const insertResponse = Meteor.bindEnvironment((resp) => {
 
 function handleCalculationServerImage(sessionID, viewName, buffer) {
   console.log('get image from WebSocket Server, len:', buffer.length);
-  insertResponse({ sessionID, pushedImage: true, buffer });
+  if (buffer.length != 844) {
+    insertResponse({ sessionID, pushedImage: true, buffer });
+  } else {
+    console.log("ignore histogram/profiler jpegs");
+  }
 }
 
 // CARTA Commands Order:

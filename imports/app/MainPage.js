@@ -29,7 +29,7 @@ import 'react-contextmenu/public/styles.css';
 
 // import actions from './actions';
 
-import FeatureContainer from './FeatureContainer';
+import FeatureContainer from '../featureContainer/FeatureContainer';
 import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import SideMenu from './SideMenu';
@@ -47,27 +47,15 @@ class MainPage extends Component {
     };
   }
   // define callback
-  onUpdate = (array) => {
-    console.log('pannelgroup change: ', array);
-    const newWidth = array[1].size;
-    console.log('pannelgroup change2: ', newWidth);
-
-    // console.log('new width:', newWidth);
-    this.setState({ secondColumnWidth: newWidth });
-    // use 2nd column's width
-  }
-  handleClick = (e, data) => {
-    // console.log(`data is ${data.type}`);
-    this.refs.grid.onAddItem(data.type);
-  }
-  handleChange = (event, index, value) => this.setState({ value });
-
-  handleExpand = () => {
-    this.setState({ expand: !this.state.expand });
-  }
-  expandToTrue = () => {
-    this.setState({ expand: true });
-  }
+  // onUpdate = (array) => {
+  //   console.log('pannelgroup change: ', array);
+  //   const newWidth = array[1].size;
+  //   console.log('pannelgroup change2: ', newWidth);
+  //
+  //   // console.log('new width:', newWidth);
+  //   this.setState({ secondColumnWidth: newWidth });
+  //   // use 2nd column's width
+  // }
   onUpdate = (second) => {
     this.setState({ secondColumnWidth: second });
   }
@@ -79,6 +67,17 @@ class MainPage extends Component {
       console.log('WILL LOAD HISTOGRAM SETTING');
     }
     this.setState({ setting: type });
+  }
+  handleClick = (e, data) => {
+    // console.log(`data is ${data.type}`);
+    this.grid.getWrappedInstance().onAddItem(data.type);
+  }
+  handleChange = (event, index, value) => this.setState({ value });
+  handleExpand = () => {
+    this.setState({ expand: !this.state.expand });
+  }
+  expandToTrue = () => {
+    this.setState({ expand: true });
   }
   showSetting = (setting) => {
     console.log('INSIDE SHOWSETTING!!');
@@ -120,7 +119,8 @@ class MainPage extends Component {
     const midPanel = (
       <div>
         <ContextMenuTrigger id="menu" holdToDisplay={1000}>
-          <FeatureContainer ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} />
+          <FeatureContainer ref={(node) => { if (node) this.grid = node; }} width={this.state.secondColumnWidth} setSetting={this.setSetting} />
+          {/* <FeatureContainer ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} /> */}
         </ContextMenuTrigger>
         <ContextMenu id="menu">
           <SubMenu title="Layout">

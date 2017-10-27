@@ -4,7 +4,9 @@ import fileReducer from './fileBrowser/reducer';
 import imageReducer from './imageViewer/reducer';
 import regionReducer from './region/reducer';
 import sessionReducer from './app/reducer';
+import profilerReducer from './profiler/reducer';
 import histogramReducer from './histogram/reducer';
+import featureReducer from './featureContainer/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -12,6 +14,8 @@ const rootReducer = combineReducers({
   ...imageReducer,
   ...regionReducer,
   ...histogramReducer,
+  ...profilerReducer,
+  ...featureReducer,
 });
 
 export default rootReducer;

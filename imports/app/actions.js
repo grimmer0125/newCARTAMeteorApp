@@ -15,6 +15,8 @@ import { Responses } from '../api/Responses';
 //
 // import { Actions as histogramActions } from '../histogram/actions';
 
+import { setupMongoReduxListeners } from '../api/MongoHelper';
+
 import api from '../api/ApiService';
 
 const GET_SESSIONID = 'GET_SESSIONID';
@@ -126,7 +128,6 @@ function waitForCommandResponses() {
 
       api.instance().setupAllDB();
       // subscribeNonCommandCollections(dispatch);
-
 
 
       // TODO use returned handle to turn off observe when client unsubscribes, may not need, think more

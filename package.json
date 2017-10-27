@@ -25,6 +25,7 @@
     "react-konva": "^1.1.4",
     "react-notification-system": "^0.2.15",
     "react-numeric-input": "^2.2.0",
+    "react-plotly.js": "^1.0.2",
     "react-redux": "^5.0.5",
     "react-swipeable-views": "^0.12.8",
     "react-tap-event-plugin": "^2.0.1",

@@ -1,19 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
-import { ImageController } from '../api/ImageController';
-import { FileBrowserDB } from '../api/FileBrowserDB';
-import { RegionDB } from '../api/RegionDB';
-import { HistogramDB } from '../api/HistogramDB';
+// import { ImageController } from '../api/ImageController';
+// import { FileBrowserDB } from '../api/FileBrowserDB';
+// import { RegionDB } from '../api/RegionDB';
+// import { HistogramDB } from '../api/HistogramDB';
 import { Responses } from '../api/Responses';
 
 // command response part:
-import { Actions as filebrowserActions } from '../fileBrowser/actions';
-import { Actions as imageViewerActions } from '../imageViewer/actions';
-import { Actions as regionActions } from '../region/actions';
-import { setupMongoReduxListeners } from '../api/MongoHelper';
-
-import { Actions as histogramActions } from '../histogram/actions';
+// import { Actions as filebrowserActions } from '../fileBrowser/actions';
+// import { Actions as imageViewerActions } from '../imageViewer/actions';
+// import { Actions as regionActions } from '../region/actions';
+// import { setupMongoReduxListeners } from '../api/MongoHelper';
+//
+// import { Actions as histogramActions } from '../histogram/actions';
 
 import api from '../api/ApiService';
 
@@ -23,9 +23,9 @@ export const Actions = {
   GET_SESSIONID,
 };
 
-let otherSubHnadleFile = null;
-let otherSubHandleImage = null;
-let otherSubHandleRegion = null;
+// let otherSubHnadleFile = null;
+// let otherSubHandleImage = null;
+// let otherSubHandleRegion = null;
 
 function turnOnWatching(watchingSessionID) {
   return (dispatch) => {

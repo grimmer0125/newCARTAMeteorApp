@@ -20,7 +20,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 function setuptImageViewer() {
   return (dispatch) => {
 
-    api.instance().setupMongoRedux(dispatch, 'imagecontroller', ImageController, IMAGEVIEWER_CHANGE);
+    api.instance().setupMongoRedux(dispatch, ImageController, IMAGEVIEWER_CHANGE);
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
@@ -45,7 +45,7 @@ function setuptImageViewer() {
   };
 }
 
-export function parseReigsterViewResp(resp) {
+function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
   console.log('get register response:', resp.cmd, 'data:', resp.data);
 
@@ -75,7 +75,7 @@ export function parseImageToMongo(buffer) {
     console.log('get dummy image response');
   }
 }
-export function zoom(zoomCommand) {
+function zoom(zoomCommand) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageController.controllerID;
     console.log('controllerID: ', controllerID);
@@ -90,6 +90,7 @@ export function zoom(zoomCommand) {
 }
 const actions = {
   setuptImageViewer,
+  zoom
 };
 
 export default actions;

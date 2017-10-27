@@ -16,7 +16,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 function setupHistogram() {
   return (dispatch) => {
 
-    api.instance().setupMongoRedux(dispatch, 'histogramdb', HistogramDB, HISTOGRAM_CHANGE);
+    api.instance().setupMongoRedux(dispatch, HistogramDB, HISTOGRAM_CHANGE);
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;

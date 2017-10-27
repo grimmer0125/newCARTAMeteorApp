@@ -46,7 +46,7 @@ const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 
 function setupFileBrowser() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, 'filebrowserdb', FileBrowserDB, FILEBROWSER_CHANGE);
+    api.instance().setupMongoRedux(dispatch, FileBrowserDB, FILEBROWSER_CHANGE);
     // setupMongoReduxListeners(FileBrowserDB, dispatch, FILEBROWSER_CHANGE);
     //    setupMongoReduxListeners(FileBrowserDB, dispatch, receiveUIChange);
   };

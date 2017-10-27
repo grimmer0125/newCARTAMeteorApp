@@ -8,7 +8,7 @@ import Card from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
-import { zoom } from '../imageViewer/actions';
+import imageActions  from '../imageViewer/actions';
 
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
@@ -458,11 +458,11 @@ class Region extends Component {
   }
   zoomIn = () => {
     console.log('ZOOM BUTTON CLICKED');
-    this.props.dispatch(zoom(-2));
+    this.props.dispatch(imageActions.zoom(-2));
   }
   zoomOut = () => {
     console.log('ZOOM BUTTON CLICKED');
-    this.props.dispatch(zoom(2));
+    this.props.dispatch(imageActions.zoom(2));
   }
   render() {
     const { x, y, width, height } = this.props;

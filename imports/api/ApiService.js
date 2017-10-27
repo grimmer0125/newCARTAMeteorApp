@@ -48,7 +48,9 @@ export default class ApiService {
     });
   }
 
-  setupMongoRedux(dispatch, mongoSetName, collection, actionType){
+  setupMongoRedux(dispatch, collection, actionType){
+
+    const mongoSetName = collection.cartaSet;
 
     for (const db of this.dblist) {
       if( db.mongoSetName === mongoSetName) {

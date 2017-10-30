@@ -1,7 +1,7 @@
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 import React, { Component } from 'react';
-import LayoutWrapper from '../example-ui/LayoutWrapper';
+import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -16,6 +16,8 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItemMUI from 'material-ui/MenuItem';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-contextmenu/public/styles.css';
+
+import Animator from '../animator/Animator';
 
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
@@ -105,7 +107,7 @@ class MainPage extends Component {
   render() {
     console.log('IN RENDER');
     const string = 'Image';
-    const label = <div>{string}<br /><sub>image 0</sub></div>;
+    // const label = <div>{string}<br /><sub>image 0</sub></div>;
     const contentStyle = {
       marginLeft: 65,
     };
@@ -171,47 +173,7 @@ class MainPage extends Component {
               </div> */}
               <Region />
               <br />
-              <Paper style={{ width: 482, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
-                <Tabs>
-                  <Tab label={label} />
-                  <Tab label="Channel" />
-                  <Tab label="Stokes" />
-                </Tabs>
-                <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
-                  <DropDownMenu value={1} underlineStyle={{ color: 'black' }}>
-                    <MenuItemMUI value={1} primaryText="Image 0" />
-                  </DropDownMenu>
-                  <p>&#8804; 3</p>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
-                  <div style={{ marginTop: '15px' }}>
-                    <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={0} />
-                  </div>
-                  <div>
-                    <Slider sliderStyle={{ width: '350px', left: '10px', height: '2px' }} step={1} min={0} max={3} value={3} />
-                  </div>
-                  <div style={{ marginLeft: '30px', marginTop: '15px' }}>
-                    <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={0} max={3} value={3} />
-                  </div>
-                </div>
-                <div style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', height: '50%', margin: 'auto', width: '40%' }}>
-                  <IconButton style={{ transform: 'rotate(180deg)' }}>
-                    <PlayForward />
-                  </IconButton>
-                  <IconButton>
-                    <SkipPrev />
-                  </IconButton>
-                  <IconButton>
-                    <Stop />
-                  </IconButton>
-                  <IconButton>
-                    <SkipNext />
-                  </IconButton>
-                  <IconButton>
-                    <PlayForward />
-                  </IconButton>
-                </div>
-              </Paper>
+              <Animator/>
             </div>
             <div>
               {midPanel}

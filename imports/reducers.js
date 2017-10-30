@@ -7,6 +7,7 @@ import sessionReducer from './app/reducer';
 import profilerReducer from './profiler/reducer';
 import histogramReducer from './histogram/reducer';
 import featureReducer from './featureContainer/reducer';
+import animatorReducer from './animator/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   ...histogramReducer,
   ...profilerReducer,
   ...featureReducer,
+  ...animatorReducer,
 });
 
 export default rootReducer;

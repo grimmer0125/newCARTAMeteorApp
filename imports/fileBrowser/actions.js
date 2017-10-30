@@ -13,7 +13,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
-export const Actions = {
+export const ActionType = {
   FILEBROWSER_CHANGE,
 };
 

@@ -1,5 +1,5 @@
 // import { combineReducers } from 'redux';
-import { Actions } from './actions';
+import { ActionType } from './actions';
 
 // const defaultData = {
 //   // rootDir: '/tmp',
@@ -8,7 +8,7 @@ import { Actions } from './actions';
 
 const HistogramDB = (state = { data: {} }, action) => {
   switch (action.type) {
-    case Actions.HISTOGRAM_CHANGE: {
+    case ActionType.HISTOGRAM_CHANGE: {
       console.log('histogramDB action:', action);
       return action.payload.data;
     }

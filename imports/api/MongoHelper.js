@@ -51,19 +51,19 @@ export function setupMongoReduxListeners(collection, dispatch, actionType) {
   });
 }
 
-export function mongoUpsert(collection, newDocObject, actionType) {
-  newDocObject.actionType = actionType;
+export function mongoUpsert(collection, newDocObject, actionSubType) {
+  newDocObject.actionSubType = actionSubType;
   const sessionID = SessionManager.getSuitableSession();
   console.log('sessionID: ', sessionID);
   const docs = collection.find({ sessionID }).fetch();
   console.log('DOCS LENGTH: ', docs.length);
   if (docs.length > 0) {
-    console.log('update collection, action:', actionType);
+    console.log('update collection, action:', actionSubType);
     const doc = docs[0];
     const docID = doc._id;
     collection.update(docID, { $set: newDocObject });
   } else {
-    console.log('insert collection, action:', actionType);
+    console.log('insert collection, action:', actionSubType);
     newDocObject.sessionID = sessionID;
     // const docID =
     collection.insert(newDocObject);

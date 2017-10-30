@@ -7,7 +7,7 @@ import api from '../api/ApiService';
 
 // redux part
 const HISTOGRAM_CHANGE = 'HISTOGRAM_CHANGE';
-export const Actions = {
+export const ActionType = {
   HISTOGRAM_CHANGE,
 };
 

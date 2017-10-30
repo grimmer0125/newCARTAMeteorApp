@@ -7,7 +7,7 @@ import api from '../api/ApiService';
 
 const REGION_CHANGE = 'REGION_CHANGE';
 
-export const Actions = {
+export const ActionType = {
   REGION_CHANGE,
 };
 

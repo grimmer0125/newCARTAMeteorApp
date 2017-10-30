@@ -11,7 +11,7 @@ const GET_IMAGE = 'GET_IMAGE';
 
 // redux part
 const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
-export const Actions = {
+export const ActionType = {
   IMAGEVIEWER_CHANGE,
 };
 

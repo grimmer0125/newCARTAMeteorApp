@@ -3,7 +3,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
 
 const FEATURE_CHANGE = 'FEAUTRE_CHANGE';
-export const Actions = {
+export const ActionType = {
   FEATURE_CHANGE,
 };
 

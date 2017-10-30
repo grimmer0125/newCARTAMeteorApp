@@ -1,8 +1,8 @@
-import { Actions } from './actions';
+import { ActionType } from './actions';
 
 const ProfilerDB = (state = { data: {}, zoomPanData: {} }, action) => {
   switch (action.type) {
-    case Actions.PROFILER_CHANGE: {
+    case ActionType.PROFILER_CHANGE: {
       console.log('profiler action:', action);
       return action.payload.data;
     }

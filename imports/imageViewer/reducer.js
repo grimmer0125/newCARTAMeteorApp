@@ -1,8 +1,8 @@
-import { Actions } from './actions';
+import { ActionType } from './actions';
 
 const ImageController = (state = { imageURL: '' }, action) => {
   switch (action.type) {
-    case Actions.IMAGEVIEWER_CHANGE:
+    case ActionType.IMAGEVIEWER_CHANGE:
       console.log('INSIDE imageController REDUCER');
       return action.payload.data;
     default:

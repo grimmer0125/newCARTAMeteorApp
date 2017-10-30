@@ -19,7 +19,6 @@ import { mongoUpsert } from '../api/MongoHelper';
 
 function setuptImageViewer() {
   return (dispatch) => {
-
     api.instance().setupMongoRedux(dispatch, ImageController, IMAGEVIEWER_CHANGE);
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
@@ -80,7 +79,7 @@ function zoom(zoomCommand) {
     const controllerID = getState().ImageController.controllerID;
     console.log('controllerID: ', controllerID);
     // console.log('STATE: ', getState());
-    const cmd = `${controllerID}:newzoom`;
+    const cmd = `${controllerID}:${Commands.NEW_ZOOM}`;
     const params = zoomCommand;
 
     api.instance().sendCommand(cmd, params, (resp) => {
@@ -90,7 +89,7 @@ function zoom(zoomCommand) {
 }
 const actions = {
   setuptImageViewer,
-  zoom
+  zoom,
 };
 
 export default actions;

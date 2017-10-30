@@ -6,5 +6,5 @@ AnimatorDB.cartaSet = 'animatordb';
 
 if (Meteor.isServer) {
   console.log('publish AnimatorDB on server');
-  Meteor.publish(AnimatorDB.cartaSet , sessionID => HistogramDB.find({ sessionID }));
+  Meteor.publish(AnimatorDB.cartaSet , sessionID => AnimatorDB.find({ sessionID }));
 }

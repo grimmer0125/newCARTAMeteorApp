@@ -6,7 +6,7 @@ import { ActionType } from './actions';
 //   // files: [{ name: 'apple.fits', type: 'fits' }],
 // }; data: {}
 
-const AnimatorDB = (state = {  }, action) => {
+const AnimatorDB = (state = { animatorTypeList: [] }, action) => {
   switch (action.type) {
     case ActionType.ANIMATOR_CHANGE: {
       console.log('animatorDB action:', action);

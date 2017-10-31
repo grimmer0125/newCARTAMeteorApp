@@ -34,7 +34,13 @@ class Animator extends Component {
     this.props.dispatch(actions.changeAnimatorType(value));
   };
 
-  changeFrame = (event, index, value) => { // value = real index.
+  handleSlider = (event, value) => {
+    // this.setState({firstSlider: value});
+    console.log('silder value:', value);
+    this.changeFrame(event, value - 1, value);
+  };
+
+  changeFrame = (event, index, value) => {
     // index: 0 ;value: 1 (we start from 1 for UI)
     console.log('change frame:', event, ';index:', index, ';value:', value);
     const { animatorTypeList } = this.props;
@@ -143,7 +149,7 @@ class Animator extends Component {
               <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameStartUser + 1} />
             </div>
             <div>
-              <Slider sliderStyle={{ width: '350px', left: '10px', height: '2px' }} step={1} min={1} max={currentSelection.frameEnd} value={currentSelection.frame + 1} />
+              <Slider sliderStyle={{ width: '350px', left: '10px', height: '2px' }} step={1} min={1} max={currentSelection.frameEnd} value={currentSelection.frame + 1} onChange={this.handleSlider} />
             </div>
             <div style={{ marginLeft: '30px', marginTop: '15px' }}>
               <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameEndUser + 1} />

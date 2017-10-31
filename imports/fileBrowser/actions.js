@@ -114,21 +114,36 @@ function selectFileToOpen(path) {
         console.log('get animator query type result:', resp);
 
         //  if 1st opend file is 2d file , resp.data will be a empty array
-        //  TODO if empty, simulate to get some data to list 1.current file. on UI
+        //  TODO [Done] if empty, simulate to get some data to list 1.current file. on UI
 
         const promiseList = [];
 
         // const animatorTypes = resp.data;
         animatorTypeList = resp.data;
-        for (const animatorType of animatorTypeList) {
-          const cmd = `${animatorID}:${Commands.GET_ANIMATORTYPE_ID}`;
-          const params = `type:${animatorType.type}`;
 
-          promiseList.push(api.instance().sendCommand(cmd, params));
+        imageTypeExist = false;
+        for (const animatorType of animatorTypeList) {
+          if (animatorType.type == 'Image') {
+            imageTypeExist = true;
+            break;
+          }
         }
-        return Promise.all(promiseList);
+
+        if (imageTypeExist) {
+          for (const animatorType of animatorTypeList) {
+            const cmd = `${animatorID}:${Commands.GET_ANIMATORTYPE_ID}`;
+            const params = `type:${animatorType.type}`;
+
+            promiseList.push(api.instance().sendCommand(cmd, params));
+          }
+          return Promise.all(promiseList);
+        }
+        console.log('no image animatorType !!!');
+        // ~ throw something, ref: https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
+        return Promise.reject('oh, no image animatorType!!');
       })
       .then((values) => {
+        console.log('get all animatorType ids');
         const promiseList = [];
         for (let i = 0; i < values.length; i += 1) {
           const value = values[i];
@@ -156,6 +171,31 @@ function selectFileToOpen(path) {
           // 2. selectionData
           mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
         }
+      })
+      .catch((e) => {
+        console.log('got promise error/reject');
+
+        // fake a image animatorType in animatorTypeList
+        const nameArray = path.split('/');
+        const fileName = nameArray[nameArray.length - 1];
+
+        const animatorType = {
+          type: 'Image',
+          visible: true,
+          selection: {
+            frameStart: 0,
+            frameStartUser: 0,
+            frameEnd: 1,
+            frameEndUser: 0,
+            frame: 0,
+            fileList: [
+              fileName,
+            ],
+          },
+        };
+
+        animatorTypeList.push(animatorType);
+        mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
       });
 
 

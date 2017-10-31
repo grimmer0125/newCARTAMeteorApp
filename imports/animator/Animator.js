@@ -28,16 +28,31 @@ class Animator extends Component {
   }
 
   handleChangeTab = (value) => {
-    this.setState({
-      value,
-    });
+    // this.setState({
+    //   value,
+    // });
+    this.props.dispatch(actions.changeAnimatorType(value));
   };
 
-  changeFrame = (event, index, value) => {
-    console.log('change frame');
+  changeFrame = (event, index, value) => { // value = real index.
+    // index: 0 ;value: 1 (we start from 1 for UI)
+    console.log('change frame:', event, ';index:', index, ';value:', value);
+    const { animatorTypeList } = this.props;
+    const currentAnimatorType = this.props.currentAnimatorType ? this.props.currentAnimatorType : Image;
+
+    if (this.props.animatorTypeList && this.props.animatorTypeList.length > 0) {
+      for (const animatorType of this.props.animatorTypeList) {
+        if (animatorType.type == currentAnimatorType) {
+          console.log('current animatorTypeID:', animatorType.animatorTypeID);
+          this.props.dispatch(actions.changeFrame(animatorType.animatorTypeID, index));
+          return;
+        }
+      }
+    }
   }
 
   render() {
+    const { animatorTypeList } = this.props;
     let imageSelection = {};
     let channelSelection = {};
     let stokesSeleciton = {};
@@ -45,8 +60,8 @@ class Animator extends Component {
     let imageLabel = Image;
     let channelLabel = Channel;
     let stokesLabel = Stokes;
-    if (this.props.animatorTypeList && this.props.animatorTypeList.length > 0) {
-      for (const animatorType of this.props.animatorTypeList) {
+    if (animatorTypeList && animatorTypeList.length > 0) {
+      for (const animatorType of animatorTypeList) {
         console.log('render animatorTypeList');
         let currentIndex = null;
         // if (animatorType.selection.frame) {
@@ -75,10 +90,10 @@ class Animator extends Component {
       }
     }
 
-
     let currentSelection = {};
-    console.log('this animator value:', this.state.value);
-    switch (this.state.value) {
+    const currentAnimatorType = this.props.currentAnimatorType ? this.props.currentAnimatorType : Image;
+    console.log('this animator value:', currentAnimatorType);// this.state.value);
+    switch (currentAnimatorType) {
       case Image:
         currentSelection = imageSelection;
         break;
@@ -105,7 +120,7 @@ class Animator extends Component {
       <div>
         <Paper style={{ width: 482, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
           <Tabs
-            value={this.state.value}
+            value={currentAnimatorType}
             onChange={this.handleChangeTab}
           >
             <Tab label={imageLabel} value={Image} />
@@ -113,7 +128,11 @@ class Animator extends Component {
             <Tab label={stokesLabel} value={Stokes} />
           </Tabs>
           <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
-            <DropDownMenu value={currentSelection.frame + 1} underlineStyle={{ color: 'black' }} onChange={this.changeFrame}>
+            <DropDownMenu
+              value={currentSelection.frame + 1}
+              underlineStyle={{ color: 'black' }}
+              onChange={this.changeFrame}
+            >
               {/* <MenuItem value={1} primaryText="Image 0" /> */}
               {menuItems}
             </DropDownMenu>
@@ -155,6 +174,7 @@ class Animator extends Component {
 
 const mapStateToProps = state => ({
   animatorTypeList: state.AnimatorDB.animatorTypeList,
+  currentAnimatorType: state.AnimatorDB.currentAnimatorType,
 });
 
 export default connect(mapStateToProps)(Animator);

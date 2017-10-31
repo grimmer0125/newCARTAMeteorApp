@@ -50,7 +50,11 @@ class Animator extends Component {
       for (const animatorType of this.props.animatorTypeList) {
         if (animatorType.type == currentAnimatorType) {
           console.log('current animatorTypeID:', animatorType.animatorTypeID);
-          this.props.dispatch(actions.changeFrame(animatorType.animatorTypeID, index));
+          if (animatorType.type == Image) {
+            this.props.dispatch(actions.changeImageFrame(animatorType.animatorTypeID, index));
+          } else {
+            this.props.dispatch(actions.changeNonImageFrame(animatorType, index));
+          }
           return;
         }
       }

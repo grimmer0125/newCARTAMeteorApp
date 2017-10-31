@@ -165,14 +165,48 @@ export function updateAnimatorAfterSelectFile(animatorID, fileName) {
     });
 }
 
-function changeFrame(animatorTypeID, newFrameIndex) {
+function changeNonImageFrame(animatorType, newFrameIndex) {
+  return (dispatch, getState) => {
+    // const state = getState().AnimatorDB;
+    const animatorTypeID = animatorType.animatorTypeID;
+    const animatorTypeList = getState().AnimatorDB.animatorTypeList;
+    const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
+    const params = newFrameIndex;
+
+    console.log('changeNonImageFrame');
+
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        console.log('get changeFrame result:', resp);
+        // mongoUpsert(AnimatorDB, { animatorID: resp.data }, `Resp_${cmd}`);
+        // return requestAllSelectionData(animatorTypeList);
+        if (resp.data && resp.data.indexOf('Animator index must be a valid integer')) {
+          console.log('get changeFrame fail');
+        } else {
+          console.log('get changeFrame ok');
+          animatorType.selection.frame = newFrameIndex;
+          mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
+        }
+      })
+      // .then(values =>
+      //   receiveAllSelectionData(animatorTypeList, values),
+      // )
+      .catch((e) => {
+        console.log('change Non-Image frame catch');
+
+        // handleAnimatorError(animatorTypeList, fileName);
+      });
+  };
+}
+
+function changeImageFrame(animatorTypeID, newFrameIndex) {
   return (dispatch, getState) => {
     // const state = getState().AnimatorDB;
     const animatorTypeList = getState().AnimatorDB.animatorTypeList;
     const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
     const params = newFrameIndex;
 
-    console.log('changeFrame');
+    console.log('changeImageFrame');
 
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
@@ -184,7 +218,7 @@ function changeFrame(animatorTypeID, newFrameIndex) {
         receiveAllSelectionData(animatorTypeList, values),
       )
       .catch((e) => {
-        console.log('change frame catch');
+        console.log('change Image frame catch');
 
         // handleAnimatorError(animatorTypeList, fileName);
       });
@@ -193,7 +227,8 @@ function changeFrame(animatorTypeID, newFrameIndex) {
 
 const actions = {
   setupAnimator,
-  changeFrame,
+  changeImageFrame,
+  changeNonImageFrame,
   changeAnimatorType,
 };
 

@@ -1,21 +1,9 @@
 import { ProfilerDB } from '../api/ProfilerDB';
 import { mongoUpsert } from '../api/MongoHelper';
-import api from '../api/ApiService';
-
-const PROFILER_CHANGE = 'PROFILER_CHANGE';
-
-export const Actions = {
-  PROFILER_CHANGE,
-};
 
 const SET_HOVER = 'SET_HOVER';
 const ZOOM_PAN = 'ZOOM_PAN';
 
-function setupProfiler() {
-  return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
-  };
-}
 function onHover(data) {
   return (dispatch, getState) => {
     const val = { curveNumber: data.points[0].curveNumber, pointNumber: data.points[0].pointNumber };
@@ -45,7 +33,6 @@ function onZoomPan(data) {
   };
 }
 const actions = {
-  setupProfiler,
   onHover,
   onZoomPan,
 };

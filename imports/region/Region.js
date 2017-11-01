@@ -8,7 +8,7 @@ import Card from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
-import imageActions  from '../imageViewer/actions';
+import imageActions from '../imageViewer/actions';
 
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
@@ -137,6 +137,7 @@ class Region extends Component {
           y={this.flipY ? item.y + item.h : item.y}
           stroke="#666"
           fill="#ddd"
+          // fill="#7CFC00"
           strokeWidth={2}
           radius={8}
           draggable
@@ -145,6 +146,7 @@ class Region extends Component {
               this.regions[item.key].topLeft = node;
               this.regions[item.key].topLeft.on('dragmove', () => {
                 const bottomLeftAttrs = this.regions[item.key].bottomLeft.getAttrs();
+                // const bottomRightAttrs = this.regions[item.key].bottomRight.getAttrs();
                 const topRightAttrs = this.regions[item.key].topRight.getAttrs();
                 let itemX = 0;
                 let itemY = 0;
@@ -165,20 +167,24 @@ class Region extends Component {
                 let newW = Math.abs((itemX + itemW) - x);
                 let newH = Math.abs((itemY + itemH) - y);
                 // flip to bottom left
-                if (bottomLeftAttrs.y < y && topRightAttrs.x > x) {
+                if (bottomLeftAttrs.y <= y && topRightAttrs.x >= x) {
                   if (!this.flipY) this.flipY = true;
                   if (this.flipX) this.flipX = false;
-                  newH = Math.abs(itemH - ((itemY + itemH) - y));
-                  // newH = Math.abs(itemY - y);
+                  // this.flipY = true;
+                  // this.flipX = false;
+                  // newH = Math.abs(itemH - ((itemY + itemH) - y));
+                  newH = Math.abs(y - bottomLeftAttrs.y);
                   this.reshape(newW, newH, x, itemY, i);
-                } else if (topRightAttrs.x < x && bottomLeftAttrs.y > y) {
+                  // const v = bottomLeftAttrs.y;
+                  // this.reshape(newW, newH, itemX, v, i);
+                } else if (topRightAttrs.x <= x && bottomLeftAttrs.y >= y) {
                   // flip to top right
                   if (!this.flipX) this.flipX = true;
                   if (this.flipY) this.flipY = false;
-                  // newW = Math.abs(x - topRightAttrs.x);
-                  newW = Math.abs(itemW - ((itemX + itemW) - x));
+                  // newW = Math.abs(itemW - ((itemX + itemW) - x));
+                  newW = Math.abs(x - topRightAttrs.x);
                   this.reshape(newW, newH, itemX, y, i);
-                  // this.reshape(newW, newH, topRightAttrs.x, y, i);
+                  // this.reshape(newW, newH, itemX + itemW, itemY, i);
                 }
                 // should be bottomRight
                 else if (bottomLeftAttrs.y <= y && topRightAttrs.x <= x) {
@@ -229,15 +235,14 @@ class Region extends Component {
                 const y = this.regions[item.key].topRight.getAttrs().y;
                 let newW = Math.abs(itemW - ((itemX + itemW) - x));
                 let newH = Math.abs((itemY + itemH) - y);
-
                 // flip to bottom right
-                if (bottomRightAttrs.y < y && topLeftAttrs.x < x) {
+                if (bottomRightAttrs.y <= y && topLeftAttrs.x <= x) {
                   if (!this.flipY) this.flipY = true;
                   if (this.flipX) this.flipX = false;
                   // newH = Math.abs(y - itemY);
                   newH = Math.abs(y - bottomRightAttrs.y);
                   this.reshape(newW, newH, itemX, itemY, i);
-                } else if (topLeftAttrs.x > x && bottomRightAttrs.y > y) {
+                } else if (topLeftAttrs.x >= x && bottomRightAttrs.y >= y) {
                   // flip to top left
                   if (!this.flipX) this.flipX = true;
                   if (this.flipY) this.flipY = false;
@@ -265,6 +270,7 @@ class Region extends Component {
           x={this.flipX ? item.x + item.w : item.x}
           y={this.flipY ? item.y : item.y + item.h}
           stroke="#666"
+          // fill="#FFFF00"
           fill="#ddd"
           strokeWidth={2}
           radius={8}
@@ -274,6 +280,7 @@ class Region extends Component {
               this.regions[item.key].bottomLeft = node;
               this.regions[item.key].bottomLeft.on('dragmove', () => {
                 const topLeftAttrs = this.regions[item.key].topLeft.getAttrs();
+                const topRightAttrs = this.regions[item.key].topRight.getAttrs();
                 const bottomRightAttrs = this.regions[item.key].bottomRight.getAttrs();
                 let itemX = 0;
                 let itemY = 0;
@@ -294,20 +301,20 @@ class Region extends Component {
                 let newW = Math.abs((itemX + itemW) - x);
                 let newH = Math.abs(itemH - ((itemY + itemH) - y));
                 // flip to top left
-                if (topLeftAttrs.y > y && bottomRightAttrs.x > x) {
+                if (topLeftAttrs.y >= y && bottomRightAttrs.x >= x) {
                   if (!this.flipY) this.flipY = true;
                   if (this.flipX) this.flipX = false;
                   newH = Math.abs((itemY + itemH) - y);
                   // newH = Math.abs(itemY - y);
                   this.reshape(newW, newH, x, y, i);
-                } else if (bottomRightAttrs.x < x && topLeftAttrs.y < y) {
+                } else if (bottomRightAttrs.x <= x && topLeftAttrs.y <= y) {
                   // flip to bottom right
                   if (!this.flipX) this.flipX = true;
                   if (this.flipY) this.flipY = false;
                   newW = Math.abs(itemW - ((itemX + itemW) - x));
                   // newW = Math.abs(x - bottomRightAttrs.x);
-                  // this.reshape(newW, newH, bottomRightAttrs.x, itemY, i);
-                  this.reshape(newW, newH, itemX, itemY, i);
+                  // this.reshape(newW, newH, itemX, itemY, i);
+                  this.reshape(newW, newH, topRightAttrs.x, topRightAttrs.y, i);
                 }
                 // should be topRight
                 else if (topLeftAttrs.y >= y && bottomRightAttrs.x <= x) {
@@ -331,6 +338,7 @@ class Region extends Component {
           y={this.flipY ? item.y : item.y + item.h}
           stroke="#666"
           fill="#ddd"
+          // fill="#9400D3"
           strokeWidth={2}
           radius={8}
           draggable
@@ -359,15 +367,16 @@ class Region extends Component {
                 // const newH = Math.abs(itemH - ((itemY + itemH) - y));
                 let newH = Math.abs(y - itemY);
                 let newW = Math.abs(itemW - ((itemX + itemW) - x));
+                // if (this.bottomRight) {
                 // flip to top right
-                if (topRightAttrs.y > y && bottomLeftAttrs.x < x) {
+                if (topRightAttrs.y >= y && bottomLeftAttrs.x <= x) {
                   if (!this.flipY) this.flipY = true;
                   if (this.flipX) this.flipX = false;
                   // topRight height calc
                   newH = Math.abs((itemY + itemH) - y);
                   // newH = Math.abs(topRightAttrs.y - y);
                   this.reshape(newW, newH, itemX, y, i);
-                } else if (bottomLeftAttrs.x > x && topRightAttrs.y < y) {
+                } else if (bottomLeftAttrs.x >= x && topRightAttrs.y <= y) {
                   // flip to bottom left
                   if (!this.flipX) this.flipX = true;
                   if (this.flipY) this.flipY = false;
@@ -479,7 +488,7 @@ class Region extends Component {
     );
     return (
       <div>
-        <div ref={(node) => { this.div = node; }}>
+        <div ref={(node) => { this.div = node; }} style={{ position: 'relative' }}>
           <Stage
             id="stage"
             width={482}
@@ -519,7 +528,7 @@ class Region extends Component {
               {this.props.regionArray ? this.props.regionArray.map(item => this.addAnchor(item)) : false}
             </Layer>
           </Stage>
-          <Card style={{ width: '24px' }} >
+          <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
             <button className="zoom" style={{ width: '24px' }}>
               <img style={{ width: '12px', height: '12px' }} src="/images/pan.png" alt="" />
             </button>

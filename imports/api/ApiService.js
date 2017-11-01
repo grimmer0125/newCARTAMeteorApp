@@ -35,7 +35,7 @@ export default class ApiService {
 
   static instance() {
     if (!instance) {
-      console.log("new ApiService");
+      console.log('new ApiService');
       instance = new ApiService();
     }
 
@@ -48,33 +48,32 @@ export default class ApiService {
     });
   }
 
-  setupMongoRedux(dispatch, collection, actionType){
-
+  setupMongoRedux(dispatch, collection, actionType) {
     const mongoSetName = collection.cartaSet;
 
     for (const db of this.dblist) {
-      if( db.mongoSetName === mongoSetName) {
-        console.log("do not setup same mongo twice:", db.mongoSetName);
+      if (db.mongoSetName === mongoSetName) {
+        console.log('do not setup same mongo twice:', db.mongoSetName);
         return;
       }
     }
 
     setupMongoReduxListeners(collection, dispatch, actionType);
     if (SessionManager.get()) {
-      console.log("directly setup subscribtioin:", mongoSetName);
+      console.log('directly setup subscribtioin:', mongoSetName);
       Meteor.subscribe(mongoSetName, SessionManager.get(), () => {
-        console.log(mongoSetName +' subscribes OK: !!!');
+        console.log(`${mongoSetName} subscribes OK: !!!`);
       });
     } else {
-      this.waitSubDBlist.push({mongoSetName, collection, actionType});
+      this.waitSubDBlist.push({ mongoSetName, collection, actionType });
     }
-    this.dblist.push({mongoSetName, collection, actionType});
+    this.dblist.push({ mongoSetName, collection, actionType });
   }
 
-  subscribeOtherPeopleDB(){
+  subscribeOtherPeopleDB() {
     for (const db of this.dblist) {
       db.handler = Meteor.subscribe(db.mongoSetName, SessionManager.getOtherSession(), () => {
-        console.log(db.mongoSetName +' subscribe other people OK: !!!');
+        console.log(`${db.mongoSetName} subscribe other people OK: !!!`);
       });
     }
   }
@@ -84,8 +83,8 @@ export default class ApiService {
       // db.handler = Meteor.subscribe(db.mongoSetName, SessionManager.getOtherSession(), () => {
       //   console.log(db.mongoSetName +' subscribe other people OK: !!!');
       // });
-      if(db.handler) {
-        console.log("stop other:", db.mongoSetName);
+      if (db.handler) {
+        console.log('stop other:', db.mongoSetName);
         db.handler.stop();
         db.handler = null;
       }
@@ -95,7 +94,7 @@ export default class ApiService {
   setupAllDB(dispatch) {
     for (const db of this.waitSubDBlist) {
       Meteor.subscribe(db.mongoSetName, SessionManager.get(), () => {
-        console.log(db.mongoSetName +' subscribes2 OK: !!!');
+        console.log(`${db.mongoSetName} subscribes2 OK: !!!`);
       });
     }
 
@@ -103,7 +102,6 @@ export default class ApiService {
   }
 
   sendCommand(cmd, params, handler = null) {
-
     const id = cmd + params;
 
     // return a promise
@@ -167,11 +165,11 @@ export default class ApiService {
 
     if (match) {
       console.log('callback:', match.id);
-      if(match.callback) {
+      if (match.callback) {
         match.callback(resp);
       }
 
-      if(match.resolve) {
+      if (match.resolve) {
         match.resolve(resp);
       }
     }

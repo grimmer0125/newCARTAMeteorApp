@@ -1,16 +1,26 @@
 import { FeatureContainerDB } from '../api/FeatureContainerDB';
+import { ProfilerDB } from '../api/ProfilerDB';
 import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
 
 const FEATURE_CHANGE = 'FEAUTRE_CHANGE';
+const PROFILER_CHANGE = 'PROFILER_CHANGE';
+
 export const Actions = {
   FEATURE_CHANGE,
+  PROFILER_CHANGE,
 };
 
 const ADD_ITEM = 'ADD_ITEM';
 const REMOVE_ITEM = 'REMOVE_ITEM';
+const SET_DRAG = 'SET_DRAG';
 const _ = require('lodash');
 
+function setupProfiler() {
+  return (dispatch) => {
+    api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
+  };
+}
 function setupFeatureContainer() {
   return (dispatch) => {
     api.instance().setupMongoRedux(dispatch, FeatureContainerDB, FEATURE_CHANGE);
@@ -50,10 +60,21 @@ function onRemoveItemDB(key) {
     mongoUpsert(FeatureContainerDB, { items: _.reject(stateTree.items, { i: key }) }, REMOVE_ITEM);
   };
 }
+function onDragStopDB(event) {
+  return (dispatch, getState) => {
+    const stateTree = getState().FeatureContainerDB;
+    for (let i = 0; i < event.length; i++) {
+      stateTree.items[i].y = event[i].y;
+    }
+    mongoUpsert(FeatureContainerDB, { items: stateTree.items }, SET_DRAG);
+  };
+}
 const actions = {
   onAddItemDB,
   onRemoveItemDB,
   setupFeatureContainer,
+  onDragStopDB,
+  setupProfiler,
 };
 
 export default actions;

@@ -85,6 +85,7 @@ class MainPage extends Component {
     if (setting) {
       if (setting === 'Profiler') return <ProfilerSettings />;
       else if (setting === 'Histogram') return <HistogramSettings />;
+      return 0;
     }
   }
   drage2ndeHandler = (first, second, third) => {
@@ -118,12 +119,12 @@ class MainPage extends Component {
     const setting = this.state.setting;
     const midPanel = (
       <div>
-        <ContextMenuTrigger id="menu" holdToDisplay={1000}>
+        <ContextMenuTrigger id="menu">
           <FeatureContainer ref={(node) => { if (node) this.grid = node; }} width={this.state.secondColumnWidth} setSetting={this.setSetting} />
           {/* <FeatureContainer ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} /> */}
         </ContextMenuTrigger>
         <ContextMenu id="menu">
-          <SubMenu title="Layout">
+          <SubMenu title="Layout" hoverDelay={100}>
             <MenuItem onClick={this.handleClick} data={{ type: 'Profiler' }}>Profiler</MenuItem>
             <MenuItem onClick={this.handleClick} data={{ type: 'Histogram' }}>Histogram</MenuItem>
             {/* <MenuItem onClick={this.handleClick} data={{ type: 'FileBrowser' }}>File Browser</MenuItem> */}
@@ -216,7 +217,7 @@ class MainPage extends Component {
             <div>
               {midPanel}
             </div>
-            <div style={{ backgroundColor: 'blue', height: 200 }}>
+            <div>
               {this.showSetting(setting)}
             </div>
           </LayoutWrapper>

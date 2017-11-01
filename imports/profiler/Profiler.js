@@ -6,7 +6,6 @@ class Profiler extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.props.dispatch(actions.setupProfiler());
     // this.getRef = this.getRef.bind(this);
   }
   componentDidMount = () => {
@@ -15,11 +14,11 @@ class Profiler extends Component {
       y: [10, 15, 13, 17],
       type: 'scatter',
     };
-    // const layout = {
-    //   height: this.props.width,
-    // };
+    const layout = {
+      height: 395,
+    };
     const data = [trace1];
-    Plotly.newPlot(this.el, data);
+    Plotly.newPlot(this.el, data, layout);
     this.el.on('plotly_hover', (e) => {
       // console.log('hover event: ', e);
       this.props.dispatch(actions.onHover(e));
@@ -35,7 +34,6 @@ class Profiler extends Component {
     });
   }
   componentWillReceiveProps = (nextProps) => {
-    console.log('RECEIVE PROPS');
     if (nextProps.width) {
       const layout = {
         width: nextProps.width - 20,

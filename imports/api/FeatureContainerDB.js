@@ -6,5 +6,5 @@ FeatureContainerDB.cartaSet = 'featureContainerdb';
 
 if (Meteor.isServer) {
   console.log('publish FeatureContainerDB on server');
-  Meteor.publish('featureContainerdb', sessionID => FeatureContainerDB.find({ sessionID }));
+  Meteor.publish(FeatureContainerDB.cartaSet, sessionID => FeatureContainerDB.find({ sessionID }));
 }

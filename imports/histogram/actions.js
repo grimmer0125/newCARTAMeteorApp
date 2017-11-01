@@ -5,17 +5,15 @@ import { HistogramDB } from '../api/HistogramDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
-// redux part
+import { mongoUpsert } from '../api/MongoHelper';
+
 const HISTOGRAM_CHANGE = 'HISTOGRAM_CHANGE';
+
 export const Actions = {
   HISTOGRAM_CHANGE,
 };
-
-import { mongoUpsert } from '../api/MongoHelper';
-
 function setupHistogram() {
   return (dispatch) => {
-
     api.instance().setupMongoRedux(dispatch, HistogramDB, HISTOGRAM_CHANGE);
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js

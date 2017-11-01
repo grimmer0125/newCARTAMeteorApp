@@ -1,4 +1,4 @@
-import { Actions } from './actions';
+import { Actions } from '../featureContainer/actions';
 
 const ProfilerDB = (state = { data: {}, zoomPanData: {} }, action) => {
   switch (action.type) {

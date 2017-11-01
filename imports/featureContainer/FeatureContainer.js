@@ -36,11 +36,8 @@ class FeatureContainer extends Component {
   mixins: [PureRenderMixin]
   constructor(props) {
     super(props);
-    this.state = {
-      items: [],
-      newCounter: 0,
-    };
     this.props.dispatch(actions.setupFeatureContainer());
+    this.props.dispatch(actions.setupProfiler());
     // layouts: JSON.parse(JSON.stringify(originalLayouts)),
   }
   getDefaultProps() {
@@ -67,22 +64,9 @@ class FeatureContainer extends Component {
   onRemoveItem(i) {
     // this.setState({ items: _.reject(this.state.items, { i }) });
     this.props.dispatch(actions.onRemoveItemDB(i));
+    this.setSetting('');
   }
   onAddItem = (data) => {
-    // this.setState({
-    // //   // Add a new item. It must have a unique key!
-    //   items: this.state.items.concat({
-    //     i: `n${this.state.newCounter}`,
-    //     x: 0,
-    //     y: Infinity, // puts it at the bottom
-    //     w: 1,
-    //     h: 2,
-    //     type: data,
-    //     isResizable: false,
-    //   }),
-    //   // Increment the counter to ensure key is always unique.
-    //   newCounter: this.state.newCounter + 1,
-    // });
     this.props.dispatch(actions.onAddItemDB(data));
   }
   setSetting(type) {
@@ -98,7 +82,6 @@ class FeatureContainer extends Component {
     }
   }
   createElement = (el) => {
-    console.log('in createElement, state:', this.state);
     const removeStyle = {
       position: 'absolute',
       right: '2px',
@@ -107,7 +90,7 @@ class FeatureContainer extends Component {
     };
     // const i = el.add ? '+' : el.i;
     return (
-      <div key={el.i} data-grid={el} style={{ backgroundColor: 'grey' }}>
+      <div key={el.i} data-grid={el} style={{ backgroundColor: 'white' }}>
         {/* {el.add ?
           <span className="add text" onClick={this.onAddItem}>Add +</span>
           : <span className="text">{i}</span>} */}
@@ -124,6 +107,7 @@ class FeatureContainer extends Component {
     // } else {
     //   console.log("this.state does not exist in render");
     // }
+    console.log('RECEIVE PROPS');
     const width = this.props.width;
     return (
       <div style={{ minHeight: '100vh' }}>
@@ -136,7 +120,12 @@ class FeatureContainer extends Component {
           onBreakpointChange={this.onBreakpointChange}
           cols={1}
           width={width}
-          onDrag={(e) => { console.log('drag event: ', e); }}
+          rowHeight={200}
+          layout={this.props.items}
+          onDragStop={(e) => {
+            console.log();
+            this.props.dispatch(actions.onDragStopDB(e));
+          }}
         >
           {/* {_.map(this.state.items, (s)=>this.createElement(s))} */}
           {/* {this.state.items.map(this.createElement)} */}

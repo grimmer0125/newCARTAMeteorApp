@@ -6,5 +6,5 @@ RegionDB.cartaSet = 'regiondb';
 
 if (Meteor.isServer) {
   console.log('publish regionDB on server');
-  Meteor.publish('regiondb', sessionID => RegionDB.find({ sessionID }));
+  Meteor.publish(RegionDB.cartaSet, sessionID => RegionDB.find({ sessionID }));
 }

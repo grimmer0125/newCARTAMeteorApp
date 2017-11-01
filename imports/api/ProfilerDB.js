@@ -6,5 +6,5 @@ ProfilerDB.cartaSet = 'profilerdb';
 
 if (Meteor.isServer) {
   console.log('publish profilerDB on server');
-  Meteor.publish('profilerdb', sessionID => ProfilerDB.find({ sessionID }));
+  Meteor.publish(ProfilerDB.cartaSet, sessionID => ProfilerDB.find({ sessionID }));
 }

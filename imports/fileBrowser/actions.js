@@ -5,15 +5,18 @@ import { Meteor } from 'meteor/meteor';
 
 // import '../api/methods';
 import { FileBrowserDB } from '../api/FileBrowserDB';
+import { AnimatorDB } from '../api/AnimatorDB';
+
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
 import { mongoUpsert } from '../api/MongoHelper';
+import { updateAnimatorAfterSelectFile } from '../animator/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
-export const Actions = {
+export const ActionType = {
   FILEBROWSER_CHANGE,
 };
 
@@ -92,16 +95,52 @@ function selectFileToOpen(path) {
   return (dispatch, getState) => {
     const state = getState();
 
+    const nameArray = path.split('/');
+    const fileName = nameArray[nameArray.length - 1];
+
     // get controllerID
     const controllerID = state.ImageController.controllerID;
     const parameter = `id:${controllerID},data:${path}`;
     console.log('inject file parameter, become:', parameter);
 
-    api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, parameter, (resp) => {
-      console.log('response is SELECT_FILE_TO_OPEN:', resp);
-    });
+    const animatorID = state.AnimatorDB.animatorID;
+    const animatorTypeList = [];
+    api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, parameter)
+      .then((resp) => {
+        console.log('response is SELECT_FILE_TO_OPEN:', resp);
+
+        updateAnimatorAfterSelectFile(animatorID, fileName);
+        // updateAnimatorAfterSelectFile
+        // return requestAnimatorTypes(animatorID);
+      });
+    // .then((resp) => {
+    //   console.log('get animator query type result:', resp);
+    //   animatorTypeList = resp.data;
+    //   return requestAnimatorTypeIDs(animatorTypeList, animatorID);
+    // })
+    // .then((values) => {
+    //   console.log('get all animatorType ids');
+    //   const promiseList = [];
+    //   for (let i = 0; i < values.length; i += 1) {
+    //     const value = values[i];
+    //     animatorTypeList[i].animatorTypeID = value.data;
+    //   }
+    //   return requestAllSelectionData(animatorTypeList);
+    // })
+    // .then(values =>
+    //   receiveAllSelectionData(animatorTypeList, values),
+    // )
+    // .catch((e) => {
+    //   handleAnimatorError(animatorTypeList, fileName);
+    // });
   };
 }
+
+export function queryAnimatorTypes() {
+
+
+}
+
 
 const actions = {
   setupFileBrowser,

@@ -1,8 +1,8 @@
-import { Actions } from './actions';
+import { ActionType } from './actions';
 
 const FeatureContainerDB = (state = { items: [] }, action) => {
   switch (action.type) {
-    case Actions.FEATURE_CHANGE: {
+    case ActionType.FEATURE_CHANGE: {
       console.log('feature action:', action);
       return action.payload.data;
     }

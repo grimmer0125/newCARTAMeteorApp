@@ -6,7 +6,7 @@ import api from '../api/ApiService';
 const FEATURE_CHANGE = 'FEAUTRE_CHANGE';
 const PROFILER_CHANGE = 'PROFILER_CHANGE';
 
-export const Actions = {
+export const ActionType = {
   FEATURE_CHANGE,
   PROFILER_CHANGE,
 };

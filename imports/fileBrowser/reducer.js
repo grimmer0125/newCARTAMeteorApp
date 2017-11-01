@@ -1,5 +1,5 @@
 // import { combineReducers } from 'redux';
-import { Actions } from './actions';
+import { ActionType } from './actions';
 
 const testFileList = {
   rootDir: '/tmp',
@@ -8,7 +8,7 @@ const testFileList = {
 
 const FileBrowserDB = (state = { fileBrowserOpened: false, ...testFileList }, action) => {
   switch (action.type) {
-    case Actions.FILEBROWSER_CHANGE: {
+    case ActionType.FILEBROWSER_CHANGE: {
       console.log('fileBrowser action:', action);
       return action.payload.data;
     }

@@ -1,8 +1,8 @@
-import { Actions } from './actions';
+import { ActionType } from './actions';
 
 const sessionID = (state = 'def', action) => {
   switch (action.type) {
-    case Actions.GET_SESSIONID:
+    case ActionType.GET_SESSIONID:
       return action.payload;
     default:
       return state;

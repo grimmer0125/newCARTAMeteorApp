@@ -21,7 +21,7 @@ import api from '../api/ApiService';
 
 const GET_SESSIONID = 'GET_SESSIONID';
 
-export const Actions = {
+export const ActionType = {
   GET_SESSIONID,
 };
 

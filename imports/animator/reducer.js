@@ -4,12 +4,12 @@ import { ActionType } from './actions';
 // const defaultData = {
 //   // rootDir: '/tmp',
 //   // files: [{ name: 'apple.fits', type: 'fits' }],
-// };
+// }; data: {}
 
-const HistogramDB = (state = { data: {} }, action) => {
+const AnimatorDB = (state = { animatorTypeList: [] }, action) => {
   switch (action.type) {
-    case ActionType.HISTOGRAM_CHANGE: {
-      console.log('histogramDB action:', action);
+    case ActionType.ANIMATOR_CHANGE: {
+      console.log('animatorDB action:', action);
       return action.payload.data;
     }
     default:
@@ -17,8 +17,8 @@ const HistogramDB = (state = { data: {} }, action) => {
   }
 };
 
-const histogramReducer = {
-  HistogramDB,
+const animatorReducer = {
+  AnimatorDB,
 };
 
-export default histogramReducer;
+export default animatorReducer;

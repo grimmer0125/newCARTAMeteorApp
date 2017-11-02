@@ -26,6 +26,15 @@ export default class ChannelClient {
 
     this.socket.onclose = () => {
       console.error('web channel closed');
+
+      // if (this.socket) {
+      //   // console.log('terminate socket');
+      //   this.socket.terminate();
+      // }
+      // this.socket = null;
+      //
+      console.log('try to re-connect in 5s');
+      setTimeout(this.createConnection.bind(this), 5000);
     };
     this.socket.onerror = (error) => {
       console.error(`web channel error: ${error}`);
@@ -36,8 +45,8 @@ export default class ChannelClient {
       }
       this.socket = null;
 
-      console.log('try to re-connect in 5s');
-      setTimeout(this.createConnection.bind(this), 5000);
+      // console.log('try to re-connect in 5s');
+      // setTimeout(this.createConnection.bind(this), 5000);
     };
 
     this.socket.onopen = () => {
@@ -125,13 +134,18 @@ export default class ChannelClient {
 
   createNewSession(sessionID) {
     if (this.QConnector) {
-      console.log('create new Session:', sessionID);
-      this.QConnector.newSessionCreatedSlot(sessionID);
+      try {
+        console.log('create new Session:', sessionID);
+        this.QConnector.newSessionCreatedSlot(sessionID);
+      } catch (err) {
+        console.log('create new Session exception:', err);
+      }
     }
   }
 
   sendKeepAlive() {
     if (this.QConnector) {
+      // no use now
       console.log('cleint send keep alive packet');
       this.QConnector.jsSendKeepAlive();
     }
@@ -139,13 +153,21 @@ export default class ChannelClient {
 
   sendCommand(sessionID, cmd, params) {
     if (this.QConnector) {
-      this.QConnector.jsSendCommandSlot(sessionID, cmd, params);
+      try {
+        this.QConnector.jsSendCommandSlot(sessionID, cmd, params);
+      } catch (err) {
+        console.log('sendCommand exception:', err);
+      }
     }
   }
 
   setupImageViewerSize(sessionID, viewName, width, height) {
     if (this.QConnector) {
-      this.QConnector.jsUpdateViewSizeSlot(sessionID, viewName, width, height);
+      try {
+        this.QConnector.jsUpdateViewSizeSlot(sessionID, viewName, width, height);
+      } catch (err) {
+        console.log('setupImageViewerSize exception:', err);
+      }
     }
   }
 }

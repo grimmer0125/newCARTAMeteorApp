@@ -14,7 +14,24 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Node.js Server Program",
+            "name": "Debug Node.js Server with meteor 1.6",
+            "cwd": "${workspaceRoot}/",
+            "runtimeExecutable": "${workspaceRoot}/.meteor/local/dev_bundle/bin/npm",
+            "restart": true,
+            "timeout": 30000,
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "runtimeArgs": [
+                "run",
+                "--inspect-brk"
+            ],
+            "protocol": "inspector",
+            "port": 9229
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "(depreciated) Launch Node.js Server Program",
             "cwd": "${workspaceRoot}/",
             "runtimeExecutable": "${workspaceRoot}/.meteor/local/dev_bundle/bin/npm",
             "restart": true,
@@ -22,25 +39,11 @@
             "stopOnEntry":false,
             "runtimeArgs": [
                 "run",
-                "dev-debug"
+                "node-debug"
             ],
             "sourceMaps": true,
             "protocol": "inspector",
             "port": 5959
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Debug Node.js Server, meteor >=1.6",
-            "cwd": "${workspaceRoot}/",
-            "runtimeExecutable": "${workspaceRoot}/.meteor/local/dev_bundle/bin/npm",
-            "preLaunchTask": "serverrun",
-            "restart": true,
-            "timeout": 30000,
-            "stopOnEntry": false,
-            "sourceMaps": true,
-            "protocol": "inspector",
-            "port": 9229
         },
         {
 			"name": "Attach to Meteor 1.5 Server with meteor debug --debug-port 5959",

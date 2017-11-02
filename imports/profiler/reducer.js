@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Actions } from '../featureContainer/actions';
-=======
-import { ActionType } from './actions';
->>>>>>> 24bde4064226ceb53ebb2502e53527133384fad4
+import { ActionType } from '../featureContainer/actions';
 
 const ProfilerDB = (state = { data: {}, zoomPanData: {} }, action) => {
   switch (action.type) {

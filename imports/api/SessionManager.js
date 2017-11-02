@@ -12,15 +12,22 @@ const useOtherSession = (sessionID) => {
   Session.set('otherSessionID', sessionID);
 };
 
-const getOtherSession = () => Session.get('otherSessionID');
-
-const getSuitableSession = () => {
+const getOtherSession = () => {
   const otherSession = Session.get('otherSessionID');
   if (otherSession) {
     return otherSession;
   }
+  return '';
+};
 
-  console.log('SessionManager getSuitableSession:', Session.get('selfSessionID'));
+const getSuitableSession = () => {
+  const otherSession = Session.get('otherSessionID');
+  if (otherSession) {
+    console.log('SessionManager getSuitableSession, other:', otherSession);
+    return otherSession;
+  }
+
+  console.log('SessionManager getSuitableSession, self:', Session.get('selfSessionID'));
 
   return Session.get('selfSessionID');
 };

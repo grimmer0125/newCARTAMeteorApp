@@ -76,10 +76,10 @@ export default class ChannelClient {
         // listen for command results callbacks and always invoke the top callback
         // in the list
         // the command results always arrive in the same order they were sent
-        this.QConnector.jsCommandResultsSignal.connect((sessionID, cmd, result, parameter) => {
+        this.QConnector.jsCommandResultsSignal.connect((sessionID, senderSession, cmd, result, parameter) => {
           try {
             if (this.receiveHandler) {
-              this.receiveHandler(sessionID, cmd, result, parameter);
+              this.receiveHandler(sessionID, senderSession, cmd, result, parameter);
             }
             // if (m_commandCallbacks.length < 1) {
             //   console.warn('Received command results but no callbacks for this!!!');
@@ -151,16 +151,17 @@ export default class ChannelClient {
     }
   }
 
-  sendCommand(sessionID, cmd, params) {
+  sendCommand(mainSessionID, senderSession, cmd, params) {
     if (this.QConnector) {
       try {
-        this.QConnector.jsSendCommandSlot(sessionID, cmd, params);
+        this.QConnector.jsSendCommandSlot(mainSessionID, senderSession, cmd, params);
       } catch (err) {
         console.log('sendCommand exception:', err);
       }
     }
   }
 
+  // NOTE if we have multiple imageViewer, we need to add senderSession
   setupImageViewerSize(sessionID, viewName, width, height) {
     if (this.QConnector) {
       try {

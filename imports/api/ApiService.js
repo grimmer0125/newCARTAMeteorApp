@@ -71,10 +71,13 @@ export default class ApiService {
   }
 
   subscribeOtherPeopleDB() {
-    for (const db of this.dblist) {
-      db.handler = Meteor.subscribe(db.mongoSetName, SessionManager.getOtherSession(), () => {
-        console.log(`${db.mongoSetName} subscribe other people OK: !!!`);
-      });
+    const otherSession = SessionManager.getOtherSession();
+    if (otherSession) {
+      for (const db of this.dblist) {
+        db.handler = Meteor.subscribe(db.mongoSetName, otherSession, () => {
+          console.log(`${db.mongoSetName} subscribe other people OK: !!!`);
+        });
+      }
     }
   }
 
@@ -143,6 +146,8 @@ export default class ApiService {
 
       return;
     }
+
+    console.log('get command response');
 
     const target = resp.cmd + resp.parameter;
     let match = null;

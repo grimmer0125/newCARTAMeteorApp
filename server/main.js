@@ -46,7 +46,7 @@ function handleCalculationServerImage(sessionID, viewName, buffer) {
   if (buffer.length != 844) {
     insertResponse({ sessionID, pushedImage: true, buffer });
   } else {
-    console.log("ignore histogram/profiler jpegs");
+    console.log('ignore histogram/profiler jpegs');
   }
 }
 
@@ -59,8 +59,9 @@ function handleCalculationServerImage(sessionID, viewName, buffer) {
 // get image  (real), c14
 
 // sessionID, cmd, data, parameter
-function handleCalculationServerMessage(sessionID, cmd, result, parameter) {
+function handleCalculationServerMessage(sessionID, senderSession, cmd, result, parameter) {
   console.log('get message from WebSocket Server, len:', result.length);
+  console.log('sessionID:', sessionID, ';senderSession:', senderSession);
 
   let data = null;
 
@@ -71,7 +72,7 @@ function handleCalculationServerMessage(sessionID, cmd, result, parameter) {
     data = result;
     console.log('the response from cpp -> js is string:', data);
   }
-  insertResponse({ sessionID, cmd, data, parameter });
+  insertResponse({ sessionID: senderSession, cmd, data, parameter });
 }
 
 let client = null;
@@ -116,10 +117,10 @@ Meteor.methods({
       console.log('forwared commands from clients:', cmd, ';params:', params);
       if (sessionID) {
         console.log('use specified sessionID to forward,', sessionID);
-        client.sendCommand(sessionID, cmd, params);
+        client.sendCommand(sessionID, this.connection.id, cmd, params);
       } else {
-        console.log('use server known session to forwared:', this.connection.id);
-        client.sendCommand(this.connection.id, cmd, params);
+        console.log('use server known sender session to forwared:', this.connection.id);
+        client.sendCommand(this.connection.id, this.connection.id, cmd, params);
       }
       return '';
     }

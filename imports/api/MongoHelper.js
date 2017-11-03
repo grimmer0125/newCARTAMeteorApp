@@ -20,9 +20,15 @@ import SessionManager from '../api/SessionManager';
 //   };
 // };
 
+let _dispatch = null;
+
+export function storeReduxDispatch(dispatch) {
+  console.log('store redux dispatch for mongo');
+  _dispatch = dispatch;
+}
 
 // TODO prevent same collection registering twice
-export function setupMongoReduxListeners(collection, dispatch, actionType) {
+export function setupMongoReduxListeners(collection, actionType) {
   const actionCreator = data => ({
     type: actionType,
     payload: {
@@ -32,10 +38,10 @@ export function setupMongoReduxListeners(collection, dispatch, actionType) {
 
   const collectionObservationHandle = collection.find().observe({
     added(newDoc) {
-      dispatch(actionCreator(newDoc));
+      _dispatch(actionCreator(newDoc));
     },
     changed(newDoc, oldDoc) {
-      dispatch(actionCreator(newDoc));
+      _dispatch(actionCreator(newDoc));
     },
     removed(oldDocument) {
       const documents = collection.find().fetch();
@@ -44,7 +50,7 @@ export function setupMongoReduxListeners(collection, dispatch, actionType) {
         // for watching the shared sessioni from python
         // which may manually remove images on client. special case
         if (!SessionManager.getOtherSession()) {
-          dispatch(actionCreator(doc));
+          _dispatch(actionCreator(doc));
         }
       }
     },

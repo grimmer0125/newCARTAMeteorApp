@@ -20,7 +20,7 @@ function changeAnimatorType(type) {
 
 function setupAnimator() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, AnimatorDB, ANIMATOR_CHANGE);
+    api.instance().setupMongoRedux(AnimatorDB, ANIMATOR_CHANGE);
 
     const cmd = Commands.REGISTER_VIEWER;
     const params = 'pluginId:Animator,index:0';

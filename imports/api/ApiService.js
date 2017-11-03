@@ -48,7 +48,7 @@ export default class ApiService {
     });
   }
 
-  setupMongoRedux(dispatch, collection, actionType) {
+  setupMongoRedux(collection, actionType) {
     const mongoSetName = collection.cartaSet;
 
     for (const db of this.dblist) {
@@ -58,7 +58,7 @@ export default class ApiService {
       }
     }
 
-    setupMongoReduxListeners(collection, dispatch, actionType);
+    setupMongoReduxListeners(collection, actionType);
     if (SessionManager.get()) {
       console.log('directly setup subscribtioin:', mongoSetName);
       Meteor.subscribe(mongoSetName, SessionManager.get(), () => {

@@ -20,7 +20,7 @@ const DELETE = 'DELETE';
 function setupRegion() {
   return (dispatch) => {
 
-    api.instance().setupMongoRedux(dispatch, RegionDB, REGION_CHANGE);
+    api.instance().setupMongoRedux(RegionDB, REGION_CHANGE);
   };
 }
 

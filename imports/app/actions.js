@@ -12,10 +12,11 @@ import { Responses } from '../api/Responses';
 // import { Actions as imageViewerActions } from '../imageViewer/actions';
 // import { Actions as regionActions } from '../region/actions';
 // import { setupMongoReduxListeners } from '../api/MongoHelper';
-//
+import { storeReduxDispatch } from '../api/MongoHelper';
+
 // import { Actions as histogramActions } from '../histogram/actions';
 
-import { setupMongoReduxListeners } from '../api/MongoHelper';
+// import { setupMongoReduxListeners } from '../api/MongoHelper';
 
 import api from '../api/ApiService';
 
@@ -76,30 +77,30 @@ function turnOffWatching() {
   };
 }
 
-function subscribeNonCommandCollections(dispatch) {
-  // if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty, subscribing will fail
+// function subscribeNonCommandCollections(dispatch) {
+// if it stays in filebrower's actions's prepareFileBrowser, its sessionid is usually empty, subscribing will fail
 
-  // Meteor.subscribe('filebrowserdb', SessionManager.get(), () => {
-  //   console.log('filebrowserdb subscribes OK: !!!');
-  // });
+// Meteor.subscribe('filebrowserdb', SessionManager.get(), () => {
+//   console.log('filebrowserdb subscribes OK: !!!');
+// });
 
-  // Meteor.subscribe('imagecontroller', SessionManager.get(), () => {
-  //   console.log('imagecontroller subscribes OK !!!');
-  // });
+// Meteor.subscribe('imagecontroller', SessionManager.get(), () => {
+//   console.log('imagecontroller subscribes OK !!!');
+// });
 
-  // Meteor.subscribe('regiondb', SessionManager.get(), () => {
-  //   console.log('regiondb subscribed!!');
-  // });
+// Meteor.subscribe('regiondb', SessionManager.get(), () => {
+//   console.log('regiondb subscribed!!');
+// });
 
-  // Meteor.subscribe('histogramdb', SessionManager.get(), () => {
-  //   console.log('histogramndb subscribed!!');
-  // });
+// Meteor.subscribe('histogramdb', SessionManager.get(), () => {
+//   console.log('histogramndb subscribed!!');
+// });
 
-  // setupMongoReduxListeners(ImageController, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
-  // setupMongoReduxListeners(FileBrowserDB, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
-  // setupMongoReduxListeners(RegionDB, dispatch, regionActions.REGION_CHANGE);
-  // setupMongoReduxListeners(HistogramDB, dispatch, histogramActions.HISTOGRAM_CHANGE);
-}
+// setupMongoReduxListeners(ImageController, dispatch, imageViewerActions.IMAGEVIEWER_CHANGE);
+// setupMongoReduxListeners(FileBrowserDB, dispatch, filebrowserActions.FILEBROWSER_CHANGE);
+// setupMongoReduxListeners(RegionDB, dispatch, regionActions.REGION_CHANGE);
+// setupMongoReduxListeners(HistogramDB, dispatch, histogramActions.HISTOGRAM_CHANGE);
+// }
 
 function handleCommandResponse(resp) {
   console.log('get response:');
@@ -107,10 +108,12 @@ function handleCommandResponse(resp) {
   api.instance().consumeResponse(resp);
 }
 
-function waitForCommandResponses() {
+function setupResponseChannnelAndAllDB() {
   return (dispatch) => {
-    console.log('waitForCommandResponses, reset session to null');
+    console.log('setupResponseChannnelAndAllDB, reset session to null');
     SessionManager.set(null);
+
+    storeReduxDispatch(dispatch);
 
     Meteor.call('getSessionId', (err, sessionID) => {
       console.log('getSessionId return:', sessionID);
@@ -194,7 +197,7 @@ function waitForCommandResponses() {
 }
 
 const actions = {
-  waitForCommandResponses,
+  setupResponseChannnelAndAllDB,
   turnOnWatching,
   turnOffWatching,
 };

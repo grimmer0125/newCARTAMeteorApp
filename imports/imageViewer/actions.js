@@ -19,7 +19,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 
 function setuptImageViewer() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, ImageController, IMAGEVIEWER_CHANGE);
+    api.instance().setupMongoRedux(ImageController, IMAGEVIEWER_CHANGE);
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;

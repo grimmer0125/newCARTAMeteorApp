@@ -18,12 +18,12 @@ const _ = require('lodash');
 
 function setupProfiler() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
+    api.instance().setupMongoRedux(ProfilerDB, PROFILER_CHANGE);
   };
 }
 function setupFeatureContainer() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, FeatureContainerDB, FEATURE_CHANGE);
+    api.instance().setupMongoRedux(FeatureContainerDB, FEATURE_CHANGE);
   };
 }
 function onAddItemDB(data) {

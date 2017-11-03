@@ -48,8 +48,10 @@ const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 // }
 
 function setupFileBrowser() {
+  console.log('grimmer filebrowser constructor-1-2');
   return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, FileBrowserDB, FILEBROWSER_CHANGE);
+    console.log('grimmer filebrowser constructor-1-3');
+    api.instance().setupMongoRedux(FileBrowserDB, FILEBROWSER_CHANGE);
     // setupMongoReduxListeners(FileBrowserDB, dispatch, FILEBROWSER_CHANGE);
     //    setupMongoReduxListeners(FileBrowserDB, dispatch, receiveUIChange);
   };

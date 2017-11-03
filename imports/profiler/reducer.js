@@ -1,4 +1,4 @@
-import { ActionType } from '../featureContainer/actions';
+import { ActionType } from './actions';
 
 const defaultState = { data: {}, zoomPanData: {} };
 const ProfilerDB = (state = defaultState, action) => {

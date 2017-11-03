@@ -17,9 +17,13 @@ export const ActionType = {
 
 import { mongoUpsert } from '../api/MongoHelper';
 
-function setuptImageViewer() {
+export function setupImageController() {
+  api.instance().setupMongoRedux(ImageController, IMAGEVIEWER_CHANGE);
+}
+
+function setupImageViewer() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(ImageController, IMAGEVIEWER_CHANGE);
+    console.log('grimmer setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
@@ -88,7 +92,7 @@ function zoom(zoomCommand) {
   };
 }
 const actions = {
-  setuptImageViewer,
+  setupImageViewer,
   zoom,
 };
 

@@ -36,8 +36,7 @@ class FeatureContainer extends Component {
   mixins: [PureRenderMixin]
   constructor(props) {
     super(props);
-    this.props.dispatch(actions.setupFeatureContainer());
-    this.props.dispatch(actions.setupProfiler());
+    // this.props.dispatch(actions.setupFeatureContainer());
     // layouts: JSON.parse(JSON.stringify(originalLayouts)),
   }
   getDefaultProps() {

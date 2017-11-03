@@ -18,10 +18,12 @@ function changeAnimatorType(type) {
   };
 }
 
+export function setupAnimatorDB() {
+  api.instance().setupMongoRedux(AnimatorDB, ANIMATOR_CHANGE);
+}
+
 function setupAnimator() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(AnimatorDB, ANIMATOR_CHANGE);
-
     const cmd = Commands.REGISTER_VIEWER;
     const params = 'pluginId:Animator,index:0';
 

@@ -37,9 +37,7 @@ class FileBrowser extends Component {
     // this.state = {
     //   selectedIndex: -1,
     // };
-
-    this.props.dispatch(actions.setupFileBrowser());
-    console.log('grimmer filebrowser constructor');
+    // this.props.dispatch(actions.setupFileBrowser());
 
     if (this.props.openBrowser) {
       this.props.dispatch(actions.queryServerFileList());

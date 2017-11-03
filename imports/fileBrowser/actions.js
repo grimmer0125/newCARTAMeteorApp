@@ -47,14 +47,11 @@ const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 //   };
 // }
 
-function setupFileBrowser() {
-  console.log('grimmer filebrowser constructor-1-2');
-  return (dispatch) => {
-    console.log('grimmer filebrowser constructor-1-3');
-    api.instance().setupMongoRedux(FileBrowserDB, FILEBROWSER_CHANGE);
-    // setupMongoReduxListeners(FileBrowserDB, dispatch, FILEBROWSER_CHANGE);
-    //    setupMongoReduxListeners(FileBrowserDB, dispatch, receiveUIChange);
-  };
+export function setupFileBrowserDB() {
+  console.log('setup FileBrowserDB');
+  // return (dispatch) => {
+  api.instance().setupMongoRedux(FileBrowserDB, FILEBROWSER_CHANGE);
+  // };
 }
 
 function parseFileList(resp) {
@@ -145,7 +142,6 @@ export function queryAnimatorTypes() {
 
 
 const actions = {
-  setupFileBrowser,
   // closeFileBrowser,
   queryServerFileList,
   selectFileToOpen,

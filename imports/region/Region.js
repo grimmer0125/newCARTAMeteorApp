@@ -32,7 +32,7 @@ class Region extends Component {
       saveAsInput: '',
     };
 
-    this.props.dispatch(actions.setupRegion());
+    // this.props.dispatch(actions.setupRegion());
   }
   onMouseDown = (event) => {
     this.props.dispatch(actions.setMouseIsDown(1));

@@ -102,7 +102,7 @@ export default class ApiService {
     }
   }
 
-  setupAllDB(dispatch) {
+  subscribeAllDB(dispatch) {
     for (const db of this.waitSubDBlist) {
       Meteor.subscribe(db.mongoSetName, SessionManager.get(), () => {
         console.log(`${db.mongoSetName} subscribes2 OK: !!!`);

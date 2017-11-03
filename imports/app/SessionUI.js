@@ -6,6 +6,7 @@ import actions from './actions';
 import People from 'material-ui/svg-icons/social/people';
 import IconButton from 'material-ui/IconButton';
 import Popover from 'material-ui/Popover';
+import SessionManager from '../api/SessionManager';
 
 const style = {
   margin: 12,
@@ -58,7 +59,6 @@ class SessionUI extends Component {
 
     // TODO: save to redux
   }
-
   render() {
     const { sessionID } = this.props;
     const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
@@ -67,6 +67,7 @@ class SessionUI extends Component {
         <IconButton>
           <People onTouchTap={this.handleTouchTap} />
         </IconButton>
+        {this.state.watching ? 'watching' : false}
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}

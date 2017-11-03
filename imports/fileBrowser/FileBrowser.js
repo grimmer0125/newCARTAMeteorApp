@@ -24,7 +24,7 @@ const browserStyle = {
 };
 
 const buttonStyle = {
-  margin: 12,
+  margin: 10,
 };
 
 
@@ -120,6 +120,7 @@ class FileBrowser extends Component {
               {fileItems}
             </SelectableList>
             <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
+            <RaisedButton style={buttonStyle} label="close" secondary />
           </div>
         }
       </div>

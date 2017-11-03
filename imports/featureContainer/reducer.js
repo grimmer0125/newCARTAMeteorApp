@@ -1,11 +1,15 @@
 import { ActionType } from './actions';
 
-const FeatureContainerDB = (state = { items: [] }, action) => {
+const defaultState = { items: [] };
+
+const FeatureContainerDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.FEATURE_CHANGE: {
       console.log('feature action:', action);
       return action.payload.data;
     }
+    case 'RESET_REDUX_STATE':
+      return defaultState;
     default:
       return state;
   }

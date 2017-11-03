@@ -32,9 +32,11 @@ export const ActionType = {
 
 function turnOnWatching(watchingSessionID) {
   return (dispatch) => {
+    console.log('RESET_REDUX_STATE !!!!!!!! start watching');
+    dispatch({ type: 'RESET_REDUX_STATE' });
+
     // subscribe
     SessionManager.useOtherSession(watchingSessionID);
-
     console.log('use other session:', SessionManager.getOtherSession());
 
     // otherSubHnadleFile = Meteor.subscribe('filebrowserdb', SessionManager.getOtherSession(), () => {
@@ -56,9 +58,15 @@ function turnOnWatching(watchingSessionID) {
 
 function turnOffWatching() {
   return (dispatch) => {
+    console.log('RESET_REDUX_STATE !!!!!!!! stop watching');
+    dispatch({ type: 'RESET_REDUX_STATE' });
+
     SessionManager.stopUsingOtherSession();
 
     api.instance().unscribeOtherPeopleDB();
+
+    api.instance().resumeselfDB(); // may let redux change twice, 1st: reset_redux_state
+
 
     // unsubscribe
     // if (otherSubHnadleFile) {

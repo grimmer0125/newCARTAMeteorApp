@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
-import { setupMongoReduxListeners } from '../api/MongoHelper';
+import { mongoResumeSelfDB, setupMongoReduxListeners } from '../api/MongoHelper';
 
 let instance = null;
 
@@ -40,6 +40,14 @@ export default class ApiService {
     }
 
     return instance;
+  }
+
+  resumeselfDB() {
+    console.log('resume db');
+    for (const db of this.dblist) {
+      mongoResumeSelfDB(db.collection, db.actionType);
+      // mongoUpsert(FileBrowserDB, { selectedFile: index }, SELECT_FILE);
+    }
   }
 
   setupViewSize(viewName, width, height) {

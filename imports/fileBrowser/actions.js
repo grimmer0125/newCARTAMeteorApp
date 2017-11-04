@@ -109,19 +109,20 @@ function closeFile() {
       // 2d, 3d, close 2d, 關2d
       // 2d, 3d, close 3d, 關3d
       // 2d, 3d. 關2d, 3d. 最後剩image type應該是invisible, 有空的channel. 怎辦?
-      if (count > 1) {
-        for (const layer of stack.layers) {
-          if (layer.selected) {
-            console.log('close this file:', layer.name);
-            currentLayer = layer;
-            break;
-          }
+
+      // if (count > 1) {
+      for (const layer of stack.layers) {
+        if (layer.selected) {
+          console.log('close this file:', layer.name);
+          currentLayer = layer;
+          break;
         }
-      } else if (count === 1) {
-        currentLayer = stack.layers[0];
+      }
+
+      // if people open A, B, C, then close C, the reamining layers become unselected
+      if (!currentLayer && count > 0) {
+        currentLayer = stack.layers[count - 1];
         console.log('close this file:', currentLayer.name);
-      } else {
-        console.log('no stack layer to close');
       }
 
       if (currentLayer) {
@@ -141,6 +142,8 @@ function closeFile() {
             // may not need to update animatorType lists
             updateAnimator(animatorID, stack);
           });
+      } else {
+        console.log('no stack layer to close');
       }
     }
   };

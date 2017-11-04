@@ -190,11 +190,13 @@ function requestAnimatorTypes(animatorID) {
 export function updateAnimator(animatorID, stack) {
   let animatorTypeList = [];
 
-  // CARTA cpp issue:
+  // CARTA cpp issue1:
   // 開過2個以上的檔案後, image就會變生出, 當降回1個 or 0個時,
   // 它的image animator的上限會是只有1個但其中filelist是兩個, 且visible = false
   // 然後從0個->1個時(如果選擇第三個檔案), filelist, visible不會更新, 等到變回2個以上才都正常
   // 所以1個時的file name很多時候是不準的, 用stack來解決
+  // issue2:
+  // if people open A, B, C, then close C, the reamining stack-layers become unselected
 
   if (!stack || !stack.layers || stack.layers.length == 0) {
     console.log('no valid stack or empty stack, so force setup animator list empty !!');

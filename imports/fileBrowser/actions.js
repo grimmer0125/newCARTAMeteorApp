@@ -63,7 +63,7 @@ function parseFileList(resp) {
   mongoUpsert(FileBrowserDB, fileList, `Resp_${cmd}`);
 }
 
-function queryServerFileList() {
+function queryServerFileList(path) {
   return (dispatch, getState) => {
     // 1. send to mongodb to sync UI
     // updateFileBrowserToMongo(true);
@@ -72,7 +72,7 @@ function queryServerFileList() {
     // QString parameter = "path:";
 
     // const cmd = Commands.REQUEST_FILE_LIST;// '/CartaObjects/DataLoader:getData';
-    const params = 'path:';// 'pluginId:ImageViewer,index:0';
+    const params = `path:${path}`; // 'pluginId:ImageViewer,index:0';
 
     // 2. send command if it becomes true.
     // TODO need to send Seesion id ? Server knows client's session. Do we need to check this on server side? (Seesion change case)

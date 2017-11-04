@@ -7,6 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { List, ListItem, makeSelectable } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 import Avatar from 'material-ui/Avatar';
+import FileFolder from 'material-ui/svg-icons/file/folder';
 
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
 import ContentSend from 'material-ui/svg-icons/content/send';
@@ -41,7 +42,7 @@ class FileBrowser extends Component {
     // this.props.dispatch(actions.setupFileBrowser());
 
     if (this.props.openBrowser) {
-      this.props.dispatch(actions.queryServerFileList());
+      this.props.dispatch(actions.queryServerFileList(''));
       console.log('OPENBROWSER, query file list ');
     }
   }
@@ -81,10 +82,45 @@ class FileBrowser extends Component {
     console.log('grimmer filebrowser did mount');
   }
 
+  clickParentFolder = () => {
+    console.log('back to');
+    if (this.props.rootDir === '/') {
+
+    } else {
+      const pathList = this.props.rootDir.split('/');
+      const lastLen = pathList[pathList.length - 1].length; // 6
+      const parentPath = this.props.rootDir.substring(0, this.props.rootDir.length - lastLen - 1);
+      if (parentPath === '') {
+        this.props.dispatch(actions.queryServerFileList('/'));
+      } else {
+        this.props.dispatch(actions.queryServerFileList(parentPath));
+      }
+
+      // /Users/grimmer/CARTA/Images
+    }
+    // this.props.rootDir 去掉
+  }
+  clickFolder(folder) {
+    const fullPath = `${this.props.rootDir}/${folder}`;
+    // grimmer send command: /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA/Images/carta_region_file
+
+    // default:   'path:'
+    // path: + fullPath;
+    // console.log('click:', e, ';index:', index, ';value:', value);
+
+    // grimmer send command: /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA/Images
+    // grimmer send command: /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA
+
+    this.props.dispatch(actions.queryServerFileList(fullPath));
+  }
+
   render() {
-    const { browserOpened, files, selectedFile } = this.props;
+    const { browserOpened, files, selectedFile, rootDir } = this.props;
     const fileItems = files.map((file, index) => {
       let iconSrc;
+      if (file.dir) {
+        return (<ListItem onClick={() => { this.clickFolder(file.name); }} style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar icon={<FileFolder />} />} />);
+      }
       switch (file.type) {
         case 'fits':
           iconSrc = 'fits.png';
@@ -105,6 +141,7 @@ class FileBrowser extends Component {
           return null;
       }
 
+
       return (
         <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={`images/${iconSrc}`} />} />
       );
@@ -116,15 +153,26 @@ class FileBrowser extends Component {
         {/* <p>File Browser, open file browser, then choose a file to read</p> */}
         {/* <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
         <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary /> */}
+        <div style={{ fontSize: 10 }}>
+          {rootDir}
+        </div>
+        <div>
+          <ListItem
+            onClick={this.clickParentFolder}
+            // style={{ fontSize: '10', height: 20 }}
+            primaryText=".."
+            leftAvatar={<Avatar icon={<FileFolder />} />}
+          />
+        </div>
         { fileItems && fileItems.length > 0 &&
           <div>
             <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
               {fileItems}
             </SelectableList>
             <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-            <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
           </div>
         }
+        <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
       </div>
     );
   }

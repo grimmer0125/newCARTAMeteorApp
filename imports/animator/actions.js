@@ -4,6 +4,8 @@ import api from '../api/ApiService';
 import Commands from '../api/Commands';
 import { mongoUpsert } from '../api/MongoHelper';
 
+import { queryStackData } from '../imageViewer/actions';
+
 // redux part
 const ANIMATOR_CHANGE = 'ANIMATOR_CHANGE';
 export const ActionType = {
@@ -41,24 +43,25 @@ function handleAnimatorError(animatorTypeList, fileName) {
   console.log('got promise error/reject');
 
   // fake a image animatorType in animatorTypeList
+  if (fileName) {
+    const animatorType = {
+      type: 'Image',
+      visible: true,
+      selection: {
+        frameStart: 0,
+        frameStartUser: 0,
+        frameEnd: 1,
+        frameEndUser: 0,
+        frame: 0,
+        fileList: [
+          fileName,
+        ],
+      },
+    };
 
-  const animatorType = {
-    type: 'Image',
-    visible: true,
-    selection: {
-      frameStart: 0,
-      frameStartUser: 0,
-      frameEnd: 1,
-      frameEndUser: 0,
-      frame: 0,
-      fileList: [
-        fileName,
-      ],
-    },
-  };
-
-  animatorTypeList.push(animatorType);
-  mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
+    animatorTypeList.push(animatorType);
+    mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
+  }
 }
 
 function receiveAllSelectionData(animatorTypeList, results) {
@@ -162,7 +165,7 @@ export function updateAnimatorAfterSelectFile(animatorID, fileName) {
       receiveAllSelectionData(animatorTypeList, values),
     )
     .catch((e) => {
-      console.log('change frame catch');
+      console.log('update animator catch');
       handleAnimatorError(animatorTypeList, fileName);
     });
 }
@@ -203,27 +206,35 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
 
 function changeImageFrame(animatorTypeID, newFrameIndex) {
   return (dispatch, getState) => {
-    // const state = getState().AnimatorDB;
-    const animatorTypeList = getState().AnimatorDB.animatorTypeList;
+    const state = getState();
+    const animatorTypeList = state.AnimatorDB.animatorTypeList;
     const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
     const params = newFrameIndex;
+
+    const controllerID = state.ImageController.controllerID;
+    const animatorID = state.AnimatorDB.animatorID;
 
     console.log('changeImageFrame');
 
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
         console.log('get changeFrame result:', resp);
-        // mongoUpsert(AnimatorDB, { animatorID: resp.data }, `Resp_${cmd}`);
-        return requestAllSelectionData(animatorTypeList);
-      })
-      .then(values =>
-        receiveAllSelectionData(animatorTypeList, values),
-      )
-      .catch((e) => {
-        console.log('change Image frame catch');
 
-        // handleAnimatorError(animatorTypeList, fileName);
+        updateAnimatorAfterSelectFile(animatorID, '');
+
+        queryStackData(controllerID);
       });
+
+    //   return requestAllSelectionData(animatorTypeList);
+    // })
+    // .then(values =>
+    //   receiveAllSelectionData(animatorTypeList, values),
+    // )
+    // .catch((e) => {
+    //   console.log('change Image frame catch');
+    //
+    //   // handleAnimatorError(animatorTypeList, fileName);
+    // });
   };
 }
 

@@ -91,6 +91,19 @@ function zoom(zoomCommand) {
     });
   };
 }
+
+export function queryStackData(controllerID) {
+  console.log('query new stack info');
+  // const controllerID = resp.data;
+  const cmd = `${controllerID}:${Commands.GET_STACK_DATA}`;
+  const params = '';
+  api.instance().sendCommand(cmd, params)
+    .then((resp) => {
+      console.log('stack resp:', resp);
+      mongoUpsert(ImageController, { stack: resp.data }, 'GET_STACK');
+    });
+}
+
 const actions = {
   setupImageViewer,
   zoom,

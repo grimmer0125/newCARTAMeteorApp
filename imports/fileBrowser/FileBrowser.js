@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 
 import RaisedButton from 'material-ui/RaisedButton';
 // import FlatButton from 'material-ui/FlatButton';
@@ -63,21 +64,22 @@ class FileBrowser extends Component {
     this.props.dispatch(actions.selectFile(index));
   }
 
+  closeImage = () => {
+    this.props.dispatch(actions.closeFile());
+  }
+
   readImage = () => {
     if (this.props.selectedFile >= 0) {
       const file = this.props.files[this.props.selectedFile];
       console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
 
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
-
-      // this.props.dispatch(actions.closeFileBrowser());
     }
   }
 
   componentDidMount() {
     console.log('grimmer filebrowser did mount');
   }
-
 
   render() {
     const { browserOpened, files, selectedFile } = this.props;
@@ -120,7 +122,7 @@ class FileBrowser extends Component {
               {fileItems}
             </SelectableList>
             <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-            <RaisedButton style={buttonStyle} label="close" secondary />
+            <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
           </div>
         }
       </div>
@@ -136,10 +138,11 @@ const mapStateToProps = state => ({
 });
 
 // TODO use the below way to use simplified methods
-// export function mapDispatchToProps(dispatch) {
-//   return bindActionCreators({
-//     prepareFileBrowser: actions.prepareFileBrowser,
-// }, dispatch);
+// const mapDispatchToProps = dispatch => ({
+//   actions: bindActionCreators(actions, dispatch),
+// });
+// function mapDispatchToProps(dispatch) {
+//   return { actions: bindActionCreators(actions, dispatch) };
 // }
 
 export default connect(mapStateToProps)(FileBrowser);

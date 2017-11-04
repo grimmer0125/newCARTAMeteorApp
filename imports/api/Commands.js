@@ -10,7 +10,8 @@ const GET_ANIMATORTYPE_ID = 'registerAnimator';
 const GET_SELECTION_DATA = 'getSelecitonData';
 const NEW_ZOOM = 'newzoom';
 const SET_FRAME = 'setFrame';
-
+const GET_STACK_DATA = 'getStackData';
+const CLOSE_IMAGE = 'closeImage';
 // TODO some commands need parameters, wrap them as a function
 
 const Commands = {
@@ -22,7 +23,8 @@ const Commands = {
   GET_SELECTION_DATA,
   NEW_ZOOM,
   SET_FRAME,
-
+  GET_STACK_DATA,
+  CLOSE_IMAGE,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

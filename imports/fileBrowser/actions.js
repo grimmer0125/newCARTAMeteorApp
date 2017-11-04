@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 // import '../api/methods';
 import { FileBrowserDB } from '../api/FileBrowserDB';
 import { AnimatorDB } from '../api/AnimatorDB';
+import { ImageController } from '../api/ImageController';
 
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
@@ -13,6 +14,7 @@ import api from '../api/ApiService';
 
 import { mongoUpsert } from '../api/MongoHelper';
 import { updateAnimatorAfterSelectFile } from '../animator/actions';
+import { queryStackData } from '../imageViewer/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
@@ -90,6 +92,57 @@ function selectFile(index) {
 //   };
 // }
 
+function closeFile() {
+  return (dispatch, getState) => {
+    console.log('closeFile action');
+    const state = getState();
+    const animatorID = state.AnimatorDB.animatorID;
+    const controllerID = state.ImageController.controllerID;
+    const stack = state.ImageController.stack;
+    if (stack && stack.layers) {
+      const count = stack.layers.length;
+      let currentLayer = null;
+      if (count > 1) {
+        for (const layer of stack.layers) {
+          if (layer.selected) {
+            console.log('close this file:', layer.name);
+            currentLayer = layer;
+            break;
+          }
+        }
+      } else if (count == 1) {
+        currentLayer = stack.layers[0];
+        console.log('close this file:', currentLayer.name);
+      } else {
+        console.log('no stack layer to close');
+      }
+
+      if (currentLayer) {
+        console.log('start to close file');
+        const cmd = `${controllerID}:${Commands.CLOSE_IMAGE}`;
+        const params = `image:${currentLayer.id}`;
+
+        api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, params)
+          .then((resp) => {
+            console.log('close ok:', resp);
+
+            // update animatorType-Selections.
+            // may not need to update animatorType lists
+            updateAnimatorAfterSelectFile(animatorID, '');
+
+            queryStackData(controllerID);
+          });
+        // 1. close it
+        // layer.id
+        // ControllerID:closeImage,
+        // image:layer.id
+        // 2.
+      }
+    }
+  };
+}
+
+
 function selectFileToOpen(path) {
   return (dispatch, getState) => {
     const state = getState();
@@ -111,27 +164,9 @@ function selectFileToOpen(path) {
         updateAnimatorAfterSelectFile(animatorID, fileName);
         // updateAnimatorAfterSelectFile
         // return requestAnimatorTypes(animatorID);
+
+        queryStackData(controllerID);
       });
-    // .then((resp) => {
-    //   console.log('get animator query type result:', resp);
-    //   animatorTypeList = resp.data;
-    //   return requestAnimatorTypeIDs(animatorTypeList, animatorID);
-    // })
-    // .then((values) => {
-    //   console.log('get all animatorType ids');
-    //   const promiseList = [];
-    //   for (let i = 0; i < values.length; i += 1) {
-    //     const value = values[i];
-    //     animatorTypeList[i].animatorTypeID = value.data;
-    //   }
-    //   return requestAllSelectionData(animatorTypeList);
-    // })
-    // .then(values =>
-    //   receiveAllSelectionData(animatorTypeList, values),
-    // )
-    // .catch((e) => {
-    //   handleAnimatorError(animatorTypeList, fileName);
-    // });
   };
 }
 
@@ -146,6 +181,7 @@ const actions = {
   queryServerFileList,
   selectFileToOpen,
   selectFile,
+  closeFile,
 };
 
 export default actions;

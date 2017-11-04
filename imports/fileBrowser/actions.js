@@ -13,7 +13,7 @@ import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
 import { mongoUpsert } from '../api/MongoHelper';
-import { updateAnimatorAfterSelectFile } from '../animator/actions';
+import { updateAnimator } from '../animator/actions';
 import { queryStackData } from '../imageViewer/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
@@ -92,6 +92,7 @@ function selectFile(index) {
 //   };
 // }
 
+
 function closeFile() {
   return (dispatch, getState) => {
     console.log('closeFile action');
@@ -102,6 +103,12 @@ function closeFile() {
     if (stack && stack.layers) {
       const count = stack.layers.length;
       let currentLayer = null;
+      // TODO 可能還要分3d, 2d的case
+      // 只有2d, close, 不fake, 看resp沒異狀. 或是再用stack檢查
+      // 只有3d, close
+      // 2d, 3d, close 2d, 關2d
+      // 2d, 3d, close 3d, 關3d
+      // 2d, 3d. 關2d, 3d. 最後剩image type應該是invisible, 有空的channel. 怎辦?
       if (count > 1) {
         for (const layer of stack.layers) {
           if (layer.selected) {
@@ -110,7 +117,7 @@ function closeFile() {
             break;
           }
         }
-      } else if (count == 1) {
+      } else if (count === 1) {
         currentLayer = stack.layers[0];
         console.log('close this file:', currentLayer.name);
       } else {
@@ -122,21 +129,18 @@ function closeFile() {
         const cmd = `${controllerID}:${Commands.CLOSE_IMAGE}`;
         const params = `image:${currentLayer.id}`;
 
-        api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, params)
+        api.instance().sendCommand(cmd, params)
           .then((resp) => {
             console.log('close ok:', resp);
 
+            // updateAnimator(animatorID, '');
+            return queryStackData(controllerID);
+          })
+          .then((stack) => {
             // update animatorType-Selections.
             // may not need to update animatorType lists
-            updateAnimatorAfterSelectFile(animatorID, '');
-
-            queryStackData(controllerID);
+            updateAnimator(animatorID, stack);
           });
-        // 1. close it
-        // layer.id
-        // ControllerID:closeImage,
-        // image:layer.id
-        // 2.
       }
     }
   };
@@ -161,11 +165,14 @@ function selectFileToOpen(path) {
       .then((resp) => {
         console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
-        updateAnimatorAfterSelectFile(animatorID, fileName);
-        // updateAnimatorAfterSelectFile
-        // return requestAnimatorTypes(animatorID);
+        // updateAnimator(animatorID, fileName);
 
-        queryStackData(controllerID);
+        return queryStackData(controllerID);
+      })
+      .then((stack) => {
+        updateAnimator(animatorID, stack);
+        // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
+        // so when switch back to A(3d), need to query animatorType list again.
       });
   };
 }

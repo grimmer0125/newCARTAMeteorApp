@@ -38,30 +38,46 @@ function setupAnimator() {
   };
 }
 
-function handleAnimatorError(animatorTypeList, fileName) {
+function handleAnimatorError(animatorTypeList, stack) { // fileName) {
   // Note: if the first opend file is 3d cube, it will only have channel AnimatorType, no image type
-  console.log('got promise error/reject');
+  console.log('got promise error/reject:', stack);
 
-  // fake a image animatorType in animatorTypeList
-  if (fileName) {
-    const animatorType = {
-      type: 'Image',
-      visible: true,
-      selection: {
-        frameStart: 0,
-        frameStartUser: 0,
-        frameEnd: 1,
-        frameEndUser: 0,
-        frame: 0,
-        fileList: [
-          fileName,
-        ],
-      },
-    };
+  // 單一3d檔案 changeFrame 不會有 fileName="" 進來這邊,
+  // 所以是新增唯一2d/3d檔案時, 以及
+  // close 單一2d/3d file. fileName=""
+  // 兩檔案變1檔案? fileName="" <- 怎辦?
+  // special case: fake a image animatorType in animatorTypeList !!!
+  if (stack && stack.layers) {
+    const count = stack.layers.length;
+    if (count > 0 && stack.layers[0].name) {
+      if (count > 1) {
+        console.log('count>1 should already have image animatorType return !!');
 
-    animatorTypeList.push(animatorType);
-    mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
+        return;
+      }
+
+      console.log('fake a image animatorType !!!!!');
+
+      const animatorType = {
+        type: 'Image',
+        visible: true,
+        selection: {
+          frameStart: 0,
+          frameStartUser: 0,
+          frameEnd: 1,
+          frameEndUser: 0,
+          frame: 0,
+          fileList: [
+            stack.layers[0].name,
+          ],
+        },
+      };
+
+      animatorTypeList.push(animatorType);
+    }
   }
+
+  mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
 }
 
 function receiveAllSelectionData(animatorTypeList, results) {
@@ -71,7 +87,7 @@ function receiveAllSelectionData(animatorTypeList, results) {
     animatorTypeList[i].selection = result.data;
   }
 
-  imageTypeExist = false;
+  let imageTypeExist = false;
   for (const animatorType of animatorTypeList) {
     if (animatorType.type == 'Image') {
       imageTypeExist = true;
@@ -79,9 +95,11 @@ function receiveAllSelectionData(animatorTypeList, results) {
     }
   }
   if (!imageTypeExist) {
+    // 1st: 3d檔案, 沒有image的selection data
+
     console.log('no image animatorType !!!');
     // ~ throw something, ref: https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
-    return Promise.reject('oh, no image animatorType!!');
+    return Promise.reject('oh, no image animatorType after get selection data!!');
   }
 
   // if (animatorTypeList) {
@@ -98,6 +116,7 @@ function requestAllSelectionData(animatorTypeList) {
   const promiseList = [];
   for (let i = 0; i < animatorTypeList.length; i += 1) {
     const animatorType = animatorTypeList[i];
+
     console.log('get animatorTypeID:', animatorType.animatorTypeID);// value.data);
     // animatorTypeList[i].animatorTypeID = animatorTypeID;//value.data;
     // Change: no more use flushState of selection object,
@@ -109,23 +128,47 @@ function requestAllSelectionData(animatorTypeList) {
   return Promise.all(promiseList);
 }
 
-function requestAnimatorTypeIDs(animatorTypeList, animatorID) {
+function requestAnimatorTypeIDs(animatorTypeList, animatorID, stack) {
   //  if 1st opend file is 2d file , resp.data will be a empty array
+  // if is a 3d file, it will only contain channel, no image type
   //  TODO [Done] if empty, simulate to get some data to list 1.current file. on UI
 
+  // let imageTypeExist = false;
   const total = animatorTypeList.length;
   if (total > 0) {
     const promiseList = [];
 
+
     // if (imageTypeExist) {
-    for (const animatorType of animatorTypeList) {
+    // array.splice(index, 1);
+    let removeIndex = -1;
+    for (let i = 0; i < animatorTypeList.length; i++) {
+      const animatorType = animatorTypeList[i];
+      if (animatorType.type === 'Image' && stack.layers.length === 1) {
+        console.log("ignore to query image animatorType's selection for only 1 file");
+        removeIndex = i;
+        continue;
+      }
+
       const cmd = `${animatorID}:${Commands.GET_ANIMATORTYPE_ID}`;
       const params = `type:${animatorType.type}`;
 
+      console.log('query animatorType:', animatorType.type);
+
       promiseList.push(api.instance().sendCommand(cmd, params));
+
+      // if (animatorType.type == 'Image') {
+      //   imageTypeExist = true;
+      // }
     }
 
-    return Promise.all(promiseList);
+    if (removeIndex > -1) {
+      animatorTypeList.splice(removeIndex, 1);
+    }
+
+    if (promiseList.length > 0) {
+      return Promise.all(promiseList);
+    }
   }
   // }
 
@@ -143,30 +186,46 @@ function requestAnimatorTypes(animatorID) {
   return api.instance().sendCommand(cmd, params);
 }
 
-export function updateAnimatorAfterSelectFile(animatorID, fileName) {
+// export function updateAnimator(animatorID, addedFileName) {
+export function updateAnimator(animatorID, stack) {
   let animatorTypeList = [];
+
+  // CARTA cpp issue:
+  // 開過2個以上的檔案後, image就會變生出, 當降回1個 or 0個時,
+  // 它的image animator的上限會是只有1個但其中filelist是兩個, 且visible = false
+  // 然後從0個->1個時(如果選擇第三個檔案), filelist, visible不會更新, 等到變回2個以上才都正常
+  // 所以1個時的file name很多時候是不準的, 用stack來解決
+
+  if (!stack || !stack.layers || stack.layers.length == 0) {
+    console.log('no valid stack or empty stack, so force setup animator list empty !!');
+    mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
+
+    return;
+  }
 
   requestAnimatorTypes(animatorID)
     .then((resp) => {
       console.log('get animator query type result:', resp);
       animatorTypeList = resp.data;
-      return requestAnimatorTypeIDs(animatorTypeList, animatorID);
+      // only need stack's layer count
+      return requestAnimatorTypeIDs(animatorTypeList, animatorID, stack);
     })
     .then((values) => {
-      console.log('get all animatorType ids');
+      console.log('get all animatorType ids:', values);
       const promiseList = [];
       for (let i = 0; i < values.length; i += 1) {
         const value = values[i];
         animatorTypeList[i].animatorTypeID = value.data;
       }
+
       return requestAllSelectionData(animatorTypeList);
     })
     .then(values =>
       receiveAllSelectionData(animatorTypeList, values),
     )
     .catch((e) => {
-      console.log('update animator catch');
-      handleAnimatorError(animatorTypeList, fileName);
+      console.log('update animator catch, usually no image animatorType');
+      handleAnimatorError(animatorTypeList, stack);
     });
 }
 
@@ -220,9 +279,12 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
       .then((resp) => {
         console.log('get changeFrame result:', resp);
 
-        updateAnimatorAfterSelectFile(animatorID, '');
-
-        queryStackData(controllerID);
+        return queryStackData(controllerID);
+      })
+      .then((stack) => {
+        // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
+        // so when switch back to A(3d), need to query animatorType list again.
+        updateAnimator(animatorID, stack);
       });
 
     //   return requestAllSelectionData(animatorTypeList);

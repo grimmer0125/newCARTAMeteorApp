@@ -97,10 +97,11 @@ export function queryStackData(controllerID) {
   // const controllerID = resp.data;
   const cmd = `${controllerID}:${Commands.GET_STACK_DATA}`;
   const params = '';
-  api.instance().sendCommand(cmd, params)
+  return api.instance().sendCommand(cmd, params)
     .then((resp) => {
       console.log('stack resp:', resp);
       mongoUpsert(ImageController, { stack: resp.data }, 'GET_STACK');
+      return resp.data;
     });
 }
 

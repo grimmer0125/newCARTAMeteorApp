@@ -557,7 +557,7 @@ class Region extends Component {
             type="submit"
             label="Save"
             primary
-            href={this.layer ? this.layer.getCanvas().toDataURL('image/jpeg', 1) : false}
+            href={this.layer ? this.layer.getCanvas().toDataURL('image/jpeg', 1) : ''}
             // href={this.stage ? this.stage.node.toDataURL({ pixelRatio: 1, mimeType: 'image/jpeg', quality: 0.2 }) : false}
             download={this.state.saveAsInput}
             style={{ left: '65%' }}

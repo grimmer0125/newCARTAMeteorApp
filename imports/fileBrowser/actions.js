@@ -73,11 +73,11 @@ function queryServerFileList(path) {
     // QString parameter = "path:";
 
     // const cmd = Commands.REQUEST_FILE_LIST;// '/CartaObjects/DataLoader:getData';
-    const params = `path:${path}`; // 'pluginId:ImageViewer,index:0';
+    const arg = `path:${path}`; // 'pluginId:ImageViewer,index:0';
 
     // 2. send command if it becomes true.
     // TODO need to send Seesion id ? Server knows client's session. Do we need to check this on server side? (Seesion change case)
-    api.instance().sendCommand(Commands.REQUEST_FILE_LIST, params, (resp) => {
+    api.instance().sendCommand(Commands.REQUEST_FILE_LIST, arg, (resp) => {
       parseFileList(resp);
     });
   };
@@ -128,9 +128,9 @@ function closeFile() {
       if (currentLayer) {
         console.log('start to close file');
         const cmd = `${controllerID}:${Commands.CLOSE_IMAGE}`;
-        const params = `image:${currentLayer.id}`;
+        const arg = `image:${currentLayer.id}`;
 
-        api.instance().sendCommand(cmd, params)
+        api.instance().sendCommand(cmd, arg)
           .then((resp) => {
             console.log('close ok:', resp);
 
@@ -149,22 +149,43 @@ function closeFile() {
   };
 }
 
+function _calculateFitZoomLevel(view_width, view_height, layer) {
+  const zoomX = view_width / layer.pixelX;
+  const zoomY = view_height / layer.pixelY;
+  let zoom = 1;
+
+  if (zoomX < 1 || zoomY < 1) {
+    if (zoomX > zoomY) {
+      zoom = zoomY; // aj.fits, 512x1024, slim
+    } else {
+      zoom = zoomX; // 502nmos.fits, 1600x1600, fat
+    }
+  } else { // equual or smaller than window size
+    if (zoomX > zoomY) {
+      zoom = zoomY; // M100_alma.fits,52x62 slim
+    } else {
+      zoom = zoomX; // cube_x220_z100_17MB,220x220 fat
+    }
+  }
+
+  return zoom;
+}
 
 function selectFileToOpen(path) {
   return (dispatch, getState) => {
     const state = getState();
 
-    // const nameArray = path.split('/');
-    // const fileName = nameArray[nameArray.length - 1];
+    const nameArray = path.split('/');
+    const fileName = nameArray[nameArray.length - 1];
 
     // get controllerID
     const controllerID = state.ImageViewerDB.controllerID;
-    const parameter = `id:${controllerID},data:${path}`;
-    console.log('inject file parameter, become:', parameter);
+    const arg = `id:${controllerID},data:${path}`;
+    console.log('inject file parameter, become:', arg);
 
     // const animatorID = state.AnimatorDB.animatorID;
     // const animatorTypeList = [];
-    api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, parameter)
+    api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, arg)
       .then((resp) => {
         console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
@@ -173,18 +194,29 @@ function selectFileToOpen(path) {
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {
-        dispatch(animator.updateAnimator(stack));
         // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
         // so when switch back to A(3d), need to query animatorType list again.
+        dispatch(animator.updateAnimator(stack));
+
+        if (stack.layers) {
+          const len = stack.layers.length;
+          if (len > 0) {
+            const lastLayer = stack.layers[len - 1];
+            if (lastLayer.name === fileName) {
+              // const zoomLevel = 3;
+              const view_width = 482,
+                view_height = 477;
+              const zoomLevel = _calculateFitZoomLevel(view_width, view_height, lastLayer);
+              console.log('setup zoomLevel to fit panel size:', zoomLevel);
+              dispatch(imageViewer.setZoomLevel(zoomLevel, lastLayer.id));
+            } else {
+              console.log('something wrong');
+            }
+          }
+        }
       });
   };
 }
-
-export function queryAnimatorTypes() {
-
-
-}
-
 
 const actions = {
   // closeFileBrowser,

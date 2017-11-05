@@ -32,16 +32,16 @@ function setupImageViewer() {
     // 'pluginId:ImageViewer,index:0';
 
     const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
-    const params = 'pluginId:ImageViewer,index:0';
+    const arg = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
     console.log('send register ImageViewer');
 
-    // api.instance().sendCommand(cmd, params, (resp) => {
+    // api.instance().sendCommand(cmd, arg, (resp) => {
     //   parseReigsterViewResp(resp);
     // });
-    api.instance().sendCommand(cmd, params)
+    api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         parseReigsterViewResp(resp);
       });
@@ -78,15 +78,30 @@ export function parseImageToMongo(buffer) {
     console.log('get dummy image response');
   }
 }
-function zoom(zoomCommand) {
+
+function setZoomLevel(zoomLevel, layerID) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    console.log('controllerID: ', controllerID);
+    // console.log('STATE: ', getState());
+    const cmd = `${controllerID}:${Commands.SET_ZOOM_LEVEL}`;
+    const arg = `${zoomLevel} ${layerID}`;
+
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      console.log('get set zoom level result:', resp);
+    });
+  };
+}
+
+function zoom(zoomFactor) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     console.log('controllerID: ', controllerID);
     // console.log('STATE: ', getState());
     const cmd = `${controllerID}:${Commands.NEW_ZOOM}`;
-    const params = zoomCommand;
+    const arg = zoomFactor;
 
-    api.instance().sendCommand(cmd, params, (resp) => {
+    api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom result:', resp);
     });
   };
@@ -100,8 +115,8 @@ function updateStack() {
 
     // const controllerID = resp.data;
     const cmd = `${controllerID}:${Commands.GET_STACK_DATA}`;
-    const params = '';
-    return api.instance().sendCommand(cmd, params)
+    const arg = '';
+    return api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         console.log('stack resp:', resp);
         mongoUpsert(ImageViewerDB, { stack: resp.data }, 'GET_STACK');
@@ -114,6 +129,7 @@ const actions = {
   setupImageViewer,
   updateStack,
   zoom,
+  setZoomLevel,
 };
 
 export default actions;

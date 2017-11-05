@@ -27,11 +27,11 @@ export function setupAnimatorDB() {
 function setupAnimator() {
   return (dispatch) => {
     const cmd = Commands.REGISTER_VIEWER;
-    const params = 'pluginId:Animator,index:0';
+    const arg = 'pluginId:Animator,index:0';
 
     console.log('send register Animator');
 
-    api.instance().sendCommand(cmd, params, (resp) => {
+    api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get register animator result:', resp);
       mongoUpsert(AnimatorDB, { animatorID: resp.data }, `Resp_${cmd}`);
     });
@@ -122,8 +122,8 @@ function requestAllSelectionData(animatorTypeList) {
     // Change: no more use flushState of selection object,
     // no need to get selection object's ID for each animatorType
     const cmd = `${animatorType.animatorTypeID}:${Commands.GET_SELECTION_DATA}`;
-    const params = '';
-    promiseList.push(api.instance().sendCommand(cmd, params));
+    const arg = '';
+    promiseList.push(api.instance().sendCommand(cmd, arg));
   }
   return Promise.all(promiseList);
 }
@@ -151,11 +151,11 @@ function requestAnimatorTypeIDs(animatorTypeList, animatorID, stack) {
       }
 
       const cmd = `${animatorID}:${Commands.GET_ANIMATORTYPE_ID}`;
-      const params = `type:${animatorType.type}`;
+      const arg = `type:${animatorType.type}`;
 
       console.log('query animatorType:', animatorType.type);
 
-      promiseList.push(api.instance().sendCommand(cmd, params));
+      promiseList.push(api.instance().sendCommand(cmd, arg));
 
       // if (animatorType.type == 'Image') {
       //   imageTypeExist = true;
@@ -181,9 +181,9 @@ function requestAnimatorTypeIDs(animatorTypeList, animatorID, stack) {
 
 function requestAnimatorTypes(animatorID) {
   const cmd = `${animatorID}:${Commands.QUERY_ANIMATOR_TYPES}`;
-  const params = '';
+  const arg = '';
 
-  return api.instance().sendCommand(cmd, params);
+  return api.instance().sendCommand(cmd, arg);
 }
 
 // export function updateAnimator(animatorID, addedFileName) {
@@ -241,11 +241,11 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
     const animatorTypeID = animatorType.animatorTypeID;
     const animatorTypeList = getState().AnimatorDB.animatorTypeList;
     const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
-    const params = newFrameIndex;
+    const arg = newFrameIndex;
 
     console.log('changeNonImageFrame');
 
-    api.instance().sendCommand(cmd, params)
+    api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         console.log('get changeFrame result:', resp);
         // mongoUpsert(AnimatorDB, { animatorID: resp.data }, `Resp_${cmd}`);
@@ -271,13 +271,13 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
 
 function changeImageFrame(animatorTypeID, newFrameIndex) {
   return (dispatch, getState) => {
-    const animatorTypeList = state.AnimatorDB.animatorTypeList;
+    const animatorTypeList = getState().AnimatorDB.animatorTypeList;
     const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
-    const params = newFrameIndex;
+    const arg = newFrameIndex;
 
     console.log('changeImageFrame');
 
-    api.instance().sendCommand(cmd, params)
+    api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         console.log('get changeFrame result:', resp);
 

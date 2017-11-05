@@ -112,15 +112,15 @@ Meteor.methods({
     return '';
   },
 
-  sendCommand(cmd, params, sessionID) {
+  sendCommand(cmd, parameter, sessionID) {
     if (Meteor.isServer) {
-      console.log('forwared commands from clients:', cmd, ';params:', params);
+      console.log('forwared commands from clients:', cmd, ';parameter:', parameter);
       if (sessionID) {
         console.log('use specified sessionID to forward,', sessionID);
-        client.sendCommand(sessionID, this.connection.id, cmd, params);
+        client.sendCommand(sessionID, this.connection.id, cmd, parameter);
       } else {
         console.log('use server known sender session to forwared:', this.connection.id);
-        client.sendCommand(this.connection.id, this.connection.id, cmd, params);
+        client.sendCommand(this.connection.id, this.connection.id, cmd, parameter);
       }
       return '';
     }

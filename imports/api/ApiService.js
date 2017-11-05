@@ -112,8 +112,8 @@ export default class ApiService {
     this.waitSubDBlist.length = 0;
   }
 
-  sendCommand(cmd, params, handler = null) {
-    const id = cmd + params;
+  sendCommand(cmd, parameter, handler = null) {
+    const id = cmd + parameter;
 
     // return a promise
     const self = this;
@@ -135,7 +135,7 @@ export default class ApiService {
         // do something, e.g. self.socket.emit broadcast messages
       }));
 
-    Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
+    Meteor.call('sendCommand', cmd, parameter, SessionManager.getSuitableSession(), (error, result) => {
       if (error) {
         console.log('get meteor command response err:', error);
       }

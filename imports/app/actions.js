@@ -5,7 +5,7 @@ import { Responses } from '../api/Responses';
 
 // NOTE please add here for any new component
 import { setupFileBrowserDB } from '../fileBrowser/actions';
-import { setupImageController } from '../imageViewer/actions';
+import { setupImageViewerDB } from '../imageViewer/actions';
 import { setupHistogramDB } from '../histogram/actions';
 import { setupFeatureContainerDB } from '../featureContainer/actions';
 import { setupProfilerDB } from '../profiler/actions';
@@ -57,7 +57,7 @@ function handleCommandResponse(resp) {
 // NOTE please add here for any new component
 function setupComponentsDB() {
   setupFileBrowserDB();
-  setupImageController();
+  setupImageViewerDB();
   setupHistogramDB();
   setupFeatureContainerDB();
   setupProfilerDB();

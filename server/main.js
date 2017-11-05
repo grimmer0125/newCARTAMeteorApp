@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Responses } from '../imports/api/Responses';
 import '../imports/api/FileBrowserDB';
-import '../imports/api/ImageController';
+import '../imports/api/ImageViewerDB';
 import '../imports/api/RegionDB';
 import '../imports/api/ProfilerDB';
 import '../imports/api/FeatureContainerDB';

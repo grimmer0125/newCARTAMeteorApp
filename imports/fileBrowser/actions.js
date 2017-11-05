@@ -6,15 +6,16 @@ import { Meteor } from 'meteor/meteor';
 // import '../api/methods';
 import { FileBrowserDB } from '../api/FileBrowserDB';
 import { AnimatorDB } from '../api/AnimatorDB';
-import { ImageController } from '../api/ImageController';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 
 import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
 import { mongoUpsert } from '../api/MongoHelper';
-import { updateAnimator } from '../animator/actions';
-import { queryStackData } from '../imageViewer/actions';
+import animator from '../animator/actions';
+
+import imageViewer from '../imageViewer/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
@@ -97,9 +98,8 @@ function closeFile() {
   return (dispatch, getState) => {
     console.log('closeFile action');
     const state = getState();
-    const animatorID = state.AnimatorDB.animatorID;
-    const controllerID = state.ImageController.controllerID;
-    const stack = state.ImageController.stack;
+    const controllerID = state.ImageViewerDB.controllerID;
+    const stack = state.ImageViewerDB.stack;
     if (stack && stack.layers) {
       const count = stack.layers.length;
       let currentLayer = null;
@@ -135,12 +135,12 @@ function closeFile() {
             console.log('close ok:', resp);
 
             // updateAnimator(animatorID, '');
-            return queryStackData(controllerID);
+            return dispatch(imageViewer.updateStack());
           })
-          .then((stack) => {
+          .then((resp) => {
             // update animatorType-Selections.
             // may not need to update animatorType lists
-            updateAnimator(animatorID, stack);
+            dispatch(animator.updateAnimator(resp));
           });
       } else {
         console.log('no stack layer to close');
@@ -154,26 +154,26 @@ function selectFileToOpen(path) {
   return (dispatch, getState) => {
     const state = getState();
 
-    const nameArray = path.split('/');
-    const fileName = nameArray[nameArray.length - 1];
+    // const nameArray = path.split('/');
+    // const fileName = nameArray[nameArray.length - 1];
 
     // get controllerID
-    const controllerID = state.ImageController.controllerID;
+    const controllerID = state.ImageViewerDB.controllerID;
     const parameter = `id:${controllerID},data:${path}`;
     console.log('inject file parameter, become:', parameter);
 
-    const animatorID = state.AnimatorDB.animatorID;
-    const animatorTypeList = [];
+    // const animatorID = state.AnimatorDB.animatorID;
+    // const animatorTypeList = [];
     api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, parameter)
       .then((resp) => {
         console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
         // updateAnimator(animatorID, fileName);
 
-        return queryStackData(controllerID);
+        return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {
-        updateAnimator(animatorID, stack);
+        dispatch(animator.updateAnimator(stack));
         // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
         // so when switch back to A(3d), need to query animatorType list again.
       });

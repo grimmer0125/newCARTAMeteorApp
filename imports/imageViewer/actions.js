@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
-import { ImageController } from '../api/ImageController';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
@@ -17,8 +17,8 @@ export const ActionType = {
 
 import { mongoUpsert } from '../api/MongoHelper';
 
-export function setupImageController() {
-  api.instance().setupMongoRedux(ImageController, IMAGEVIEWER_CHANGE);
+export function setupImageViewerDB() {
+  api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
 }
 
 function setupImageViewer() {
@@ -56,7 +56,7 @@ function parseReigsterViewResp(resp) {
   const controllerID = data;
 
   // step1: save controllerID to mongodb
-  mongoUpsert(ImageController, { controllerID }, `Resp_${cmd}`);
+  mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
 
   // step2
   const viewName = `${controllerID}/view`;
@@ -73,14 +73,14 @@ export function parseImageToMongo(buffer) {
     // const url = `data:image/jpeg;base64,${buffer}`;
     console.log('image url string size:', buffer.length);
 
-    mongoUpsert(ImageController, { imageURL: buffer }, GET_IMAGE);
+    mongoUpsert(ImageViewerDB, { imageURL: buffer }, GET_IMAGE);
   } else {
     console.log('get dummy image response');
   }
 }
 function zoom(zoomCommand) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageController.controllerID;
+    const controllerID = getState().ImageViewerDB.controllerID;
     console.log('controllerID: ', controllerID);
     // console.log('STATE: ', getState());
     const cmd = `${controllerID}:${Commands.NEW_ZOOM}`;
@@ -92,21 +92,27 @@ function zoom(zoomCommand) {
   };
 }
 
-export function queryStackData(controllerID) {
-  console.log('query new stack info');
-  // const controllerID = resp.data;
-  const cmd = `${controllerID}:${Commands.GET_STACK_DATA}`;
-  const params = '';
-  return api.instance().sendCommand(cmd, params)
-    .then((resp) => {
-      console.log('stack resp:', resp);
-      mongoUpsert(ImageController, { stack: resp.data }, 'GET_STACK');
-      return resp.data;
-    });
+function updateStack() {
+  return (dispatch, getState) => {
+    console.log('query new stack info');
+    const state = getState();
+    const controllerID = state.ImageViewerDB.controllerID;
+
+    // const controllerID = resp.data;
+    const cmd = `${controllerID}:${Commands.GET_STACK_DATA}`;
+    const params = '';
+    return api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        console.log('stack resp:', resp);
+        mongoUpsert(ImageViewerDB, { stack: resp.data }, 'GET_STACK');
+        return resp.data;
+      });
+  };
 }
 
 const actions = {
   setupImageViewer,
+  updateStack,
   zoom,
 };
 

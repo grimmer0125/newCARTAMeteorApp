@@ -4,7 +4,7 @@ import api from '../api/ApiService';
 import Commands from '../api/Commands';
 import { mongoUpsert } from '../api/MongoHelper';
 
-import { queryStackData } from '../imageViewer/actions';
+import imageViewer from '../imageViewer/actions';
 
 // redux part
 const ANIMATOR_CHANGE = 'ANIMATOR_CHANGE';
@@ -187,48 +187,52 @@ function requestAnimatorTypes(animatorID) {
 }
 
 // export function updateAnimator(animatorID, addedFileName) {
-export function updateAnimator(animatorID, stack) {
-  let animatorTypeList = [];
+function updateAnimator(stack) {
+  return (dispatch, getState) => {
+    const animatorID = getState().AnimatorDB.animatorID;
 
-  // CARTA cpp issue1:
-  // 開過2個以上的檔案後, image就會變生出, 當降回1個 or 0個時,
-  // 它的image animator的上限會是只有1個但其中filelist是兩個, 且visible = false
-  // 然後從0個->1個時(如果選擇第三個檔案), filelist, visible不會更新, 等到變回2個以上才都正常
-  // 所以1個時的file name很多時候是不準的, 用stack來解決
-  // issue2:
-  // if people open A, B, C, then close C, the reamining stack-layers become unselected
+    let animatorTypeList = [];
 
-  if (!stack || !stack.layers || stack.layers.length == 0) {
-    console.log('no valid stack or empty stack, so force setup animator list empty !!');
-    mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
+    // CARTA cpp issue1:
+    // 開過2個以上的檔案後, image就會變生出, 當降回1個 or 0個時,
+    // 它的image animator的上限會是只有1個但其中filelist是兩個, 且visible = false
+    // 然後從0個->1個時(如果選擇第三個檔案), filelist, visible不會更新, 等到變回2個以上才都正常
+    // 所以1個時的file name很多時候是不準的, 用stack來解決
+    // issue2:
+    // if people open A, B, C, then close C, the reamining stack-layers become unselected
 
-    return;
-  }
+    if (!stack || !stack.layers || stack.layers.length == 0) {
+      console.log('no valid stack or empty stack, so force setup animator list empty !!');
+      mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
 
-  requestAnimatorTypes(animatorID)
-    .then((resp) => {
-      console.log('get animator query type result:', resp);
-      animatorTypeList = resp.data;
-      // only need stack's layer count
-      return requestAnimatorTypeIDs(animatorTypeList, animatorID, stack);
-    })
-    .then((values) => {
-      console.log('get all animatorType ids:', values);
-      const promiseList = [];
-      for (let i = 0; i < values.length; i += 1) {
-        const value = values[i];
-        animatorTypeList[i].animatorTypeID = value.data;
-      }
+      return;
+    }
 
-      return requestAllSelectionData(animatorTypeList);
-    })
-    .then(values =>
-      receiveAllSelectionData(animatorTypeList, values),
-    )
-    .catch((e) => {
-      console.log('update animator catch, usually no image animatorType');
-      handleAnimatorError(animatorTypeList, stack);
-    });
+    requestAnimatorTypes(animatorID)
+      .then((resp) => {
+        console.log('get animator query type result:', resp);
+        animatorTypeList = resp.data;
+        // only need stack's layer count
+        return requestAnimatorTypeIDs(animatorTypeList, animatorID, stack);
+      })
+      .then((values) => {
+        console.log('get all animatorType ids:', values);
+        const promiseList = [];
+        for (let i = 0; i < values.length; i += 1) {
+          const value = values[i];
+          animatorTypeList[i].animatorTypeID = value.data;
+        }
+
+        return requestAllSelectionData(animatorTypeList);
+      })
+      .then(values =>
+        receiveAllSelectionData(animatorTypeList, values),
+      )
+      .catch((e) => {
+        console.log('update animator catch, usually no image animatorType');
+        handleAnimatorError(animatorTypeList, stack);
+      });
+  };
 }
 
 function changeNonImageFrame(animatorType, newFrameIndex) {
@@ -267,13 +271,9 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
 
 function changeImageFrame(animatorTypeID, newFrameIndex) {
   return (dispatch, getState) => {
-    const state = getState();
     const animatorTypeList = state.AnimatorDB.animatorTypeList;
     const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
     const params = newFrameIndex;
-
-    const controllerID = state.ImageController.controllerID;
-    const animatorID = state.AnimatorDB.animatorID;
 
     console.log('changeImageFrame');
 
@@ -281,12 +281,12 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
       .then((resp) => {
         console.log('get changeFrame result:', resp);
 
-        return queryStackData(controllerID);
+        return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {
         // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
         // so when switch back to A(3d), need to query animatorType list again.
-        updateAnimator(animatorID, stack);
+        dispatch(updateAnimator(stack));
       });
 
     //   return requestAllSelectionData(animatorTypeList);
@@ -307,6 +307,7 @@ const actions = {
   changeImageFrame,
   changeNonImageFrame,
   changeAnimatorType,
+  updateAnimator,
 };
 
 export default actions;

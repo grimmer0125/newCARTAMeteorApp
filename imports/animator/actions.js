@@ -80,27 +80,37 @@ function handleAnimatorError(animatorTypeList, stack) { // fileName) {
   mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
 }
 
-function receiveAllSelectionData(animatorTypeList, results) {
+function receiveAllSelectionData(animatorTypeList, results, stack) {
   for (let i = 0; i < results.length; i += 1) {
     const result = results[i];
     console.log('get selectionData:', result.data);
     animatorTypeList[i].selection = result.data;
   }
 
-  let imageTypeExist = false;
+  let imageAnimatorType = null; // false;
+
   for (const animatorType of animatorTypeList) {
     if (animatorType.type == 'Image') {
-      imageTypeExist = true;
+      imageAnimatorType = animatorType;
+      // imageTypeExist = true;
       break;
     }
   }
-  if (!imageTypeExist) {
+  if (!imageAnimatorType) {
     // 1st: 3d檔案, 沒有image的selection data
 
     console.log('no image animatorType !!!');
     // ~ throw something, ref: https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
     return Promise.reject('oh, no image animatorType after get selection data!!');
   }
+
+  // replace fileList with layer-name inf Stack's layers
+  imageAnimatorType.selection.fileList = [];
+  for (const layer of stack.layers) {
+    imageAnimatorType.selection.fileList.push(layer.name);
+  }
+  // imageAnimatorType.selection.fileList
+
 
   // if (animatorTypeList) {
   console.log('insert animatorTypeList:', animatorTypeList);
@@ -226,7 +236,7 @@ function updateAnimator(stack) {
         return requestAllSelectionData(animatorTypeList);
       })
       .then(values =>
-        receiveAllSelectionData(animatorTypeList, values),
+        receiveAllSelectionData(animatorTypeList, values, stack),
       )
       .catch((e) => {
         console.log('update animator catch, usually no image animatorType');

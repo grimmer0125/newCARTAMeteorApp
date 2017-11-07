@@ -17,6 +17,8 @@ import animator from '../animator/actions';
 
 import imageViewer from '../imageViewer/actions';
 
+import profiler from '../profiler/actions';
+
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
 export const ActionType = {
@@ -190,6 +192,7 @@ function selectFileToOpen(path) {
         console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
         // updateAnimator(animatorID, fileName);
+        dispatch(profiler.getProfile());
 
         return dispatch(imageViewer.updateStack());
       })

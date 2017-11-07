@@ -17,11 +17,11 @@ const SET_SHAPE = 'SET_SHAPE';
 const RESHAPE = 'RESHAPE';
 const DELETE = 'DELETE';
 
-function setupRegion() {
-  return (dispatch) => {
+export function setupRegionDB() {
+  // return (dispatch) => {
 
-    api.instance().setupMongoRedux(dispatch, RegionDB, REGION_CHANGE);
-  };
+  api.instance().setupMongoRedux(RegionDB, REGION_CHANGE);
+  // };
 }
 
 function drawShape(coordX, coordY, width, height) {
@@ -79,7 +79,6 @@ function reshape(newW, newH, newX, newY, index) {
 }
 
 const actions = {
-  setupRegion,
   drawShape,
   setMouseIsDown,
   setShape,

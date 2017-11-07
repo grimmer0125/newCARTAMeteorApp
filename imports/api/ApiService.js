@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
-import { setupMongoReduxListeners } from '../api/MongoHelper';
+import { mongoResumeSelfDB, setupMongoReduxListeners } from '../api/MongoHelper';
 
 let instance = null;
 
@@ -42,13 +42,21 @@ export default class ApiService {
     return instance;
   }
 
+  resumeselfDB() {
+    console.log('resume db');
+    for (const db of this.dblist) {
+      mongoResumeSelfDB(db.collection, db.actionType);
+      // mongoUpsert(FileBrowserDB, { selectedFile: index }, SELECT_FILE);
+    }
+  }
+
   setupViewSize(viewName, width, height) {
     Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
       console.log('get setupViewSize dummy result:', result);
     });
   }
 
-  setupMongoRedux(dispatch, collection, actionType) {
+  setupMongoRedux(collection, actionType) {
     const mongoSetName = collection.cartaSet;
 
     for (const db of this.dblist) {
@@ -58,7 +66,7 @@ export default class ApiService {
       }
     }
 
-    setupMongoReduxListeners(collection, dispatch, actionType);
+    setupMongoReduxListeners(collection, actionType);
     if (SessionManager.get()) {
       console.log('directly setup subscribtioin:', mongoSetName);
       Meteor.subscribe(mongoSetName, SessionManager.get(), () => {
@@ -94,7 +102,7 @@ export default class ApiService {
     }
   }
 
-  setupAllDB(dispatch) {
+  subscribeAllDB(dispatch) {
     for (const db of this.waitSubDBlist) {
       Meteor.subscribe(db.mongoSetName, SessionManager.get(), () => {
         console.log(`${db.mongoSetName} subscribes2 OK: !!!`);
@@ -104,8 +112,8 @@ export default class ApiService {
     this.waitSubDBlist.length = 0;
   }
 
-  sendCommand(cmd, params, handler = null) {
-    const id = cmd + params;
+  sendCommand(cmd, parameter, handler = null) {
+    const id = cmd + parameter;
 
     // return a promise
     const self = this;
@@ -127,7 +135,7 @@ export default class ApiService {
         // do something, e.g. self.socket.emit broadcast messages
       }));
 
-    Meteor.call('sendCommand', cmd, params, SessionManager.getSuitableSession(), (error, result) => {
+    Meteor.call('sendCommand', cmd, parameter, SessionManager.getSuitableSession(), (error, result) => {
       if (error) {
         console.log('get meteor command response err:', error);
       }

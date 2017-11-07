@@ -151,10 +151,10 @@ export default class ChannelClient {
     }
   }
 
-  sendCommand(mainSessionID, senderSession, cmd, params) {
+  sendCommand(mainSessionID, senderSession, cmd, parameter) {
     if (this.QConnector) {
       try {
-        this.QConnector.jsSendCommandSlot(mainSessionID, senderSession, cmd, params);
+        this.QConnector.jsSendCommandSlot(mainSessionID, senderSession, cmd, parameter);
       } catch (err) {
         console.log('sendCommand exception:', err);
       }
@@ -177,5 +177,5 @@ export default class ChannelClient {
 // let QConnector = null;
 
 
-// QtConnector.jsSendCommandSlot(cmd, params);
+// QtConnector.jsSendCommandSlot(cmd, arg);
 // QtConnector.jsUpdateViewSlot(this.m_viewName, this.m_container.offsetWidth, this.m_container.offsetHeight);

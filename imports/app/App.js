@@ -95,7 +95,7 @@ class App extends Component {
     );
   }
 }
-store.dispatch(actions.waitForCommandResponses());
+store.dispatch(actions.setupResponseChannnelAndAllDB());
 
 
 export default App;

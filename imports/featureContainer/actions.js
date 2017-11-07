@@ -4,11 +4,9 @@ import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
 
 const FEATURE_CHANGE = 'FEAUTRE_CHANGE';
-const PROFILER_CHANGE = 'PROFILER_CHANGE';
 
 export const ActionType = {
   FEATURE_CHANGE,
-  PROFILER_CHANGE,
 };
 
 const ADD_ITEM = 'ADD_ITEM';
@@ -16,15 +14,10 @@ const REMOVE_ITEM = 'REMOVE_ITEM';
 const SET_DRAG = 'SET_DRAG';
 const _ = require('lodash');
 
-function setupProfiler() {
-  return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
-  };
-}
-function setupFeatureContainer() {
-  return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, FeatureContainerDB, FEATURE_CHANGE);
-  };
+export function setupFeatureContainerDB() {
+  // return (dispatch) => {
+  api.instance().setupMongoRedux(FeatureContainerDB, FEATURE_CHANGE);
+  // };
 }
 function onAddItemDB(data) {
   return (dispatch, getState) => {
@@ -72,9 +65,7 @@ function onDragStopDB(event) {
 const actions = {
   onAddItemDB,
   onRemoveItemDB,
-  setupFeatureContainer,
   onDragStopDB,
-  setupProfiler,
 };
 
 export default actions;

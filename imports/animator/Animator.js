@@ -148,12 +148,13 @@ class Animator extends Component {
             </DropDownMenu>
             {/* <p>&#8804; {currentSelection.frameEnd}</p> */}
           </div>
+
           <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
             <div style={{ marginTop: '15px' }}>
               <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameStartUser + 1} />
             </div>
             <div>
-              <Slider sliderStyle={{ width: '350px', left: '10px', height: '2px' }} step={1} min={1} max={currentSelection.frameEnd} value={currentSelection.frame + 1} onChange={this.handleSlider} />
+              <Slider sliderStyle={{ width: '350px', left: '10px', height: '2px' }} step={1} min={currentSelection.frameEnd > 1 ? 1 : null} max={currentSelection.frameEnd} value={currentSelection.frame + 1} onChange={this.handleSlider} />
             </div>
             <div style={{ marginLeft: '30px', marginTop: '15px' }}>
               <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameEndUser + 1} />

@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Responses } from '../imports/api/Responses';
 import '../imports/api/FileBrowserDB';
-import '../imports/api/ImageController';
+import '../imports/api/ImageViewerDB';
 import '../imports/api/RegionDB';
 import '../imports/api/ProfilerDB';
 import '../imports/api/FeatureContainerDB';
@@ -112,15 +112,15 @@ Meteor.methods({
     return '';
   },
 
-  sendCommand(cmd, params, sessionID) {
+  sendCommand(cmd, parameter, sessionID) {
     if (Meteor.isServer) {
-      console.log('forwared commands from clients:', cmd, ';params:', params);
+      console.log('forwared commands from clients:', cmd, ';parameter:', parameter);
       if (sessionID) {
         console.log('use specified sessionID to forward,', sessionID);
-        client.sendCommand(sessionID, this.connection.id, cmd, params);
+        client.sendCommand(sessionID, this.connection.id, cmd, parameter);
       } else {
         console.log('use server known sender session to forwared:', this.connection.id);
-        client.sendCommand(this.connection.id, this.connection.id, cmd, params);
+        client.sendCommand(this.connection.id, this.connection.id, cmd, parameter);
       }
       return '';
     }

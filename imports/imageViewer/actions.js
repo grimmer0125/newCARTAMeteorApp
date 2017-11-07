@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import SessionManager from '../api/SessionManager';
-import { ImageController } from '../api/ImageController';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
@@ -17,9 +17,13 @@ export const ActionType = {
 
 import { mongoUpsert } from '../api/MongoHelper';
 
-function setuptImageViewer() {
+export function setupImageViewerDB() {
+  api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
+}
+
+function setupImageViewer() {
   return (dispatch) => {
-    api.instance().setupMongoRedux(dispatch, ImageController, IMAGEVIEWER_CHANGE);
+    console.log('grimmer setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
@@ -28,16 +32,16 @@ function setuptImageViewer() {
     // 'pluginId:ImageViewer,index:0';
 
     const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
-    const params = 'pluginId:ImageViewer,index:0';
+    const arg = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
     console.log('send register ImageViewer');
 
-    // api.instance().sendCommand(cmd, params, (resp) => {
+    // api.instance().sendCommand(cmd, arg, (resp) => {
     //   parseReigsterViewResp(resp);
     // });
-    api.instance().sendCommand(cmd, params)
+    api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         parseReigsterViewResp(resp);
       });
@@ -52,7 +56,7 @@ function parseReigsterViewResp(resp) {
   const controllerID = data;
 
   // step1: save controllerID to mongodb
-  mongoUpsert(ImageController, { controllerID }, `Resp_${cmd}`);
+  mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
 
   // step2
   const viewName = `${controllerID}/view`;
@@ -69,27 +73,63 @@ export function parseImageToMongo(buffer) {
     // const url = `data:image/jpeg;base64,${buffer}`;
     console.log('image url string size:', buffer.length);
 
-    mongoUpsert(ImageController, { imageURL: buffer }, GET_IMAGE);
+    mongoUpsert(ImageViewerDB, { imageURL: buffer }, GET_IMAGE);
   } else {
     console.log('get dummy image response');
   }
 }
-function zoom(zoomCommand) {
+
+function setZoomLevel(zoomLevel, layerID) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageController.controllerID;
+    const controllerID = getState().ImageViewerDB.controllerID;
+    console.log('controllerID: ', controllerID);
+    // console.log('STATE: ', getState());
+    const cmd = `${controllerID}:${Commands.SET_ZOOM_LEVEL}`;
+    const arg = `${zoomLevel} ${layerID}`;
+
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      console.log('get set zoom level result:', resp);
+    });
+  };
+}
+
+function zoom(zoomFactor) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
     console.log('controllerID: ', controllerID);
     // console.log('STATE: ', getState());
     const cmd = `${controllerID}:${Commands.NEW_ZOOM}`;
-    const params = zoomCommand;
+    const arg = zoomFactor;
 
-    api.instance().sendCommand(cmd, params, (resp) => {
+    api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom result:', resp);
     });
   };
 }
+
+function updateStack() {
+  return (dispatch, getState) => {
+    console.log('query new stack info');
+    const state = getState();
+    const controllerID = state.ImageViewerDB.controllerID;
+
+    // const controllerID = resp.data;
+    const cmd = `${controllerID}:${Commands.GET_STACK_DATA}`;
+    const arg = '';
+    return api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        console.log('stack resp:', resp);
+        mongoUpsert(ImageViewerDB, { stack: resp.data }, 'GET_STACK');
+        return resp.data;
+      });
+  };
+}
+
 const actions = {
-  setuptImageViewer,
+  setupImageViewer,
+  updateStack,
   zoom,
+  setZoomLevel,
 };
 
 export default actions;

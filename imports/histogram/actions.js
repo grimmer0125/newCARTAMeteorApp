@@ -13,11 +13,12 @@ export const ActionType = {
 
 import { mongoUpsert } from '../api/MongoHelper';
 
+export function setupHistogramDB() {
+  api.instance().setupMongoRedux(HistogramDB, HISTOGRAM_CHANGE);
+}
+
 function setupHistogram() {
   return (dispatch) => {
-
-    api.instance().setupMongoRedux(dispatch, HistogramDB, HISTOGRAM_CHANGE);
-
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
     // var pathDict = skel.widgets.Path.getInstance();
@@ -25,13 +26,13 @@ function setupHistogram() {
     // 'pluginId:ImageViewer,index:0';
 
     const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
-    const params = 'pluginId:Histogram,index:0';
+    const arg = 'pluginId:Histogram,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
     console.log('send register Histogram');
 
-    api.instance().sendCommand(cmd, params, (resp) => {
+    api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get register histogram result:', resp);
 
       parseReigsterHistogramResp(resp);

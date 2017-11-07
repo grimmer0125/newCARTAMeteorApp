@@ -1,8 +1,19 @@
 import { ProfilerDB } from '../api/ProfilerDB';
 import { mongoUpsert } from '../api/MongoHelper';
+import api from '../api/ApiService';
 
 const SET_HOVER = 'SET_HOVER';
 const ZOOM_PAN = 'ZOOM_PAN';
+
+const PROFILER_CHANGE = 'PROFILER_CHANGE';
+
+export const ActionType = {
+  PROFILER_CHANGE,
+};
+
+export function setupProfilerDB() {
+  api.instance().setupMongoRedux(ProfilerDB, PROFILER_CHANGE);
+}
 
 function onHover(data) {
   return (dispatch, getState) => {

@@ -21,20 +21,23 @@ export default class SideMenu extends Component {
       width: 56,
       openFiles: false,
       openBrowser: false,
+      expand: false,
     };
   }
   handleToggle = () => {
-    this.props.handleExpand();
+    // this.props.handleExpand();
+    this.setState({ expand: !this.state.expand });
   }
   handleLogout = () => {
     this.props.handleLogout();
   }
   handleOpenFiles = () => {
-    this.props.expandToTrue();
+    // this.props.expandToTrue();
     this.setState({
       width: this.state.openWidth,
       openFiles: !this.state.openFiles,
       openBrowser: !this.state.openBrowser,
+      expand: true,
     });
   }
   handleNavBack = () => {
@@ -45,7 +48,7 @@ export default class SideMenu extends Component {
   }
   render() {
     let width = 0;
-    if (this.props.expand) {
+    if (this.state.expand) {
       width = openWidth;
     } else {
       width = closeWidth;
@@ -59,7 +62,7 @@ export default class SideMenu extends Component {
         <MenuItemMUI style={{ overflowX: 'hidden' }} onClick={this.handleOpenFiles} primaryText="Files" leftIcon={<Folder />} />
         <MenuItemMUI style={{ overflowX: 'hidden' }} onClick={this.handleLogout} primaryText="Sign out" leftIcon={<Run />} />
         {
-          this.props.expand ?
+          this.state.expand ?
             <IconButton style={buttonStyle2}>
               <NavBefore onTouchTap={this.handleToggle} />
             </IconButton>

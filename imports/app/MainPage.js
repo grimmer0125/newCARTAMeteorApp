@@ -43,7 +43,7 @@ class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expand: false,
+      // expand: false,
       value: 3,
       setting: '',
     };
@@ -74,6 +74,9 @@ class MainPage extends Component {
     // console.log(`data is ${data.type}`);
     this.grid.getWrappedInstance().onAddItem(data.type);
   }
+  handleClick2 = (type) => {
+    this.grid.getWrappedInstance().onAddItem(type);
+  }
   handleChange = (event, index, value) => this.setState({ value });
   handleExpand = () => {
     this.setState({ expand: !this.state.expand });
@@ -82,7 +85,7 @@ class MainPage extends Component {
     this.setState({ expand: true });
   }
   showSetting = (setting) => {
-    console.log('INSIDE SHOWSETTING!!');
+    // console.log('INSIDE SHOWSETTING!!');
     // console.log('SETTING TO BE SHOWN: ', setting);
     if (setting) {
       if (setting === 'Profiler') return <ProfilerSettings />;
@@ -107,31 +110,31 @@ class MainPage extends Component {
   }
   render() {
     console.log('IN RENDER');
-    const string = 'Image';
     // const label = <div>{string}<br /><sub>image 0</sub></div>;
-    const contentStyle = {
-      marginLeft: 65,
-    };
+    // const contentStyle = {
+    //   marginLeft: 65,
+    // };
     const toolbarStyle = {
       backgroundColor: '#EEEEEE',
       bottom: 0,
       width: '100%',
     };
-    const expanded = this.state.expand;
+    // const expanded = this.state.expand;
     const setting = this.state.setting;
     const midPanel = (
       <div>
-        <ContextMenuTrigger id="menu">
-          <FeatureContainer ref={(node) => { if (node) this.grid = node; }} width={this.state.secondColumnWidth} setSetting={this.setSetting} />
-          {/* <FeatureContainer ref="grid" width={this.state.secondColumnWidth} setSetting={this.setSetting} /> */}
-        </ContextMenuTrigger>
+        <div>
+          <ContextMenuTrigger id="menu">
+            <FeatureContainer ref={(node) => { if (node) this.grid = node; }} width={this.state.secondColumnWidth} setSetting={this.setSetting} />
+          </ContextMenuTrigger>
+        </div>
         <ContextMenu id="menu">
           <SubMenu title="Layout" hoverDelay={100}>
             <MenuItem onClick={this.handleClick} data={{ type: 'Profiler' }}>Profiler</MenuItem>
             <MenuItem onClick={this.handleClick} data={{ type: 'Histogram' }}>Histogram</MenuItem>
             {/* <MenuItem onClick={this.handleClick} data={{ type: 'FileBrowser' }}>File Browser</MenuItem> */}
             {/* <MenuItem onClick={this.handleClick} data={{ type: 'Image Composite' }}>Image Composite Layout</MenuItem>
-          <MenuItem onClick={this.handleClick} data={{ type: 'Custom' }}>Custom Layout</MenuItem> */}
+            <MenuItem onClick={this.handleClick} data={{ type: 'Custom' }}>Custom Layout</MenuItem> */}
           </SubMenu>
         </ContextMenu>
       </div>
@@ -139,9 +142,9 @@ class MainPage extends Component {
     return (
       <div className="layout-row">
         <SideMenu
-          expandToTrue={this.expandToTrue}
-          handleExpand={this.handleExpand}
-          expand={this.state.expand}
+          // expandToTrue={this.expandToTrue}
+          // handleExpand={this.handleExpand}
+          // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
         />
         {/* <Topbar style={contentStyle} /> */}
@@ -174,9 +177,23 @@ class MainPage extends Component {
               </div> */}
               <Region />
               <br />
-              <Animator/>
+              <Animator />
             </div>
             <div>
+              <div style={{ marginLeft: '30%', marginTop: '10px' }}>
+                <RaisedButton
+                  style={{ marginLeft: '10px' }}
+                  onClick={() => this.handleClick2('Profiler')}
+                >
+                  <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
+                </RaisedButton>
+                <RaisedButton
+                  style={{ marginLeft: '10px' }}
+                  onClick={() => this.handleClick2('Histogram')}
+                >
+                  <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
+                </RaisedButton>
+              </div>
               {midPanel}
             </div>
             <div>

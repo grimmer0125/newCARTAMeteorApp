@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import actions from './actions';
+import api from '../api/ApiService';
 
 class Profiler extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.props.dispatch(actions.setupProfiler());
     // this.getRef = this.getRef.bind(this);
   }
   componentDidMount = () => {
-    const trace1 = {
-      x: [1, 2, 3, 4],
-      y: [10, 15, 13, 17],
+    console.log('componentDidMount', this.props);
+    let trace1 = {
+      // x: [1, 2, 3, 4],
+      // y: [10, 15, 13, 17],
       type: 'scatter',
     };
     const layout = {
@@ -34,6 +37,11 @@ class Profiler extends Component {
     });
   }
   componentWillReceiveProps = (nextProps) => {
+    console.log('Profiler nextProps:', nextProps);
+    if (nextProps.profileData) {
+      Plotly.deleteTraces(this.el, -1);
+      Plotly.addTraces(this.el, nextProps.profileData);
+    }
     if (nextProps.width) {
       const layout = {
         width: nextProps.width - 20,
@@ -65,6 +73,7 @@ class Profiler extends Component {
   }
 }
 const mapStateToProps = state => ({
+  profileData: state.ProfilerDB.profileData,
   data: state.ProfilerDB.data,
   zoomPanData: state.ProfilerDB.zoomPanData,
 });

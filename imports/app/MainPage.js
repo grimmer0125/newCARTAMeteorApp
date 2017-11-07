@@ -185,13 +185,13 @@ class MainPage extends Component {
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Profiler')}
                 >
-                  <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
+                  <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
                 </RaisedButton>
                 <RaisedButton
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Histogram')}
                 >
-                  <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
+                  <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
                 </RaisedButton>
               </div>
               {midPanel}

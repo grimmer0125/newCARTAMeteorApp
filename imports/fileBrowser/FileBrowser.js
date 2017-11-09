@@ -170,9 +170,9 @@ class FileBrowser extends Component {
               {fileItems}
             </SelectableList>
             <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-            <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
           </div>
         }
+        <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
       </div>
     );
   }

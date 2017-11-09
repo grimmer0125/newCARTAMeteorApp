@@ -22,7 +22,10 @@ const insertResponse = Meteor.bindEnvironment((resp) => {
   const docId = Responses.insert(resp);
   console.log('insert is finished:', docId);
 });
-
+const gm = require('gm');
+// const fs = require('fs');
+const { exec } = require('child_process');
+// const gm = require('gm').subClass({ imageMagick: true });
 // TODO the sequence is wired. (1st version is remove + insert). remove seems like generator
 // 2nd wired things: Also FileBrowser's Tracker.autorun may receive two times call (count2+count1)
 //  or just 1 time (3 count),
@@ -87,7 +90,6 @@ Meteor.startup(() => {
   //   client.sendKeepAlive();
   // }, 200);`;
 });
-
 Meteor.methods({
 
   setupViewSize(viewName, width, height) {
@@ -126,6 +128,56 @@ Meteor.methods({
     }
 
     console.log('sendCommand in client');
+    return '';
+  },
+  convertFile(url, type) {
+    console.log('INSIDE convertFile');
+    console.log('URL: ', url);
+    if (Meteor.isServer) {
+      return new Promise(((resolve, reject) => {
+        const buf = Buffer.from(url.replace(/^data:image\/(png|jpg);base64,/, ''), 'base64');
+        // const buf = Buffer.from(url.replace(/^data:image\/svg\+xml,/, ''), 'utf8');
+        console.log('BUFFER BEFORE: ', buf);
+        gm(buf).toBuffer(type, (err, buffer) => {
+          if (!err) {
+            console.log('BUFFER AFTER: ', buffer);
+            console.log('done');
+            // result = buffer;
+            resolve(buffer);
+          }
+          console.log(err);
+          reject(err);
+        });
+      }));
+      // /Users/julie/newCARTAMeteorApp/public/images/histogram.svg
+      // `cairosvg  ${url} -o /Users/julie/newCARTAMeteorApp/public/images/histogram.ps
+      // const data = url.replace(/^data:image\/svg\+xml,/, '');
+      // const buf = Buffer.from(url.replace(/^data:image\/svg\+xml,/, ''), 'base64');
+      // exec('python3', (err, stdout, stderr) => {
+      //   if (err) {
+      //     console.log(err);
+      //   }
+      //   console.log(`stdout: ${stdout}`);
+      //   console.log(`stderr: ${stderr}`);
+      // });
+      // return exec('cairosvg.svg2pdf(url="/Users/julie/newCARTAMeteorApp/public/images/histogram.svg", write_to="/Users/julie/newCARTAMeteorApp/public/images/histogram.pdf")',
+      //   (err, stdout, stderr) => {
+      //     if (err) {
+      //       console.log(err);
+      //     }
+      //     console.log(`stdout: ${stdout}`);
+      //     console.log(`stderr: ${stderr}`);
+      //   });
+      // const output = exec(`cairosvg.svg2pdf(bytestring=open(${buf}).read().encode('utf-8')))`,
+      //   (err, stdout, stderr) => {
+      //     if (err) {
+      //       console.log(err);
+      //     }
+      //     console.log(`stdout: ${stdout}`);
+      //     console.log(`stderr: ${stderr}`);
+      //   });
+      // return output;
+    }
     return '';
   },
 });

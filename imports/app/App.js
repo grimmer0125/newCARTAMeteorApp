@@ -66,18 +66,17 @@ class App extends Component {
           autoDismiss: 4,
         });
       } else {
-        this.refs.notificationSystem.addNotification({
-          title: 'Logout Failure',
-          message: 'Sign out failed. Try again.',
-          level: 'error',
-          autoDismiss: 4,
-        });
+        // this.refs.notificationSystem.addNotification({
+        //   title: 'Logout Failure',
+        //   message: 'Sign out failed. Try again.',
+        //   level: 'error',
+        //   autoDismiss: 4,
+        // });
         this.setState({ loggedIn: false });
       }
     });
   }
   render() {
-    console.log('LOGGED IN STATE: ', this.state.loggedIn);
     return (
       <Provider store={store}>
         <MuiThemeProvider muiTheme={muiTheme}>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
@@ -6,12 +7,16 @@ import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
+
+const Blob = require('blob');
 
 
 // import ImageViewer2 from '../imageViewer/ImageViewer2';
@@ -473,6 +478,36 @@ class Region extends Component {
     console.log('ZOOM BUTTON CLICKED');
     this.props.dispatch(imageActions.zoom(2));
   }
+  convertToImage = () => {
+    console.log('convertToImage');
+    if (this.layer) {
+      // const resizedCanvas = document.createElement('canvas');
+      // const resizedContext = resizedCanvas.getContext('2d');
+      // resizedCanvas.height = '477';
+      // resizedCanvas.width = '482';
+      // const canvas = this.layer.getCanvas();
+      // resizedContext.drawImage(canvas._canvas, 0, 0, 477, 482);
+      // const url = resizedCanvas.toDataURL('image/png', 1);
+      const canvas = this.layer.getCanvas();
+      const url = canvas.toDataURL('image/png', 1);
+      Meteor.call('convertFile', url, this.state.value, (error, result) => {
+        // console.log('RESULT: ', result);
+        const blob = new Blob([result], { type: 'text/eps' });
+        const b64encoded = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('href', b64encoded);
+        a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        // window.URL.revokeObjectURL(b64encoded);
+      });
+    }
+  }
+  handleChange = (event, index, value) => {
+    this.setState({ value });
+    // this.convertToImage();
+  }
   render() {
     const { x, y, width, height } = this.props;
     this.rect = (
@@ -508,7 +543,7 @@ class Region extends Component {
             <Layer
               id="layer"
               ref={(node) => {
-                this.layer = node;
+                if (node) this.layer = node;
                 // if (this.layer) {
                 // this.layer.getCanvas().context._context.imageSmoothingQuality = 'high';
                 // console.log(this.layer.getContext().scale(1, 1));
@@ -542,6 +577,11 @@ class Region extends Component {
         <RaisedButton label="rectangle" onClick={this.init} />
         <RaisedButton label="delete" onClick={this.delete} />
         <RaisedButton label="save" onClick={this.handleTouchTap} />
+        {/* <RaisedButton
+          label="file"
+          onClick={this.convertToImage}
+        /> */}
+        {/* <img src={`data:image/png;base64,${this.state.src}`} alt="" /> */}
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
@@ -552,16 +592,27 @@ class Region extends Component {
           <TextField
             floatingLabelText="Save as..."
             onChange={this.saveAs}
-          /><br />
+            style={{ margin: '10px', verticalAlign: 'middle' }}
+          />
+          <SelectField
+            floatingLabelText="File Type"
+            value={this.state.value}
+            onChange={this.handleChange}
+            autoWidth
+            style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
+          >
+            <MenuItem value="pdf" primaryText="pdf" />
+            <MenuItem value="eps" primaryText="eps" />
+            <MenuItem value="ps" primaryText="ps" />
+          </SelectField>
+          <br />
           <FlatButton
             type="submit"
             label="Save"
             primary
-            href={this.layer ? this.layer.getCanvas().toDataURL('image/jpeg', 1) : ''}
-            // href={this.stage ? this.stage.node.toDataURL({ pixelRatio: 1, mimeType: 'image/jpeg', quality: 0.2 }) : false}
-            download={this.state.saveAsInput}
-            style={{ left: '65%' }}
-            // onClick={this.test}
+            // href={`data:text/eps;base64,${this.state.src}`}
+            style={{ marginRight: 0 }}
+            onClick={this.convertToImage}
           />
         </Popover>
       </div>

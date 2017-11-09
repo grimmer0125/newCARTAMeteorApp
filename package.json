@@ -8,6 +8,7 @@
   "dependencies": {
     "babel-runtime": "^6.20.0",
     "bcrypt": "^1.0.3",
+    "blob": "0.0.4",
     "gm": "^1.23.0",
     "immutability-helper": "^2.4.0",
     "indexof": "0.0.1",

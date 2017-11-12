@@ -28,7 +28,7 @@ let endY;
 class Region extends Component {
   constructor(props) {
     super(props);
-    this.regions = [];
+    // this.regions = [];
     this.rect = null;
     this.flipY = false;
     this.flipX = false;
@@ -135,6 +135,7 @@ class Region extends Component {
       this.props.dispatch(actions.moveRect(newX, newY, index));
     });
   }
+
   reshape = (newW, newH, newX, newY, index) => {
     // this.regionArray = this.props.regionArray;
     // const newArray = update(this.regionArray[index],
@@ -147,9 +148,9 @@ class Region extends Component {
     });
   }
   addAnchor = (item, index) => {
-    if (!this.regions.hasOwnProperty(item.key)) {
-      this.regions[item.key] = {};
-    }
+    // if (!this.regions.hasOwnProperty(item.key)) {
+    //   this.regions[item.key] = {};
+    // }
 
     const circlesLen = item.circles.length;
     const circles = [];
@@ -165,17 +166,24 @@ class Region extends Component {
           radius={8}
           draggable
           key={element.pos}
-          ref={(node) => {
-            if (node && !this.regions[item.key].hasOwnProperty(element.pos)) {
-              console.log('regiser circle:', element.pos);
-              this.regions[item.key][element.pos] = node;
-              this.regions[item.key][element.pos].on('dragmove', () => {
-                const x = this.regions[item.key][element.pos].getAttrs().x;
-                const y = this.regions[item.key][element.pos].getAttrs().y;
-                this.resizeRect(x, y, element.pos, index);
-              });
-            }
+          onDragMove={(e) => {
+            const x = e.target._lastPos.x;
+            const y = e.target._lastPos.y;
+            console.log('drag circle:', x, ';', y);
+            this.resizeRect(x, y, element.pos, index);
           }}
+          // ref={(node) => {
+          //   if (node && !this.regions[item.key].hasOwnProperty(element.pos)) {
+          //     console.log('regiser circle:', element.pos);
+          //     this.regions[item.key][element.pos] = node;
+          //     this.regions[item.key][element.pos].on('dragmove', () => {
+          //       const x = this.regions[item.key][element.pos].getAttrs().x;
+          //       const y = this.regions[item.key][element.pos].getAttrs().y;
+          //       console.log('drag0:', x, ';', y);
+          //       this.resizeRect(x, y, element.pos, index);
+          //     });
+          //   }
+          // }}
         />
       );
       circles.push(circle);
@@ -198,33 +206,39 @@ class Region extends Component {
           stroke="red"
           draggable
           listening
-          ref={(node) => {
-            if (node && !this.regions[item.key].hasOwnProperty('shape')) {
-              this.regions[item.key].shape = node;
-              this.regions[item.key].shape.on('dragmove', () => {
-                // console.log('dragmove');
-                // const itemW = item.w;
-                // const itemH = item.h;
-                // const i = index;
-                // this.props.regionArray.forEach((obj, index) => {
-                //   if (obj.key === item.key) {
-                //     itemW = obj.w;
-                //     itemH = obj.h;
-                //     i = index;
-                //   }
-                // });
-                const x = this.regions[item.key].shape.getAttrs().x;
-                const y = this.regions[item.key].shape.getAttrs().y;
-                this.moveRect(x, y, index);
-                // this.reshape(itemW, itemH, x, y, i);
-              });
-              this.regions[item.key].shape.on('click', () => {
-                this.setState({
-                  toDelete: item.key,
-                });
-              });
-            }
+          onDragMove={(e) => {
+            const x = e.target._lastPos.x;
+            const y = e.target._lastPos.y;
+            console.log('drag rect:', x, ';', y);
+            this.moveRect(x, y, index);
           }}
+          // ref={(node) => {
+          //   if (node && !this.regions[item.key].hasOwnProperty('shape')) {
+          //     this.regions[item.key].shape = node;
+          //     this.regions[item.key].shape.on('dragmove', () => {
+          //       // console.log('dragmove');
+          //       // const itemW = item.w;
+          //       // const itemH = item.h;
+          //       // const i = index;
+          //       // this.props.regionArray.forEach((obj, index) => {
+          //       //   if (obj.key === item.key) {
+          //       //     itemW = obj.w;
+          //       //     itemH = obj.h;
+          //       //     i = index;
+          //       //   }
+          //       // });
+          //       const x = this.regions[item.key].shape.getAttrs().x;
+          //       const y = this.regions[item.key].shape.getAttrs().y;
+          //       this.moveRect(x, y, index);
+          //       // this.reshape(itemW, itemH, x, y, i);
+          //     });
+          //     this.regions[item.key].shape.on('click', () => {
+          //       this.setState({
+          //         toDelete: item.key,
+          //       });
+          //     });
+          //   }
+          // }}
         />
         {anchors}
       </Group>

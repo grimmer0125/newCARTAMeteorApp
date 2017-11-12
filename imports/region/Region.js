@@ -123,6 +123,18 @@ class Region extends Component {
     const target = this.state.toDelete;
     this.props.dispatch(actions.remove(target));
   }
+
+  resizeRect = (newX, newY, pos, index) => {
+    process.nextTick(() => {
+      this.props.dispatch(actions.resizeRect(newX, newY, pos, index));
+    });
+  }
+
+  moveRect = (newX, newY, index) => {
+    process.nextTick(() => {
+      this.props.dispatch(actions.moveRect(newX, newY, index));
+    });
+  }
   reshape = (newW, newH, newX, newY, index) => {
     // this.regionArray = this.props.regionArray;
     // const newArray = update(this.regionArray[index],
@@ -131,281 +143,47 @@ class Region extends Component {
     // const data = update(this.regionArray, { $splice: [[index, 1, newArray]] });
     process.nextTick(() => {
       // this.regionArray = data;
-      this.props.dispatch(actions.reshape(newW, newH, newX, newY, index));
+      this.props.dispatch(actions.reshape(newW, newH, newX, newY, index, circles));
     });
   }
-  addAnchor = (item) => {
+  addAnchor = (item, index) => {
+    if (!this.regions.hasOwnProperty(item.key)) {
+      this.regions[item.key] = {};
+    }
+
+    const circlesLen = item.circles.length;
+    const circles = [];
+    for (let i = 0; i < circlesLen; i++) {
+      const element = item.circles[i];
+      const circle = (
+        <Circle
+          x={element.x}
+          y={element.y}
+          stroke="#666"
+          fill="#ddd"
+          strokeWidth={2}
+          radius={8}
+          draggable
+          key={element.pos}
+          ref={(node) => {
+            if (node && !this.regions[item.key].hasOwnProperty(element.pos)) {
+              console.log('regiser circle:', element.pos);
+              this.regions[item.key][element.pos] = node;
+              this.regions[item.key][element.pos].on('dragmove', () => {
+                const x = this.regions[item.key][element.pos].getAttrs().x;
+                const y = this.regions[item.key][element.pos].getAttrs().y;
+                this.resizeRect(x, y, element.pos, index);
+              });
+            }
+          }}
+        />
+      );
+      circles.push(circle);
+    }
+
     const anchors = (
       <Group>
-        <Circle
-          x={this.flipX ? item.x + item.w : item.x}
-          y={this.flipY ? item.y + item.h : item.y}
-          stroke="#666"
-          fill="#ddd"
-          // fill="#7CFC00"
-          strokeWidth={2}
-          radius={8}
-          draggable
-          ref={(node) => {
-            if (node && !this.regions[item.key].hasOwnProperty('topLeft')) {
-              this.regions[item.key].topLeft = node;
-              this.regions[item.key].topLeft.on('dragmove', () => {
-                const bottomLeftAttrs = this.regions[item.key].bottomLeft.getAttrs();
-                // const bottomRightAttrs = this.regions[item.key].bottomRight.getAttrs();
-                const topRightAttrs = this.regions[item.key].topRight.getAttrs();
-                let itemX = 0;
-                let itemY = 0;
-                let itemW = 0;
-                let itemH = 0;
-                let i = 0;
-                this.props.regionArray.forEach((obj, index) => {
-                  if (obj.key === item.key) {
-                    itemX = obj.x;
-                    itemY = obj.y;
-                    itemW = obj.w;
-                    itemH = obj.h;
-                    i = index;
-                  }
-                });
-                const x = this.regions[item.key].topLeft.getAttrs().x;
-                const y = this.regions[item.key].topLeft.getAttrs().y;
-                let newW = Math.abs((itemX + itemW) - x);
-                let newH = Math.abs((itemY + itemH) - y);
-                // flip to bottom left
-                if (bottomLeftAttrs.y <= y && topRightAttrs.x >= x) {
-                  if (!this.flipY) this.flipY = true;
-                  if (this.flipX) this.flipX = false;
-                  // this.flipY = true;
-                  // this.flipX = false;
-                  // newH = Math.abs(itemH - ((itemY + itemH) - y));
-                  newH = Math.abs(y - bottomLeftAttrs.y);
-                  this.reshape(newW, newH, x, itemY, i);
-                  // const v = bottomLeftAttrs.y;
-                  // this.reshape(newW, newH, itemX, v, i);
-                } else if (topRightAttrs.x <= x && bottomLeftAttrs.y >= y) {
-                  // flip to top right
-                  if (!this.flipX) this.flipX = true;
-                  if (this.flipY) this.flipY = false;
-                  // newW = Math.abs(itemW - ((itemX + itemW) - x));
-                  newW = Math.abs(x - topRightAttrs.x);
-                  this.reshape(newW, newH, itemX, y, i);
-                  // this.reshape(newW, newH, itemX + itemW, itemY, i);
-                }
-                // should be bottomRight
-                else if (bottomLeftAttrs.y <= y && topRightAttrs.x <= x) {
-                  if (!this.flipX) this.flipX = true;
-                  if (!this.flipY) this.flipY = true;
-                  newH = Math.abs(y - itemY);
-                  newW = Math.abs(itemW - ((itemX + itemW) - x));
-                  this.reshape(newW, newH, itemX, itemY, i);
-                } else {
-                  if (this.flipY) this.flipY = false;
-                  if (this.flipX) this.flipX = false;
-                  this.reshape(newW, newH, x, y, i);
-                }
-              });
-            }
-          }}
-        />
-        <Circle
-          x={this.flipX ? item.x : item.x + item.w}
-          y={this.flipY ? item.y + item.h : item.y}
-          stroke="#666"
-          fill="#ddd"
-          strokeWidth={2}
-          radius={8}
-          draggable
-          ref={(node) => {
-            if (node && !this.regions[item.key].hasOwnProperty('topRight')) {
-              this.regions[item.key].topRight = node;
-              this.regions[item.key].topRight.on('dragmove', () => {
-                const bottomRightAttrs = this.regions[item.key].bottomRight.getAttrs();
-                const topLeftAttrs = this.regions[item.key].topLeft.getAttrs();
-                // console.log('resize');
-                let itemX = 0;
-                let itemY = 0;
-                let itemW = 0;
-                let itemH = 0;
-                let i = 0;
-                this.props.regionArray.forEach((obj, index) => {
-                  if (obj.key === item.key) {
-                    itemX = obj.x;
-                    itemY = obj.y;
-                    itemW = obj.w;
-                    itemH = obj.h;
-                    i = index;
-                  }
-                });
-                const x = this.regions[item.key].topRight.getAttrs().x;
-                const y = this.regions[item.key].topRight.getAttrs().y;
-                let newW = Math.abs(itemW - ((itemX + itemW) - x));
-                let newH = Math.abs((itemY + itemH) - y);
-                // flip to bottom right
-                if (bottomRightAttrs.y <= y && topLeftAttrs.x <= x) {
-                  if (!this.flipY) this.flipY = true;
-                  if (this.flipX) this.flipX = false;
-                  // newH = Math.abs(y - itemY);
-                  newH = Math.abs(y - bottomRightAttrs.y);
-                  this.reshape(newW, newH, itemX, itemY, i);
-                } else if (topLeftAttrs.x >= x && bottomRightAttrs.y >= y) {
-                  // flip to top left
-                  if (!this.flipX) this.flipX = true;
-                  if (this.flipY) this.flipY = false;
-                  // newW = Math.abs(itemX - x);
-                  newW = Math.abs((itemX + itemW) - x);
-                  this.reshape(newW, newH, x, y, i);
-                }
-                // should be bottomLeft
-                else if (bottomRightAttrs.y <= y && topLeftAttrs.x >= x) {
-                  if (!this.flipX) this.flipX = true;
-                  if (!this.flipY) this.flipY = true;
-                  newW = Math.abs((itemX + itemW) - x);
-                  newH = Math.abs(itemH - ((itemY + itemH) - y));
-                  this.reshape(newW, newH, x, itemY, i);
-                } else {
-                  if (this.flipY) this.flipY = false;
-                  if (this.flipX) this.flipX = false;
-                  this.reshape(newW, newH, itemX, y, i);
-                }
-              });
-            }
-          }}
-        />
-        <Circle
-          x={this.flipX ? item.x + item.w : item.x}
-          y={this.flipY ? item.y : item.y + item.h}
-          stroke="#666"
-          // fill="#FFFF00"
-          fill="#ddd"
-          strokeWidth={2}
-          radius={8}
-          draggable
-          ref={(node) => {
-            if (node && !this.regions[item.key].hasOwnProperty('bottomLeft')) {
-              this.regions[item.key].bottomLeft = node;
-              this.regions[item.key].bottomLeft.on('dragmove', () => {
-                const topLeftAttrs = this.regions[item.key].topLeft.getAttrs();
-                const topRightAttrs = this.regions[item.key].topRight.getAttrs();
-                const bottomRightAttrs = this.regions[item.key].bottomRight.getAttrs();
-                let itemX = 0;
-                let itemY = 0;
-                let itemW = 0;
-                let itemH = 0;
-                let i = 0;
-                this.props.regionArray.forEach((obj, index) => {
-                  if (obj.key === item.key) {
-                    itemX = obj.x;
-                    itemY = obj.y;
-                    itemW = obj.w;
-                    itemH = obj.h;
-                    i = index;
-                  }
-                });
-                const x = this.regions[item.key].bottomLeft.getAttrs().x;
-                const y = this.regions[item.key].bottomLeft.getAttrs().y;
-                let newW = Math.abs((itemX + itemW) - x);
-                let newH = Math.abs(itemH - ((itemY + itemH) - y));
-                // flip to top left
-                if (topLeftAttrs.y >= y && bottomRightAttrs.x >= x) {
-                  if (!this.flipY) this.flipY = true;
-                  if (this.flipX) this.flipX = false;
-                  newH = Math.abs((itemY + itemH) - y);
-                  // newH = Math.abs(itemY - y);
-                  this.reshape(newW, newH, x, y, i);
-                } else if (bottomRightAttrs.x <= x && topLeftAttrs.y <= y) {
-                  // flip to bottom right
-                  if (!this.flipX) this.flipX = true;
-                  if (this.flipY) this.flipY = false;
-                  newW = Math.abs(itemW - ((itemX + itemW) - x));
-                  // newW = Math.abs(x - bottomRightAttrs.x);
-                  // this.reshape(newW, newH, itemX, itemY, i);
-                  this.reshape(newW, newH, topRightAttrs.x, topRightAttrs.y, i);
-                }
-                // should be topRight
-                else if (topLeftAttrs.y >= y && bottomRightAttrs.x <= x) {
-                  if (!this.flipX) this.flipX = true;
-                  if (!this.flipY) this.flipY = true;
-                  newW = Math.abs(itemW - ((itemX + itemW) - x));
-                  // newW = Math.abs((itemX + itemW) - x);
-                  newH = Math.abs((itemY + itemH) - y);
-                  this.reshape(newW, newH, itemX, y, i);
-                } else {
-                  if (this.flipY) this.flipY = false;
-                  if (this.flipX) this.flipX = false;
-                  this.reshape(newW, newH, x, itemY, i);
-                }
-              });
-            }
-          }}
-        />
-        <Circle
-          x={this.flipX ? item.x : item.x + item.w}
-          y={this.flipY ? item.y : item.y + item.h}
-          stroke="#666"
-          fill="#ddd"
-          // fill="#9400D3"
-          strokeWidth={2}
-          radius={8}
-          draggable
-          ref={(node) => {
-            if (node && !this.regions[item.key].hasOwnProperty('bottomRight')) {
-              this.regions[item.key].bottomRight = node;
-              this.regions[item.key].bottomRight.on('dragmove', () => {
-                const topRightAttrs = this.regions[item.key].topRight.getAttrs();
-                const bottomLeftAttrs = this.regions[item.key].bottomLeft.getAttrs();
-                let itemX = 0;
-                let itemY = 0;
-                let itemW = 0;
-                let itemH = 0;
-                let i = 0;
-                this.props.regionArray.forEach((obj, index) => {
-                  if (obj.key === item.key) {
-                    itemX = obj.x;
-                    itemY = obj.y;
-                    itemW = obj.w;
-                    itemH = obj.h;
-                    i = index;
-                  }
-                });
-                const x = this.regions[item.key].bottomRight.getAttrs().x;
-                const y = this.regions[item.key].bottomRight.getAttrs().y;
-                // const newH = Math.abs(itemH - ((itemY + itemH) - y));
-                let newH = Math.abs(y - itemY);
-                let newW = Math.abs(itemW - ((itemX + itemW) - x));
-                // if (this.bottomRight) {
-                // flip to top right
-                if (topRightAttrs.y >= y && bottomLeftAttrs.x <= x) {
-                  if (!this.flipY) this.flipY = true;
-                  if (this.flipX) this.flipX = false;
-                  // topRight height calc
-                  newH = Math.abs((itemY + itemH) - y);
-                  // newH = Math.abs(topRightAttrs.y - y);
-                  this.reshape(newW, newH, itemX, y, i);
-                } else if (bottomLeftAttrs.x >= x && topRightAttrs.y <= y) {
-                  // flip to bottom left
-                  if (!this.flipX) this.flipX = true;
-                  if (this.flipY) this.flipY = false;
-                  // bottomLeft width calc
-                  newW = Math.abs((itemX + itemW) - x);
-                  // newW = Math.abs(bottomLeftAttrs.x - x);
-                  this.reshape(newW, newH, x, itemY, i);
-                }
-                // after two flips in both directions, should become topLeft
-                else if (topRightAttrs.y >= y && bottomLeftAttrs.x >= x) {
-                  if (!this.flipX) this.flipX = true;
-                  if (!this.flipY) this.flipY = true;
-                  newH = Math.abs((itemY + itemH) - y);
-                  newW = Math.abs((itemX + itemW) - x);
-                  this.reshape(newW, newH, x, y, i);
-                } else {
-                  if (this.flipY) this.flipY = false;
-                  if (this.flipX) this.flipX = false;
-                  this.reshape(newW, newH, itemX, itemY, i);
-                }
-              });
-            }
-          }}
-        />
+        {circles}
       </Group>
     );
     const result = (
@@ -421,23 +199,24 @@ class Region extends Component {
           draggable
           listening
           ref={(node) => {
-            if (node && !this.regions.hasOwnProperty(item.key)) {
-              this.regions[item.key] = { shape: node };
+            if (node && !this.regions[item.key].hasOwnProperty('shape')) {
+              this.regions[item.key].shape = node;
               this.regions[item.key].shape.on('dragmove', () => {
                 // console.log('dragmove');
-                let itemW = 0;
-                let itemH = 0;
-                let i = 0;
-                this.props.regionArray.forEach((obj, index) => {
-                  if (obj.key === item.key) {
-                    itemW = obj.w;
-                    itemH = obj.h;
-                    i = index;
-                  }
-                });
+                // const itemW = item.w;
+                // const itemH = item.h;
+                // const i = index;
+                // this.props.regionArray.forEach((obj, index) => {
+                //   if (obj.key === item.key) {
+                //     itemW = obj.w;
+                //     itemH = obj.h;
+                //     i = index;
+                //   }
+                // });
                 const x = this.regions[item.key].shape.getAttrs().x;
                 const y = this.regions[item.key].shape.getAttrs().y;
-                this.reshape(itemW, itemH, x, y, i);
+                this.moveRect(x, y, index);
+                // this.reshape(itemW, itemH, x, y, i);
               });
               this.regions[item.key].shape.on('click', () => {
                 this.setState({
@@ -560,7 +339,7 @@ class Region extends Component {
               <ImageViewer />
               {/* <ImageViewer2 /> */}
               {(this.props.mouseIsDown === 1) ? this.rect : false}
-              {this.props.regionArray ? this.props.regionArray.map(item => this.addAnchor(item)) : false}
+              {this.props.regionArray ? this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
             </Layer>
           </Stage>
           <Card style={{ width: '24px', position: 'absolute', top: 0 }} >

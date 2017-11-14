@@ -212,6 +212,11 @@ class Region extends Component {
             console.log('drag rect:', x, ';', y);
             this.moveRect(x, y, index);
           }}
+          onClick={() => {
+            this.setState({
+              toDelete: item.key,
+            });
+          }}
           // ref={(node) => {
           //   if (node && !this.regions[item.key].hasOwnProperty('shape')) {
           //     this.regions[item.key].shape = node;
@@ -283,10 +288,15 @@ class Region extends Component {
       // const url = resizedCanvas.toDataURL('image/png', 1);
       const canvas = this.layer.getCanvas();
       const url = canvas.toDataURL('image/png', 1);
-      Meteor.call('convertFile', url, this.state.value, (error, result) => {
-        // console.log('RESULT: ', result);
-        const blob = new Blob([result], { type: 'text/eps' });
+      Meteor.call('convertPNGFile', url, this.state.value, (error, result) => {
+        let mime = '';
+        if (this.state.value === 'pdf') mime = 'application/pdf';
+        else if (this.state.value === 'eps') mime = 'text/eps';
+        else mime = 'text/ps';
+        const blob = new Blob([result], { type: mime });
+        console.log('BLOB: ', blob);
         const b64encoded = window.URL.createObjectURL(blob);
+        console.log('ENCODING: ', b64encoded);
         const a = document.createElement('a');
         a.setAttribute('href', b64encoded);
         a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
@@ -299,7 +309,6 @@ class Region extends Component {
   }
   handleChange = (event, index, value) => {
     this.setState({ value });
-    // this.convertToImage();
   }
   render() {
     const { x, y, width, height } = this.props;

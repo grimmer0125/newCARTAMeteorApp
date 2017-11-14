@@ -23,7 +23,7 @@ const insertResponse = Meteor.bindEnvironment((resp) => {
   console.log('insert is finished:', docId);
 });
 const gm = require('gm');
-// const fs = require('fs');
+const fs = require('fs');
 const { exec } = require('child_process');
 // const gm = require('gm').subClass({ imageMagick: true });
 // TODO the sequence is wired. (1st version is remove + insert). remove seems like generator
@@ -130,17 +130,16 @@ Meteor.methods({
     console.log('sendCommand in client');
     return '';
   },
-  convertFile(url, type) {
-    console.log('INSIDE convertFile');
-    console.log('URL: ', url);
+  convertPNGFile(url, type) {
+    // console.log('INSIDE convertFile');
+    // console.log('URL: ', url);
     if (Meteor.isServer) {
       return new Promise(((resolve, reject) => {
         const buf = Buffer.from(url.replace(/^data:image\/(png|jpg);base64,/, ''), 'base64');
-        // const buf = Buffer.from(url.replace(/^data:image\/svg\+xml,/, ''), 'utf8');
-        console.log('BUFFER BEFORE: ', buf);
+        // console.log('BUFFER BEFORE: ', buf);
         gm(buf).toBuffer(type, (err, buffer) => {
           if (!err) {
-            console.log('BUFFER AFTER: ', buffer);
+            // console.log('BUFFER AFTER: ', buffer);
             console.log('done');
             // result = buffer;
             resolve(buffer);
@@ -149,34 +148,55 @@ Meteor.methods({
           reject(err);
         });
       }));
-      // /Users/julie/newCARTAMeteorApp/public/images/histogram.svg
-      // `cairosvg  ${url} -o /Users/julie/newCARTAMeteorApp/public/images/histogram.ps
-      // const data = url.replace(/^data:image\/svg\+xml,/, '');
-      // const buf = Buffer.from(url.replace(/^data:image\/svg\+xml,/, ''), 'base64');
-      // exec('python3', (err, stdout, stderr) => {
-      //   if (err) {
-      //     console.log(err);
-      //   }
-      //   console.log(`stdout: ${stdout}`);
-      //   console.log(`stderr: ${stderr}`);
-      // });
-      // return exec('cairosvg.svg2pdf(url="/Users/julie/newCARTAMeteorApp/public/images/histogram.svg", write_to="/Users/julie/newCARTAMeteorApp/public/images/histogram.pdf")',
-      //   (err, stdout, stderr) => {
-      //     if (err) {
-      //       console.log(err);
-      //     }
-      //     console.log(`stdout: ${stdout}`);
-      //     console.log(`stderr: ${stderr}`);
-      //   });
-      // const output = exec(`cairosvg.svg2pdf(bytestring=open(${buf}).read().encode('utf-8')))`,
-      //   (err, stdout, stderr) => {
-      //     if (err) {
-      //       console.log(err);
-      //     }
-      //     console.log(`stdout: ${stdout}`);
-      //     console.log(`stderr: ${stderr}`);
-      //   });
-      // return output;
+    }
+    return '';
+  },
+  convertSVGFile(url, type, userID) {
+    // console.log('INSIDE convertFile');
+    // console.log('URL: ', url);
+    if (Meteor.isServer) {
+      const buf = Buffer.from(url);
+      // console.log('BUFFER: ', buf);
+      // console.log('session id: ', seshID);
+      const filepath = `chart${userID}.svg`;
+      fs.writeFileSync(filepath, buf, (err) => {
+        if (err) throw err;
+        console.log('The file was successfully saved!');
+      });
+      return new Promise(((resolve, reject) => {
+        exec(`cairosvg chart${userID}.svg -o chart${userID}.${type}`,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.log(error);
+              reject(error);
+            }
+            console.log(`stdout: ${stdout}`);
+            console.log(`stderr: ${stderr}`);
+            const bitmap = fs.readFileSync(`chart${userID}.${type}`);
+            const bufString = Buffer.from(bitmap).toString('base64');
+            resolve(bufString);
+          });
+      }));
+    }
+    return '';
+  },
+  removeFile(type, userID) {
+    if (Meteor.isServer) {
+      // console.log('session id: ', seshID);
+      fs.unlink(`chart${userID}.svg`, (err) => {
+        if (err) {
+          console.log(`failed to delete local image: ${err}`);
+        } else {
+          console.log('successfully deleted local image');
+        }
+      });
+      fs.unlink(`chart${userID}.${type}`, (err) => {
+        if (err) {
+          console.log(`failed to delete local image: ${err}`);
+        } else {
+          console.log('successfully deleted local image');
+        }
+      });
     }
     return '';
   },

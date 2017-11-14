@@ -18,7 +18,11 @@ export default class Topbar extends Component {
       open: false,
       localDisabled: true,
       remoteDisabled: false,
+      username: '',
     };
+  }
+  componentDidMount = () => {
+    setTimeout(() => { this.setState({ username: Meteor.user().username }); }, 200);
   }
   handleClose = () => {
     this.setState({ open: false });
@@ -51,11 +55,13 @@ export default class Topbar extends Component {
     });
   }
   render() {
+    // console.log('METEOR: ', Meteor.users.find({ _id: Meteor.userId() }).fetch());
     return (
       <div>
         <Toolbar style={this.props.style}>
           <ToolbarGroup>
             <div className="layout-row-end-center ">
+              <p style={{ borderRadius: '12px', border: '2px solid red', padding: '2px' }}>{this.state.username ? `Hi, ${this.state.username}` : ''}</p>
               <SessionUI />
             </div>
           </ToolbarGroup>

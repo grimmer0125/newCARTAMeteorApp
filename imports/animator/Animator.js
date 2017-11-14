@@ -36,20 +36,20 @@ class Animator extends Component {
 
   handleSlider = (event, value) => {
     // this.setState({firstSlider: value});
-    console.log('silder value:', value);
+    // console.log('silder value:', value);
     this.changeFrame(event, value - 1, value);
   };
 
   changeFrame = (event, index, value) => {
     // index: 0 ;value: 1 (we start from 1 for UI)
-    console.log('change frame:', event, ';index:', index, ';value:', value);
+    // console.log('change frame:', event, ';index:', index, ';value:', value);
     const { animatorTypeList } = this.props;
     const currentAnimatorType = this.props.currentAnimatorType ? this.props.currentAnimatorType : Image;
 
     if (this.props.animatorTypeList && this.props.animatorTypeList.length > 0) {
       for (const animatorType of this.props.animatorTypeList) {
         if (animatorType.type == currentAnimatorType) {
-          console.log('current animatorTypeID:', animatorType.animatorTypeID);
+          // console.log('current animatorTypeID:', animatorType.animatorTypeID);
           if (animatorType.type == Image) {
             this.props.dispatch(actions.changeImageFrame(animatorType.animatorTypeID, index));
           } else {
@@ -72,7 +72,7 @@ class Animator extends Component {
     let stokesLabel = Stokes;
     if (animatorTypeList && animatorTypeList.length > 0) {
       for (const animatorType of animatorTypeList) {
-        console.log('render animatorTypeList');
+        // console.log('render animatorTypeList');
         let currentIndex = null;
         // if (animatorType.selection.frame) {
         currentIndex = (animatorType.selection.frame) + 1;
@@ -94,7 +94,7 @@ class Animator extends Component {
             break;
           case Stokes:
             stokesSeleciton = animatorType.selection;
-            console.log('stoke label:', stokesLabel);
+            // console.log('stoke label:', stokesLabel);
             stokesLabel = label;
         }
       }
@@ -102,14 +102,14 @@ class Animator extends Component {
 
     let currentSelection = {};
     const currentAnimatorType = this.props.currentAnimatorType ? this.props.currentAnimatorType : Image;
-    console.log('this animator value:', currentAnimatorType);// this.state.value);
+    // console.log('this animator value:', currentAnimatorType);// this.state.value);
     switch (currentAnimatorType) {
       case Image:
         currentSelection = imageSelection;
         break;
       case Channel:
         currentSelection = channelSelection;
-        console.log('switch to channel:', channelSelection);
+        // console.log('switch to channel:', channelSelection);
         break;
       case Stokes:
         currentSelection = stokesSeleciton;

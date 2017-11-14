@@ -9,7 +9,7 @@ const defaultState = {
 const FileBrowserDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.FILEBROWSER_CHANGE: {
-      console.log('fileBrowser action:', action);
+      // console.log('fileBrowser action:', action);
       return action.payload.data;
     }
     case 'RESET_REDUX_STATE':

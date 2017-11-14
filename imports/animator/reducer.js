@@ -9,7 +9,7 @@ import { ActionType } from './actions';
 const AnimatorDB = (state = { animatorTypeList: [] }, action) => {
   switch (action.type) {
     case ActionType.ANIMATOR_CHANGE: {
-      console.log('animatorDB action:', action);
+      // console.log('animatorDB action:', action);
       return action.payload.data;
     }
     default:

@@ -22,7 +22,9 @@ export default class Topbar extends Component {
     };
   }
   componentDidMount = () => {
-    setTimeout(() => { this.setState({ username: Meteor.user().username }); }, 200);
+    setTimeout(() => {
+      if (Meteor.user()) this.setState({ username: Meteor.user().username });
+    }, 200);
   }
   handleClose = () => {
     this.setState({ open: false });

@@ -10,9 +10,6 @@ import TextField from 'material-ui/TextField';
 import actions from './actions';
 import api from '../api/ApiService';
 
-const Blob = require('blob');
-const XMLSerializer = require('xmldom').XMLSerializer;
-
 class Profiler extends Component {
   constructor(props) {
     super(props);
@@ -24,7 +21,7 @@ class Profiler extends Component {
     // this.getRef = this.getRef.bind(this);
   }
   componentDidMount = () => {
-    console.log('componentDidMount', this.props);
+    // console.log('componentDidMount', this.props);
     const trace1 = {
       // x: [1, 2, 3, 4],
       // y: [10, 15, 13, 17],
@@ -35,23 +32,16 @@ class Profiler extends Component {
     };
     const data = [trace1];
     Plotly.newPlot(this.el, data, layout);
-    // .then((gd) => {});
     this.el.on('plotly_hover', (e) => {
-      // console.log('hover event: ', e);
       this.props.dispatch(actions.onHover(e));
     });
     this.el.on('plotly_relayout', (e) => {
       if (!e.width) {
         this.props.dispatch(actions.onZoomPan(e));
       }
-      // if (this.relayoutEvent !== e) {
-      //   this.props.dispatch(actions.onZoomPan(e));
-      //   this.relayoutEvent = e;
-      // }
     });
   }
   componentWillReceiveProps = (nextProps) => {
-    console.log('Profiler nextProps:', nextProps);
     if (nextProps.profileData) {
       Plotly.deleteTraces(this.el, -1);
       Plotly.addTraces(this.el, nextProps.profileData);
@@ -76,29 +66,6 @@ class Profiler extends Component {
       // console.log('ZOOM DATA: ', data);
       Plotly.relayout(this.el, data);
     }
-  }
-encodeOptimizedSVGDataUri = (svgString) => {
-  const uriPayload = encodeURIComponent(svgString); // encode URL-unsafe characters
-  // .replace(/%0A/g, '') // remove newlines
-  // .replace(/%20/g, ' ') // put spaces back in
-  // .replace(/%3D/g, '=') // ditto equals signs
-  // .replace(/%3A/g, ':') // ditto colons
-  // .replace(/%2F/g, '/') // ditto slashes
-  // .replace(/%22/g, "'"); // replace quotes with apostrophes (may break certain SVGs)
-  return `data:image/svg+xml,${uriPayload}`;
-}
-  convertImageToCanvas = (image) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = image.width;
-    canvas.height = image.height;
-    canvas.getContext('2d').drawImage(image, 0, 0);
-    return canvas;
-  }
-  // Converts canvas to an image
-  convertCanvasToImage = (canvas) => {
-    const image = document.createElement('IMG');
-    image.src = canvas.toDataURL('image/png', 1);
-    return image;
   }
   // getRef = (el) => {
   //   this.el = el;
@@ -134,7 +101,6 @@ encodeOptimizedSVGDataUri = (svgString) => {
       const userID = Meteor.userId();
       const decodedURL = decodeURIComponent(url.replace(/^data:image\/svg\+xml,/, ''));
       Meteor.call('convertSVGFile', decodedURL, this.state.value, userID, (error, result) => {
-        // console.log('RESULT: ', result);
         let mime = '';
         if (this.state.value === 'pdf') mime = 'application/pdf';
         else mime = 'text/ps';

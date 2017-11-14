@@ -131,17 +131,12 @@ Meteor.methods({
     return '';
   },
   convertPNGFile(url, type) {
-    // console.log('INSIDE convertFile');
-    // console.log('URL: ', url);
     if (Meteor.isServer) {
       return new Promise(((resolve, reject) => {
         const buf = Buffer.from(url.replace(/^data:image\/(png|jpg);base64,/, ''), 'base64');
-        // console.log('BUFFER BEFORE: ', buf);
         gm(buf).toBuffer(type, (err, buffer) => {
           if (!err) {
-            // console.log('BUFFER AFTER: ', buffer);
             console.log('done');
-            // result = buffer;
             resolve(buffer);
           }
           console.log(err);
@@ -152,12 +147,8 @@ Meteor.methods({
     return '';
   },
   convertSVGFile(url, type, userID) {
-    // console.log('INSIDE convertFile');
-    // console.log('URL: ', url);
     if (Meteor.isServer) {
       const buf = Buffer.from(url);
-      // console.log('BUFFER: ', buf);
-      // console.log('session id: ', seshID);
       const filepath = `chart${userID}.svg`;
       fs.writeFileSync(filepath, buf, (err) => {
         if (err) throw err;
@@ -182,7 +173,6 @@ Meteor.methods({
   },
   removeFile(type, userID) {
     if (Meteor.isServer) {
-      // console.log('session id: ', seshID);
       fs.unlink(`chart${userID}.svg`, (err) => {
         if (err) {
           console.log(`failed to delete local image: ${err}`);

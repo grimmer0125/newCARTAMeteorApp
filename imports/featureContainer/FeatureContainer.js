@@ -39,20 +39,11 @@ class FeatureContainer extends Component {
     // this.props.dispatch(actions.setupFeatureContainer());
     // layouts: JSON.parse(JSON.stringify(originalLayouts)),
   }
-  getDefaultProps() {
-    return {
-      className: 'layout',
-      // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 2 },
-      // cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
-      // rowHeight: 100,
-      onLayoutChange() {},
-    };
-  }
   // callback function for handling
   onLayoutChange = (layout) => {
     // console.log('layout: ', layout);
     saveToLS('layout', layout);
-    console.log('after saving layouts: ', getFromLS('layout'));
+    // console.log('after saving layouts: ', getFromLS('layout'));
   }
   onBreakpointChange = (breakpoint, cols) => {
     this.setState({
@@ -69,7 +60,7 @@ class FeatureContainer extends Component {
     this.props.dispatch(actions.onAddItemDB(data));
   }
   setSetting(type) {
-    console.log('THE TYPE TO BE PASSED: ', type);
+    // console.log('THE TYPE TO BE PASSED: ', type);
     this.props.setSetting(type);
   }
   addGraph = (type) => {
@@ -106,7 +97,7 @@ class FeatureContainer extends Component {
     // } else {
     //   console.log("this.state does not exist in render");
     // }
-    console.log('RECEIVE PROPS');
+    // console.log('RECEIVE PROPS');
     const width = this.props.width;
     return (
       <div style={{ minHeight: '100vh' }}>
@@ -135,6 +126,13 @@ class FeatureContainer extends Component {
     );
   }
 }
+FeatureContainer.defaultProps = {
+  className: 'layout',
+  // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 2 },
+  // cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+  // rowHeight: 100,
+  onLayoutChange() {},
+};
 const mapStateToProps = state => ({
   items: state.FeatureContainerDB.items,
 });

@@ -53,7 +53,7 @@ const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 // }
 
 export function setupFileBrowserDB() {
-  console.log('setup FileBrowserDB');
+  // console.log('setup FileBrowserDB');
   // return (dispatch) => {
   api.instance().setupMongoRedux(FileBrowserDB, FILEBROWSER_CHANGE);
   // };
@@ -98,7 +98,7 @@ function selectFile(index) {
 
 function closeFile() {
   return (dispatch, getState) => {
-    console.log('closeFile action');
+    // console.log('closeFile action');
     const state = getState();
     const controllerID = state.ImageViewerDB.controllerID;
     const stack = state.ImageViewerDB.stack;
@@ -115,7 +115,7 @@ function closeFile() {
       // if (count > 1) {
       for (const layer of stack.layers) {
         if (layer.selected) {
-          console.log('close this file:', layer.name);
+          // console.log('close this file:', layer.name);
           currentLayer = layer;
           break;
         }
@@ -124,21 +124,21 @@ function closeFile() {
       // if people open A, B, C, then close C, the reamining layers become unselected
       if (!currentLayer && count > 0) {
         currentLayer = stack.layers[count - 1];
-        console.log('close this file:', currentLayer.name);
+        // console.log('close this file:', currentLayer.name);
       }
 
       if (currentLayer) {
-        console.log('start to close file');
+        // console.log('start to close file');
         const cmd = `${controllerID}:${Commands.CLOSE_IMAGE}`;
         const arg = `image:${currentLayer.id}`;
 
         api.instance().sendCommand(cmd, arg)
-          .then((resp) => {
-            console.log('close ok:', resp);
+          .then(resp =>
+            // console.log('close ok:', resp);
 
             // updateAnimator(animatorID, '');
-            return dispatch(imageViewer.updateStack());
-          })
+            dispatch(imageViewer.updateStack()),
+          )
           .then((resp) => {
             // update animatorType-Selections.
             // may not need to update animatorType lists
@@ -183,13 +183,13 @@ function selectFileToOpen(path) {
     // get controllerID
     const controllerID = state.ImageViewerDB.controllerID;
     const arg = `id:${controllerID},data:${path}`;
-    console.log('inject file parameter, become:', arg);
+    // console.log('inject file parameter, become:', arg);
 
     // const animatorID = state.AnimatorDB.animatorID;
     // const animatorTypeList = [];
     api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, arg)
       .then((resp) => {
-        console.log('response is SELECT_FILE_TO_OPEN:', resp);
+        // console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
         // updateAnimator(animatorID, fileName);
         dispatch(profiler.getProfile());
@@ -210,7 +210,7 @@ function selectFileToOpen(path) {
               const view_width = 482,
                 view_height = 477;
               const zoomLevel = _calculateFitZoomLevel(view_width, view_height, lastLayer);
-              console.log('setup zoomLevel to fit panel size:', zoomLevel);
+              // console.log('setup zoomLevel to fit panel size:', zoomLevel);
               dispatch(imageViewer.setZoomLevel(zoomLevel, lastLayer.id));
             } else {
               console.log('something wrong');

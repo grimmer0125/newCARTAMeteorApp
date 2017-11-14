@@ -62,16 +62,14 @@ class MainPage extends Component {
     this.setState({ secondColumnWidth: second });
   }
   setSetting = (type) => {
-    console.log('THE RECEIVED TYPE: ', type);
-    if (type === 'Profiler') {
-      console.log('WILL LOAD PROFILER SETTING');
-    } else {
-      console.log('WILL LOAD HISTOGRAM SETTING');
-    }
+    // if (type === 'Profiler') {
+    //   console.log('WILL LOAD PROFILER SETTING');
+    // } else {
+    //   console.log('WILL LOAD HISTOGRAM SETTING');
+    // }
     this.setState({ setting: type });
   }
   handleClick = (e, data) => {
-    // console.log(`data is ${data.type}`);
     this.grid.getWrappedInstance().onAddItem(data.type);
   }
   handleClick2 = (type) => {
@@ -85,8 +83,6 @@ class MainPage extends Component {
     this.setState({ expand: true });
   }
   showSetting = (setting) => {
-    // console.log('INSIDE SHOWSETTING!!');
-    // console.log('SETTING TO BE SHOWN: ', setting);
     if (setting) {
       if (setting === 'Profiler') return <ProfilerSettings />;
       else if (setting === 'Histogram') return <HistogramSettings />;
@@ -109,11 +105,7 @@ class MainPage extends Component {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
   render() {
-    console.log('IN RENDER');
-    // const label = <div>{string}<br /><sub>image 0</sub></div>;
-    // const contentStyle = {
-    //   marginLeft: 65,
-    // };
+    // console.log('IN RENDER');
     const toolbarStyle = {
       backgroundColor: '#EEEEEE',
       bottom: 0,
@@ -147,7 +139,6 @@ class MainPage extends Component {
           // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
         />
-        {/* <Topbar style={contentStyle} /> */}
         <div className="layout-fill">
           <Topbar style={toolbarStyle} />
           <LayoutWrapper

@@ -35,7 +35,6 @@ export default class ApiService {
 
   static instance() {
     if (!instance) {
-      console.log('new ApiService');
       instance = new ApiService();
     }
 
@@ -43,7 +42,6 @@ export default class ApiService {
   }
 
   resumeselfDB() {
-    console.log('resume db');
     for (const db of this.dblist) {
       mongoResumeSelfDB(db.collection, db.actionType);
       // mongoUpsert(FileBrowserDB, { selectedFile: index }, SELECT_FILE);
@@ -52,7 +50,7 @@ export default class ApiService {
 
   setupViewSize(viewName, width, height) {
     Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
-      console.log('get setupViewSize dummy result:', result);
+      // console.log('get setupViewSize dummy result:', result);
     });
   }
 
@@ -61,16 +59,16 @@ export default class ApiService {
 
     for (const db of this.dblist) {
       if (db.mongoSetName === mongoSetName) {
-        console.log('do not setup same mongo twice:', db.mongoSetName);
+        // console.log('do not setup same mongo twice:', db.mongoSetName);
         return;
       }
     }
 
     setupMongoReduxListeners(collection, actionType);
     if (SessionManager.get()) {
-      console.log('directly setup subscribtioin:', mongoSetName);
+      // console.log('directly setup subscribtioin:', mongoSetName);
       Meteor.subscribe(mongoSetName, SessionManager.get(), () => {
-        console.log(`${mongoSetName} subscribes OK: !!!`);
+        // console.log(`${mongoSetName} subscribes OK: !!!`);
       });
     } else {
       this.waitSubDBlist.push({ mongoSetName, collection, actionType });
@@ -81,7 +79,7 @@ export default class ApiService {
   subscribeOtherPeopleDB() {
     for (const db of this.dblist) {
       db.handler = Meteor.subscribe(db.mongoSetName, SessionManager.getOtherSession(), () => {
-        console.log(`${db.mongoSetName} subscribe other people OK: !!!`);
+        // console.log(`${db.mongoSetName} subscribe other people OK: !!!`);
       });
     }
   }
@@ -92,7 +90,7 @@ export default class ApiService {
       //   console.log(db.mongoSetName +' subscribe other people OK: !!!');
       // });
       if (db.handler) {
-        console.log('stop other:', db.mongoSetName);
+        // console.log('stop other:', db.mongoSetName);
         db.handler.stop();
         db.handler = null;
       }
@@ -102,7 +100,7 @@ export default class ApiService {
   subscribeAllDB(dispatch) {
     for (const db of this.waitSubDBlist) {
       Meteor.subscribe(db.mongoSetName, SessionManager.get(), () => {
-        console.log(`${db.mongoSetName} subscribes2 OK: !!!`);
+        // console.log(`${db.mongoSetName} subscribes2 OK: !!!`);
       });
     }
 
@@ -121,10 +119,10 @@ export default class ApiService {
         // self.callback = resolve;
 
         if (handler) {
-          console.log('send command with handler');
+          // console.log('send command with handler');
           self.callbacks.push({ id, callback: handler, resolve });
         } else {
-          console.log('send command without handler');
+          // console.log('send command without handler');
           self.callbacks.push({ id, callback: null, resolve });
         }
 
@@ -137,7 +135,7 @@ export default class ApiService {
         console.log('get meteor command response err:', error);
       }
 
-      console.log('send a command to meteor server ok:', result);
+      // console.log('send a command to meteor server ok:', result);
     });
 
     return p1;
@@ -145,8 +143,8 @@ export default class ApiService {
 
   consumeResponse(resp) {
     if (resp.pushedImage) {
-      console.log('get server pushed image):');
-      console.log(resp);
+      // console.log('get server pushed image):');
+      // console.log(resp);
       parseImageToMongo(resp.buffer);
 
       return;
@@ -154,13 +152,10 @@ export default class ApiService {
 
     const target = resp.cmd + resp.parameter;
     let match = null;
-    console.log('target:', target);
-
     const len = this.callbacks.length;
     for (let i = 0; i < len; i++) {
       const obj = this.callbacks[i];
       if (obj.id === target) {
-        console.log('bingo');
         match = obj;
         // this.callbacks.shift();
         this.callbacks.splice(i, 1);
@@ -169,10 +164,10 @@ export default class ApiService {
       }
     }
 
-    console.log('callback count:', this.callbacks.length);
+    // console.log('callback count:', this.callbacks.length);
 
     if (match) {
-      console.log('callback:', match.id);
+      // console.log('callback:', match.id);
       if (match.callback) {
         match.callback(resp);
       }

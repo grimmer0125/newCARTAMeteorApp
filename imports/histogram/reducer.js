@@ -10,7 +10,7 @@ const defaultState = { data: {} };
 const HistogramDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.HISTOGRAM_CHANGE: {
-      console.log('histogramDB action:', action);
+      // console.log('histogramDB action:', action);
       return action.payload.data;
     }
     case 'RESET_REDUX_STATE':

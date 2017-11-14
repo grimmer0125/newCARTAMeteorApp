@@ -34,8 +34,7 @@
     "redux": "^3.7.1",
     "redux-actions": "^2.2.1",
     "redux-thunk": "^2.2.0",
-    "ws": "^3.0.0",
-    "xmldom": "^0.1.27"
+    "ws": "^3.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

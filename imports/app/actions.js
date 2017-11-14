@@ -24,12 +24,12 @@ export const ActionType = {
 
 function turnOnWatching(watchingSessionID) {
   return (dispatch) => {
-    console.log('RESET_REDUX_STATE !!!!!!!! start watching');
+    // console.log('RESET_REDUX_STATE !!!!!!!! start watching');
     dispatch({ type: 'RESET_REDUX_STATE' });
 
     // subscribe
     SessionManager.useOtherSession(watchingSessionID);
-    console.log('use other session:', SessionManager.getOtherSession());
+    // console.log('use other session:', SessionManager.getOtherSession());
 
     api.instance().subscribeOtherPeopleDB();
   };
@@ -37,7 +37,7 @@ function turnOnWatching(watchingSessionID) {
 
 function turnOffWatching() {
   return (dispatch) => {
-    console.log('RESET_REDUX_STATE !!!!!!!! stop watching');
+    // console.log('RESET_REDUX_STATE !!!!!!!! stop watching');
     dispatch({ type: 'RESET_REDUX_STATE' });
 
     SessionManager.stopUsingOtherSession();
@@ -49,7 +49,7 @@ function turnOffWatching() {
 }
 
 function handleCommandResponse(resp) {
-  console.log('get response:');
+  // console.log('get response:');
 
   api.instance().consumeResponse(resp);
 }
@@ -67,7 +67,7 @@ function setupComponentsDB() {
 
 function setupResponseChannnelAndAllDB() {
   return (dispatch) => {
-    console.log('setupResponseChannnelAndAllDB, reset session to null');
+    // console.log('setupResponseChannnelAndAllDB, reset session to null');
     SessionManager.set(null);
     storeReduxDispatch(dispatch);
 
@@ -75,7 +75,7 @@ function setupResponseChannnelAndAllDB() {
     setupComponentsDB();
 
     Meteor.call('getSessionId', (err, sessionID) => {
-      console.log('getSessionId return:', sessionID);
+      // console.log('getSessionId return:', sessionID);
 
       SessionManager.set(sessionID);
       dispatch({
@@ -84,31 +84,25 @@ function setupResponseChannnelAndAllDB() {
       });
 
       Meteor.subscribe('commandResponse', SessionManager.get(), () => {
-        console.log('commandResponse subscribes OK !!!');
+        // console.log('commandResponse subscribes OK !!!');
       });
 
       api.instance().subscribeAllDB();
 
       const respObservationHandle = Responses.find().observe({
         added(newDoc) {
-          console.log('get Mongo added response');
-
           handleCommandResponse(newDoc);
 
           // delete responses
           process.nextTick(() => {
-            console.log('delete response');
             Responses.remove(newDoc._id);
           });
         },
 
         changed(newDoc, oldDoc) {
-          console.log('get Mongo changed response');
-
           handleCommandResponse(newDoc);
 
           process.nextTick(() => {
-            console.log('delete response');
             Responses.remove(newDoc._id);
           });
         },

@@ -4,7 +4,7 @@ const defaultState = { data: {}, zoomPanData: {} };
 const ProfilerDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.PROFILER_CHANGE: {
-      console.log('profiler action:', action);
+      // console.log('profiler action:', action);
       return action.payload.data;
     }
     case 'RESET_REDUX_STATE':

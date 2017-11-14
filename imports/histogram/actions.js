@@ -30,10 +30,8 @@ function setupHistogram() {
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
 
-    console.log('send register Histogram');
-
     api.instance().sendCommand(cmd, arg, (resp) => {
-      console.log('get register histogram result:', resp);
+      // console.log('get register histogram result:', resp);
 
       parseReigsterHistogramResp(resp);
     });
@@ -42,7 +40,7 @@ function setupHistogram() {
 
 export function parseReigsterHistogramResp(resp) {
   const { cmd, data } = resp;
-  console.log('grimmer got register histogram-view command response:', data);
+  // console.log('grimmer got register histogram-view command response:', data);
   const histogramID = data;
   //  grimmer got register histogram-view command response: /CartaObjects/c145
 

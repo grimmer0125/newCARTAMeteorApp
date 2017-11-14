@@ -15,7 +15,7 @@ const SET_PROFILEDATA = 'SET_PROFILEDATA';
 
 export function parseRegisterProfilerResp(resp) {
   const { cmd, data } = resp;
-  console.log('grimmer got register profiler-view command response:', data);
+  // console.log('grimmer got register profiler-view command response:', data);
   const profilerID = data;
 
   // save profilerID to mongodb
@@ -29,10 +29,10 @@ function setupProfiler() {
     const cmd = Commands.REGISTER_VIEWER;
     const params = 'pluginId:Profiler,index:0';
 
-    console.log('send register Profiler');
+    // console.log('send register Profiler');
 
     api.instance().sendCommand(cmd, params, (resp) => {
-      console.log('get register Profiler result:', resp);
+      // console.log('get register Profiler result:', resp);
 
       parseRegisterProfilerResp(resp);
     });
@@ -42,13 +42,13 @@ function setupProfiler() {
 function getProfile() {
   return (dispatch, getState) => {
     const profilerID = getState().ProfilerDB.profilerID;
-    console.log('profilerID for getting profile: ', profilerID);
+    // console.log('profilerID for getting profile: ', profilerID);
 
     const cmd = `${profilerID}:getProfileData`;
     const params = '';
 
     api.instance().sendCommand(cmd, params, (resp) => {
-      console.log('get response of profile:', resp);
+      // console.log('get response of profile:', resp);
       mongoUpsert(ProfilerDB, { profileData: resp.data }, SET_PROFILEDATA);
     });
   };
@@ -66,7 +66,6 @@ function onHover(data) {
 }
 function onZoomPan(data) {
   return (dispatch, getState) => {
-    // console.log('DATA: ', data);
     let val = null;
     val = {};
     if (data['xaxis.range[0]']) {

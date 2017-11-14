@@ -4,7 +4,7 @@ const defaultState = { x: 0, y: 0, width: 0, height: 0, mouseIsDown: 0, regionAr
 const RegionDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.REGION_CHANGE: {
-      console.log('region action:', action);
+      // console.log('region action:', action);
       return action.payload.data;
     }
     case 'RESET_REDUX_STATE':

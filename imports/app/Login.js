@@ -49,14 +49,14 @@ class Login extends Component {
           }
         }
       } else {
-        console.log('SIGN IN SUCCESS');
+        // console.log('SIGN IN SUCCESS');
         this.props.handleLogin();
       }
     });
   }
   handleSubmitSignup = (event) => {
     event.preventDefault();
-    console.log('ABOUT TO SIGN UP');
+    // console.log('ABOUT TO SIGN UP');
     const confirmPwd = this.state.confirmPwd;
     const newUser = this.state.newUser;
     const newPwd = this.state.newPwd;
@@ -96,7 +96,7 @@ class Login extends Component {
       if (err) {
         console.log(err);
       } else {
-        console.log('GOOGLE LOG IN SUCCESS');
+        // console.log('GOOGLE LOG IN SUCCESS');
         this.props.handleLogin();
       }
     });

@@ -20,7 +20,7 @@ class SessionUI extends Component {
   }
 
   handleChange = (event) => {
-    console.log('event:', event.target.value);
+    // console.log('event:', event.target.value);
     this.setState({
       sessionText: event.target.value,
     });

@@ -23,7 +23,7 @@ export function setupImageViewerDB() {
 
 function setupImageViewer() {
   return (dispatch) => {
-    console.log('grimmer setupImageViewer');
+    // console.log('grimmer setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
@@ -35,9 +35,6 @@ function setupImageViewer() {
     const arg = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
-
-    console.log('send register ImageViewer');
-
     // api.instance().sendCommand(cmd, arg, (resp) => {
     //   parseReigsterViewResp(resp);
     // });
@@ -50,9 +47,9 @@ function setupImageViewer() {
 
 function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
-  console.log('get register response:', resp.cmd, 'data:', resp.data);
+  // console.log('get register response:', resp.cmd, 'data:', resp.data);
 
-  console.log('grimmer got register view command response');
+  // console.log('grimmer got register view command response');
   const controllerID = data;
 
   // step1: save controllerID to mongodb
@@ -68,10 +65,8 @@ function parseReigsterViewResp(resp) {
 
 export function parseImageToMongo(buffer) {
   if (buffer) {
-    console.log('parseImageToMongo');
-
     // const url = `data:image/jpeg;base64,${buffer}`;
-    console.log('image url string size:', buffer.length);
+    // console.log('image url string size:', buffer.length);
 
     mongoUpsert(ImageViewerDB, { imageURL: buffer }, GET_IMAGE);
   } else {
@@ -82,7 +77,7 @@ export function parseImageToMongo(buffer) {
 function setZoomLevel(zoomLevel, layerID) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
-    console.log('controllerID: ', controllerID);
+    // console.log('controllerID: ', controllerID);
     // console.log('STATE: ', getState());
     const cmd = `${controllerID}:${Commands.SET_ZOOM_LEVEL}`;
     const arg = `${zoomLevel} ${layerID}`;
@@ -96,8 +91,7 @@ function setZoomLevel(zoomLevel, layerID) {
 function zoom(zoomFactor) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
-    console.log('controllerID: ', controllerID);
-    // console.log('STATE: ', getState());
+    // console.log('controllerID: ', controllerID);
     const cmd = `${controllerID}:${Commands.NEW_ZOOM}`;
     const arg = zoomFactor;
 
@@ -109,16 +103,15 @@ function zoom(zoomFactor) {
 
 function updateStack() {
   return (dispatch, getState) => {
-    console.log('query new stack info');
+    // console.log('query new stack info');
     const state = getState();
     const controllerID = state.ImageViewerDB.controllerID;
-
     // const controllerID = resp.data;
     const cmd = `${controllerID}:${Commands.GET_STACK_DATA}`;
     const arg = '';
     return api.instance().sendCommand(cmd, arg)
       .then((resp) => {
-        console.log('stack resp:', resp);
+        // console.log('stack resp:', resp);
         mongoUpsert(ImageViewerDB, { stack: resp.data }, 'GET_STACK');
         return resp.data;
       });

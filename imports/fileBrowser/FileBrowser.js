@@ -43,7 +43,6 @@ class FileBrowser extends Component {
 
     if (this.props.openBrowser) {
       this.props.dispatch(actions.queryServerFileList(''));
-      console.log('OPENBROWSER, query file list ');
     }
   }
 
@@ -61,7 +60,6 @@ class FileBrowser extends Component {
   // }
   selectImage = (e, index) => {
     // this.setState({ selectedIndex: index });
-    console.log('SELECTED INDEX: ', index);
     this.props.dispatch(actions.selectFile(index));
   }
 
@@ -72,18 +70,17 @@ class FileBrowser extends Component {
   readImage = () => {
     if (this.props.selectedFile >= 0) {
       const file = this.props.files[this.props.selectedFile];
-      console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
+      // console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
 
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
     }
   }
 
-  componentDidMount() {
-    console.log('grimmer filebrowser did mount');
-  }
+  // componentDidMount() {
+  //   console.log('grimmer filebrowser did mount');
+  // }
 
   clickParentFolder = () => {
-    console.log('back to');
     if (this.props.rootDir === '/') {
 
     } else {

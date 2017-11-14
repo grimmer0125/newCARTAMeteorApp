@@ -23,7 +23,7 @@ import SessionManager from '../api/SessionManager';
 let _dispatch = null;
 
 export function storeReduxDispatch(dispatch) {
-  console.log('store redux dispatch for mongo');
+  // console.log('store redux dispatch for mongo');
   _dispatch = dispatch;
 }
 
@@ -47,7 +47,6 @@ export function setupMongoReduxListeners(collection, actionType) {
       _dispatch(actionCreator(newDoc, actionType));
     },
     removed(oldDocument) {
-      console.log('get removed document');
       // const documents = collection.find().fetch();
       // if (documents.length > 0) {
       //   const doc = documents[0];
@@ -64,7 +63,6 @@ export function setupMongoReduxListeners(collection, actionType) {
 export function mongoResumeSelfDB(collection, actionType) {
   const sessionID = SessionManager.getSuitableSession();
   const docs = collection.find({ sessionID }).fetch();
-  console.log('DOCS LENGTH: ', docs.length);
   if (docs.length > 0) {
     const doc = docs[0];
     _dispatch(actionCreator(doc, actionType));
@@ -74,16 +72,12 @@ export function mongoResumeSelfDB(collection, actionType) {
 export function mongoUpsert(collection, newDocObject, actionSubType) {
   newDocObject.actionSubType = actionSubType;
   const sessionID = SessionManager.getSuitableSession();
-  console.log('sessionID: ', sessionID);
   const docs = collection.find({ sessionID }).fetch();
-  console.log('DOCS LENGTH: ', docs.length);
   if (docs.length > 0) {
-    console.log('update collection, action:', actionSubType);
     const doc = docs[0];
     const docID = doc._id;
     collection.update(docID, { $set: newDocObject });
   } else {
-    console.log('insert collection, action:', actionSubType);
     newDocObject.sessionID = sessionID;
     // const docID =
     collection.insert(newDocObject);

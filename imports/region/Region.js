@@ -269,15 +269,12 @@ class Region extends Component {
     });
   }
   zoomIn = () => {
-    console.log('ZOOM BUTTON CLICKED');
     this.props.dispatch(imageActions.zoom(-2));
   }
   zoomOut = () => {
-    console.log('ZOOM BUTTON CLICKED');
     this.props.dispatch(imageActions.zoom(2));
   }
   convertToImage = () => {
-    console.log('convertToImage');
     if (this.layer) {
       // const resizedCanvas = document.createElement('canvas');
       // const resizedContext = resizedCanvas.getContext('2d');
@@ -294,9 +291,7 @@ class Region extends Component {
         else if (this.state.value === 'eps') mime = 'text/eps';
         else mime = 'text/ps';
         const blob = new Blob([result], { type: mime });
-        console.log('BLOB: ', blob);
         const b64encoded = window.URL.createObjectURL(blob);
-        console.log('ENCODING: ', b64encoded);
         const a = document.createElement('a');
         a.setAttribute('href', b64encoded);
         a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
@@ -379,11 +374,6 @@ class Region extends Component {
         <RaisedButton label="rectangle" onClick={this.init} />
         <RaisedButton label="delete" onClick={this.delete} />
         <RaisedButton label="save" onClick={this.handleTouchTap} />
-        {/* <RaisedButton
-          label="file"
-          onClick={this.convertToImage}
-        /> */}
-        {/* <img src={`data:image/png;base64,${this.state.src}`} alt="" /> */}
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
@@ -412,7 +402,6 @@ class Region extends Component {
             type="submit"
             label="Save"
             primary
-            // href={`data:text/eps;base64,${this.state.src}`}
             style={{ marginRight: 0 }}
             onClick={this.convertToImage}
           />

@@ -29,10 +29,10 @@ function setupAnimator() {
     const cmd = Commands.REGISTER_VIEWER;
     const arg = 'pluginId:Animator,index:0';
 
-    console.log('send register Animator');
+    // console.log('send register Animator');
 
     api.instance().sendCommand(cmd, arg, (resp) => {
-      console.log('get register animator result:', resp);
+      // console.log('get register animator result:', resp);
       mongoUpsert(AnimatorDB, { animatorID: resp.data }, `Resp_${cmd}`);
     });
   };
@@ -40,7 +40,7 @@ function setupAnimator() {
 
 function handleAnimatorError(animatorTypeList, stack) { // fileName) {
   // Note: if the first opend file is 3d cube, it will only have channel AnimatorType, no image type
-  console.log('got promise error/reject:', stack);
+  // console.log('got promise error/reject:', stack);
 
   // 單一3d檔案 changeFrame 不會有 fileName="" 進來這邊,
   // 所以是新增唯一2d/3d檔案時, 以及
@@ -51,12 +51,12 @@ function handleAnimatorError(animatorTypeList, stack) { // fileName) {
     const count = stack.layers.length;
     if (count > 0 && stack.layers[0].name) {
       if (count > 1) {
-        console.log('count>1 should already have image animatorType return !!');
+        // console.log('count>1 should already have image animatorType return !!');
 
         return;
       }
 
-      console.log('fake a image animatorType !!!!!');
+      // console.log('fake a image animatorType !!!!!');
 
       const animatorType = {
         type: 'Image',
@@ -83,7 +83,7 @@ function handleAnimatorError(animatorTypeList, stack) { // fileName) {
 function receiveAllSelectionData(animatorTypeList, results, stack) {
   for (let i = 0; i < results.length; i += 1) {
     const result = results[i];
-    console.log('get selectionData:', result.data);
+    // console.log('get selectionData:', result.data);
     animatorTypeList[i].selection = result.data;
   }
 
@@ -99,7 +99,7 @@ function receiveAllSelectionData(animatorTypeList, results, stack) {
   if (!imageAnimatorType) {
     // 1st: 3d檔案, 沒有image的selection data
 
-    console.log('no image animatorType !!!');
+    // console.log('no image animatorType !!!');
     // ~ throw something, ref: https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
     return Promise.reject('oh, no image animatorType after get selection data!!');
   }
@@ -113,7 +113,7 @@ function receiveAllSelectionData(animatorTypeList, results, stack) {
 
 
   // if (animatorTypeList) {
-  console.log('insert animatorTypeList:', animatorTypeList);
+  // console.log('insert animatorTypeList:', animatorTypeList);
   // write to mongo
   // 1. animator query list
   // 2. selectionData
@@ -122,12 +122,12 @@ function receiveAllSelectionData(animatorTypeList, results, stack) {
 }
 
 function requestAllSelectionData(animatorTypeList) {
-  console.log('get all animatorType ids');
+  // console.log('get all animatorType ids');
   const promiseList = [];
   for (let i = 0; i < animatorTypeList.length; i += 1) {
     const animatorType = animatorTypeList[i];
 
-    console.log('get animatorTypeID:', animatorType.animatorTypeID);// value.data);
+    // console.log('get animatorTypeID:', animatorType.animatorTypeID);// value.data);
     // animatorTypeList[i].animatorTypeID = animatorTypeID;//value.data;
     // Change: no more use flushState of selection object,
     // no need to get selection object's ID for each animatorType
@@ -155,7 +155,7 @@ function requestAnimatorTypeIDs(animatorTypeList, animatorID, stack) {
     for (let i = 0; i < animatorTypeList.length; i++) {
       const animatorType = animatorTypeList[i];
       if (animatorType.type === 'Image' && stack.layers.length === 1) {
-        console.log("ignore to query image animatorType's selection for only 1 file");
+        // console.log("ignore to query image animatorType's selection for only 1 file");
         removeIndex = i;
         continue;
       }
@@ -163,7 +163,7 @@ function requestAnimatorTypeIDs(animatorTypeList, animatorID, stack) {
       const cmd = `${animatorID}:${Commands.GET_ANIMATORTYPE_ID}`;
       const arg = `type:${animatorType.type}`;
 
-      console.log('query animatorType:', animatorType.type);
+      // console.log('query animatorType:', animatorType.type);
 
       promiseList.push(api.instance().sendCommand(cmd, arg));
 
@@ -182,7 +182,7 @@ function requestAnimatorTypeIDs(animatorTypeList, animatorID, stack) {
   }
   // }
 
-  console.log('return requestAnimatorTypeIDs error');
+  // console.log('return requestAnimatorTypeIDs error');
 
   // ~ throw something, ref: https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
   return Promise.reject('oh, no image animatorType!!');
@@ -212,7 +212,7 @@ function updateAnimator(stack) {
     // if people open A, B, C, then close C, the reamining stack-layers become unselected
 
     if (!stack || !stack.layers || stack.layers.length == 0) {
-      console.log('no valid stack or empty stack, so force setup animator list empty !!');
+      // console.log('no valid stack or empty stack, so force setup animator list empty !!');
       mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
 
       return;
@@ -220,13 +220,13 @@ function updateAnimator(stack) {
 
     requestAnimatorTypes(animatorID)
       .then((resp) => {
-        console.log('get animator query type result:', resp);
+        // console.log('get animator query type result:', resp);
         animatorTypeList = resp.data;
         // only need stack's layer count
         return requestAnimatorTypeIDs(animatorTypeList, animatorID, stack);
       })
       .then((values) => {
-        console.log('get all animatorType ids:', values);
+        // console.log('get all animatorType ids:', values);
         const promiseList = [];
         for (let i = 0; i < values.length; i += 1) {
           const value = values[i];
@@ -239,7 +239,7 @@ function updateAnimator(stack) {
         receiveAllSelectionData(animatorTypeList, values, stack),
       )
       .catch((e) => {
-        console.log('update animator catch, usually no image animatorType');
+        // console.log('update animator catch, usually no image animatorType');
         handleAnimatorError(animatorTypeList, stack);
       });
   };
@@ -253,17 +253,17 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
     const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
     const arg = newFrameIndex;
 
-    console.log('changeNonImageFrame');
+    // console.log('changeNonImageFrame');
 
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
-        console.log('get changeFrame result:', resp);
+        // console.log('get changeFrame result:', resp);
         // mongoUpsert(AnimatorDB, { animatorID: resp.data }, `Resp_${cmd}`);
         // return requestAllSelectionData(animatorTypeList);
         if (resp.data && resp.data.indexOf('Animator index must be a valid integer')) {
-          console.log('get changeFrame fail');
+          // console.log('get changeFrame fail');
         } else {
-          console.log('get changeFrame ok');
+          // console.log('get changeFrame ok');
           animatorType.selection.frame = newFrameIndex;
           mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
         }
@@ -272,7 +272,7 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
       //   receiveAllSelectionData(animatorTypeList, values),
       // )
       .catch((e) => {
-        console.log('change Non-Image frame catch');
+        // console.log('change Non-Image frame catch');
 
         // handleAnimatorError(animatorTypeList, fileName);
       });
@@ -285,7 +285,7 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
     const cmd = `${animatorTypeID}:${Commands.SET_FRAME}`;
     const arg = newFrameIndex;
 
-    console.log('changeImageFrame');
+    // console.log('changeImageFrame');
 
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {

@@ -55,7 +55,6 @@ class App extends Component {
     this.setState({ loggedIn: true });
   }
   handleLogout = () => {
-    console.log('INSIDE APP handleLogout');
     Meteor.logout((err) => {
       if (err) {
         console.log(err);

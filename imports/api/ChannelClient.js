@@ -76,11 +76,12 @@ export default class ChannelClient {
         // listen for command results callbacks and always invoke the top callback
         // in the list
         // the command results always arrive in the same order they were sent
-        this.QConnector.jsCommandResultsSignal.connect((sessionID, senderSession, cmd, result, parameter) => {
-          try {
-            if (this.receiveHandler) {
-              this.receiveHandler(sessionID, senderSession, cmd, result, parameter);
-            }
+        this.QConnector.jsCommandResultsSignal.connect(
+          (sessionID, senderSession, cmd, result, parameter) => {
+            try {
+              if (this.receiveHandler) {
+                this.receiveHandler(sessionID, senderSession, cmd, result, parameter);
+              }
             // if (m_commandCallbacks.length < 1) {
             //   console.warn('Received command results but no callbacks for this!!!');
             //   console.warn('The result: ', result);
@@ -95,11 +96,11 @@ export default class ChannelClient {
             //   return;
             // }
             // cb(result);
-          } catch (error) {
-            console.error('Caught error in command callback ', error);
-            console.trace();
-          }
-        });
+            } catch (error) {
+              console.error('Caught error in command callback ', error);
+              console.trace();
+            }
+          });
 
         // listen for jsViewUpdatedSignal to render the image
         this.QConnector.jsViewUpdatedSignal.connect((sessionID, viewName, buffer, refreshId) => {
@@ -178,4 +179,5 @@ export default class ChannelClient {
 
 
 // QtConnector.jsSendCommandSlot(cmd, arg);
-// QtConnector.jsUpdateViewSlot(this.m_viewName, this.m_container.offsetWidth, this.m_container.offsetHeight);
+// QtConnector.jsUpdateViewSlot(this.m_viewName,
+// this.m_container.offsetWidth, this.m_container.offsetHeight);

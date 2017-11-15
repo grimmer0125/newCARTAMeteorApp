@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-
-import SessionManager from '../api/SessionManager';
+// import { Meteor } from 'meteor/meteor';
+import { mongoUpsert } from '../api/MongoHelper';
+// import SessionManager from '../api/SessionManager';
 import { HistogramDB } from '../api/HistogramDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
@@ -11,14 +11,22 @@ export const ActionType = {
   HISTOGRAM_CHANGE,
 };
 
-import { mongoUpsert } from '../api/MongoHelper';
 
 export function setupHistogramDB() {
   api.instance().setupMongoRedux(HistogramDB, HISTOGRAM_CHANGE);
 }
+export function parseReigsterHistogramResp(resp) {
+  const { cmd, data } = resp;
+  // console.log('grimmer got register histogram-view command response:', data);
+  const histogramID = data;
+  //  grimmer got register histogram-view command response: /CartaObjects/c145
+
+  // save histogramID to mongodb
+  mongoUpsert(HistogramDB, { histogramID }, `Resp_${cmd}`);
+}
 
 function setupHistogram() {
-  return (dispatch) => {
+  return () => {
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
     // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
     // var pathDict = skel.widgets.Path.getInstance();
@@ -37,17 +45,6 @@ function setupHistogram() {
     });
   };
 }
-
-export function parseReigsterHistogramResp(resp) {
-  const { cmd, data } = resp;
-  // console.log('grimmer got register histogram-view command response:', data);
-  const histogramID = data;
-  //  grimmer got register histogram-view command response: /CartaObjects/c145
-
-  // save histogramID to mongodb
-  mongoUpsert(HistogramDB, { histogramID }, `Resp_${cmd}`);
-}
-
 const actions = {
   setupHistogram,
 };

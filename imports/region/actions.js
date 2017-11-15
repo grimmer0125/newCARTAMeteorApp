@@ -1,7 +1,7 @@
 import update from 'immutability-helper';
-import { Meteor } from 'meteor/meteor';
+// import { Meteor } from 'meteor/meteor';
 import { RegionDB } from '../api/RegionDB';
-import SessionManager from '../api/SessionManager';
+// import SessionManager from '../api/SessionManager';
 import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
 
@@ -29,14 +29,14 @@ export function setupRegionDB() {
 
 // the creating one
 function drawShape(coordX, coordY, width, height) {
-  return (dispatch, getState) => {
+  return () => {
     // this is action.payload.data
     mongoUpsert(RegionDB, { x: coordX, y: coordY, width, height }, DRAW);
   };
 }
 
 function setMouseIsDown(val) {
-  return (dispatch, getState) => {
+  return () => {
     mongoUpsert(RegionDB, { mouseIsDown: val }, SET_MOUSE);
   };
 }
@@ -154,7 +154,7 @@ function resizeRect(newX, newY, pos, index) {
       //   circles: { $set: makeCircles(newX, newY, array[index].w, array[index].h) },
       // });
     const data = update(array, { $splice: [[index, 1, newArray]] });
-    mongoUpsert(RegionDB, { regionArray: data }, MOVERECT);
+    mongoUpsert(RegionDB, { regionArray: data }, RESIZERECT);
   };
 }
 

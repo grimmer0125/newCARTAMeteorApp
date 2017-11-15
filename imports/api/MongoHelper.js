@@ -39,24 +39,25 @@ export function setupMongoReduxListeners(collection, actionType) {
   // TODO move actionCreator above and only define once
 
 
-  const collectionObservationHandle = collection.find().observe({
+  // const collectionObservationHandle =
+  collection.find().observe({
     added(newDoc) {
       _dispatch(actionCreator(newDoc, actionType));
     },
-    changed(newDoc, oldDoc) {
+    changed(newDoc) {
       _dispatch(actionCreator(newDoc, actionType));
     },
-    removed(oldDocument) {
-      // const documents = collection.find().fetch();
-      // if (documents.length > 0) {
-      //   const doc = documents[0];
-      //   // for watching the shared sessioni from python
-      //   // which may manually remove images on client. special case
-      //   if (!SessionManager.getOtherSession()) {
-      //     _dispatch(actionCreator(doc));
-      //   }
-      // }
-    },
+    // removed(oldDocument) {
+    // const documents = collection.find().fetch();
+    // if (documents.length > 0) {
+    //   const doc = documents[0];
+    //   // for watching the shared sessioni from python
+    //   // which may manually remove images on client. special case
+    //   if (!SessionManager.getOtherSession()) {
+    //     _dispatch(actionCreator(doc));
+    //   }
+    // }
+    // },
   });
 }
 

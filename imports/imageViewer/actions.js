@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-
-import SessionManager from '../api/SessionManager';
 import { ImageViewerDB } from '../api/ImageViewerDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
+import { mongoUpsert } from '../api/MongoHelper';
 
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
@@ -15,14 +13,30 @@ export const ActionType = {
   IMAGEVIEWER_CHANGE,
 };
 
-import { mongoUpsert } from '../api/MongoHelper';
 
 export function setupImageViewerDB() {
   api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
 }
+function parseReigsterViewResp(resp) {
+  const { cmd, data } = resp;
+  // console.log('get register response:', resp.cmd, 'data:', resp.data);
+
+  // console.log('grimmer got register view command response');
+  const controllerID = data;
+
+  // step1: save controllerID to mongodb
+  mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
+
+  // step2
+  const viewName = `${controllerID}/view`;
+  const width = 482; // TODO same as the experimental setting in ImageViewer, change later
+  const height = 477;
+
+  api.instance().setupViewSize(viewName, width, height);
+}
 
 function setupImageViewer() {
-  return (dispatch) => {
+  return () => {
     // console.log('grimmer setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
@@ -43,24 +57,6 @@ function setupImageViewer() {
         parseReigsterViewResp(resp);
       });
   };
-}
-
-function parseReigsterViewResp(resp) {
-  const { cmd, data } = resp;
-  // console.log('get register response:', resp.cmd, 'data:', resp.data);
-
-  // console.log('grimmer got register view command response');
-  const controllerID = data;
-
-  // step1: save controllerID to mongodb
-  mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
-
-  // step2
-  const viewName = `${controllerID}/view`;
-  const width = 482; // TODO same as the experimental setting in ImageViewer, change later
-  const height = 477;
-
-  api.instance().setupViewSize(viewName, width, height);
 }
 
 export function parseImageToMongo(buffer) {

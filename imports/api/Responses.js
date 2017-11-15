@@ -6,3 +6,4 @@ export const Responses = new Mongo.Collection('responses');
 if (Meteor.isServer) {
   Meteor.publish('commandResponse', sessionID => Responses.find({ sessionID }));
 }
+export default Responses;

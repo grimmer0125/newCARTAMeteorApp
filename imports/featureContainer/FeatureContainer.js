@@ -14,43 +14,14 @@ const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 // const ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
 const ReactGridLayout = require('react-grid-layout');
 
-function getFromLS(key) {
-  let ls = {};
-  if (global.localStorage) {
-    try {
-      ls = JSON.parse(global.localStorage.getItem('rgl-8')) || {};
-    } catch (e) { /* Ignore */ }
-  }
-  return ls[key];
-}
-
-function saveToLS(key, value) {
-  if (global.localStorage) {
-    global.localStorage.setItem('rgl-8', JSON.stringify({
-      [key]: value,
-    }));
-  }
-}
-
 class FeatureContainer extends Component {
   mixins: [PureRenderMixin]
-  constructor(props) {
-    super(props);
-    // this.props.dispatch(actions.setupFeatureContainer());
-    // layouts: JSON.parse(JSON.stringify(originalLayouts)),
-  }
-  // callback function for handling
-  onLayoutChange = (layout) => {
-    // console.log('layout: ', layout);
-    saveToLS('layout', layout);
-    // console.log('after saving layouts: ', getFromLS('layout'));
-  }
-  onBreakpointChange = (breakpoint, cols) => {
-    this.setState({
-      breakpoint,
-      cols,
-    });
-  }
+  // onBreakpointChange = (breakpoint, cols) => {
+  //   this.setState({
+  //     breakpoint,
+  //     cols,
+  //   });
+  // }
   onRemoveItem(i) {
     // this.setState({ items: _.reject(this.state.items, { i }) });
     this.props.dispatch(actions.onRemoveItemDB(i));
@@ -70,6 +41,7 @@ class FeatureContainer extends Component {
     } else if (type === 'Profiler') {
       return <Profiler width={this.props.width} />;
     }
+    return '';
   }
   createElement = (el) => {
     const removeStyle = {
@@ -92,22 +64,15 @@ class FeatureContainer extends Component {
     );
   }
   render() {
-    // if (this.state) {
-    //   console.log("in render, print state:", this.state);
-    // } else {
-    //   console.log("this.state does not exist in render");
-    // }
     // console.log('RECEIVE PROPS');
     const width = this.props.width;
     return (
       <div style={{ minHeight: '100vh' }}>
         {/* <button onClick={this.onAddItem('none')}>Add Item</button> */}
         <ReactGridLayout
-          ref="rrgl"
           {...this.props}
           autoSize
-          // onLayoutChange={(e) => { console.log('onLayoutChange: ', e); }}
-          onBreakpointChange={this.onBreakpointChange}
+          // onBreakpointChange={this.onBreakpointChange}
           cols={1}
           width={width}
           rowHeight={200}
@@ -126,13 +91,6 @@ class FeatureContainer extends Component {
     );
   }
 }
-FeatureContainer.defaultProps = {
-  className: 'layout',
-  // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 2 },
-  // cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
-  // rowHeight: 100,
-  onLayoutChange() {},
-};
 const mapStateToProps = state => ({
   items: state.FeatureContainerDB.items,
 });

@@ -113,9 +113,11 @@ class SplitterLayout extends React.Component {
     }
 
     if (primaryPaneSize < this.props.primaryMinSize) {
-      secondaryPaneSize = Math.max(secondaryPaneSize - (this.props.primaryMinSize - primaryPaneSize), 0);
+      secondaryPaneSize =
+      Math.max(secondaryPaneSize - (this.props.primaryMinSize - primaryPaneSize), 0);
     } else if (secondaryPaneSize < this.props.secondaryMinSize) {
-      secondaryPaneSize = Math.min(totalSize - splitterSize - this.props.primaryMinSize, this.props.secondaryMinSize);
+      secondaryPaneSize =
+      Math.min(totalSize - splitterSize - this.props.primaryMinSize, this.props.secondaryMinSize);
     }
 
     return secondaryPaneSize;
@@ -131,8 +133,6 @@ class SplitterLayout extends React.Component {
         left: splitterRect.left,
         top: splitterRect.top,
       }, false);
-
-      // console.log('grimmer handleResize:', secondaryPaneSize, 'container_width:', containerRect.width);
       this.setState({ secondaryPaneSize });
       returnSecondaryPaneSize = secondaryPaneSize;
     } else {
@@ -160,8 +160,6 @@ class SplitterLayout extends React.Component {
         top: e.clientY,
       }, true);
       clearSelection();
-
-      // console.log('grimmer handleMouseMove:', secondaryPaneSize, 'container_width:', containerRect.width);
       this.setState({ secondaryPaneSize });
 
       if (this.props.drageHandler) {
@@ -202,8 +200,9 @@ class SplitterLayout extends React.Component {
       children.push(<div />);
     }
     const wrappedChildren = [];
-    const primaryIndex = (this.props.primaryIndex !== 0 && this.props.primaryIndex !== 1) ? 0 : this.props.primaryIndex;
-    for (let i = 0; i < children.length; ++i) {
+    const primaryIndex =
+    (this.props.primaryIndex !== 0 && this.props.primaryIndex !== 1) ? 0 : this.props.primaryIndex;
+    for (let i = 0; i < children.length; i += 1) {
       let primary = true;
       let size = null;
       if (children.length > 1 && i !== primaryIndex) {
@@ -211,7 +210,12 @@ class SplitterLayout extends React.Component {
         size = this.state.secondaryPaneSize;
       }
       wrappedChildren.push(
-        <Pane vertical={this.props.vertical} percentage={this.props.percentage} primary={primary} size={size}>
+        <Pane
+          vertical={this.props.vertical}
+          percentage={this.props.percentage}
+          primary={primary}
+          size={size}
+        >
           {children[i]}
         </Pane>,
       );

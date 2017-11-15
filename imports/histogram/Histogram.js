@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import actions from './actions';
 import { connect } from 'react-redux';
+import actions from './actions';
 
 class Histogram extends Component {
   constructor(props) {

@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import actions from './actions';
 import People from 'material-ui/svg-icons/social/people';
 import IconButton from 'material-ui/IconButton';
 import Popover from 'material-ui/Popover';
-import SessionManager from '../api/SessionManager';
+import actions from './actions';
+// import SessionManager from '../api/SessionManager';
 
 const style = {
   margin: 12,
@@ -49,8 +49,6 @@ class SessionUI extends Component {
         this.setState({ watching: true });
         // save to SeesionManger:
         this.props.dispatch(actions.turnOnWatching(this.state.sessionText));
-      } else {
-
       }
     } else {
       this.setState({ watching: false });
@@ -82,7 +80,16 @@ class SessionUI extends Component {
             onChange={this.handleChange}
             style={{ padding: '10px', paddingTop: 0 }}
           /><br />
-          <RaisedButton onTouchTap={this.switchWatchMode} label={buttonLabel} style={style} />
+          <RaisedButton
+            onTouchTap={this.switchWatchMode}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                this.switchWatchMode();
+              }
+            }}
+            label={buttonLabel}
+            style={style}
+          />
           <br />
           <p style={{ textAlign: 'center' }}>
             My Session ID: <br />

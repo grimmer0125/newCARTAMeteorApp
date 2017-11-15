@@ -1,29 +1,18 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
+// import { bindActionCreators } from 'redux';
 
 import RaisedButton from 'material-ui/RaisedButton';
 // import FlatButton from 'material-ui/FlatButton';
 
 import { List, ListItem, makeSelectable } from 'material-ui/List';
-import Paper from 'material-ui/Paper';
 import Avatar from 'material-ui/Avatar';
 import FileFolder from 'material-ui/svg-icons/file/folder';
-
-import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import ContentSend from 'material-ui/svg-icons/content/send';
 
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
 import { connect } from 'react-redux';
 import actions from './actions';
-
-const browserStyle = {
-  width: 800,
-  margin: 20,
-  // textAlign: 'center',
-  // display: 'inline-block',
-};
 
 const buttonStyle = {
   margin: 10,
@@ -82,7 +71,7 @@ class FileBrowser extends Component {
 
   clickParentFolder = () => {
     if (this.props.rootDir === '/') {
-
+      // ??
     } else {
       const pathList = this.props.rootDir.split('/');
       const lastLen = pathList[pathList.length - 1].length; // 6
@@ -99,20 +88,22 @@ class FileBrowser extends Component {
   }
   clickFolder(folder) {
     const fullPath = `${this.props.rootDir}/${folder}`;
-    // grimmer send command: /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA/Images/carta_region_file
+    // grimmer send command:
+    // /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA/Images/carta_region_file
 
     // default:   'path:'
     // path: + fullPath;
     // console.log('click:', e, ';index:', index, ';value:', value);
 
-    // grimmer send command: /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA/Images
+    // grimmer send command:
+    // /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA/Images
     // grimmer send command: /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA
 
     this.props.dispatch(actions.queryServerFileList(fullPath));
   }
 
   render() {
-    const { browserOpened, files, selectedFile, rootDir } = this.props;
+    const { files, selectedFile, rootDir } = this.props;
     const fileItems = files.map((file, index) => {
       let iconSrc;
       if (file.dir) {
@@ -148,15 +139,12 @@ class FileBrowser extends Component {
       // <Paper style={browserStyle} zDepth={1} >
       <div>
         {/* <p>File Browser, open file browser, then choose a file to read</p> */}
-        {/* <RaisedButton style={buttonStyle} onTouchTap={this.openBrowser} label="Open Server's File Browser" primary />
-        <RaisedButton style={buttonStyle} onTouchTap={this.closeBrowser} label="Close File Browser" secondary /> */}
         <div style={{ fontSize: 10 }}>
           {rootDir}
         </div>
         <div>
           <ListItem
             onClick={this.clickParentFolder}
-            // style={{ fontSize: '10', height: 20 }}
             primaryText=".."
             leftAvatar={<Avatar icon={<FileFolder />} />}
           />

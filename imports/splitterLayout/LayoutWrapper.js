@@ -1,9 +1,9 @@
-import SplitterLayout from '../splitterLayout/components/SplitterLayout';
 import React, { Component } from 'react';
+import SplitterLayout from '../splitterLayout/components/SplitterLayout';
 
 const splitterWidth = 4;
 
-class LayoutWrapper extends React.Component {
+class LayoutWrapper extends Component {
   constructor(props) {
     super(props);
 
@@ -17,7 +17,9 @@ class LayoutWrapper extends React.Component {
     this.subLevelSecondaryPercentage = 0;
     if (this.props.firstPercentage && this.props.secondPercentage) {
       // same as thirdColumnPercentange*100
-      this.subLevelSecondaryPercentage = 100 * (100 - this.props.firstPercentage - this.props.secondPercentage) / (100 - this.props.firstPercentage);
+      this.subLevelSecondaryPercentage =
+      100 * ((100 - this.props.firstPercentage - this.props.secondPercentage)
+      / (100 - this.props.firstPercentage));
     }
 
     this.firstColumnSize = {};
@@ -25,46 +27,20 @@ class LayoutWrapper extends React.Component {
     this.thirdColumnSize = {};
   }
 
-  // affect 2,3 column, current Container is not the 1st level SplitterLayout !!!
-  drage2ndSplitterHandler = (containerWidth, containerHeight, secondaryPaneSize) => {
-    console.log('drage2nd:', containerWidth, ';height:', containerHeight, ';size:', secondaryPaneSize);
-    this.subLevelSecondaryPercentage = secondaryPaneSize;
-    this.setupNewSize();
-
-    // TODO callback
-    if (this.props.drage2ndeHandler) {
-      this.props.drage2ndeHandler(this.firstColumnSize, this.secondColumnSize, this.thirdColumnSize);
-    }
-  };
-
-  // affect 1,2, 3 column
-  drage1stSplitterHandler = (containerWidth, containerHeight, secondaryPaneSize) => {
-    console.log('drage1st:', containerWidth, ';height:', containerHeight, ';size:', secondaryPaneSize);
-
-    this.secondaryPercentage = secondaryPaneSize;
-    this.setupNewSize();
-
-    // TODO callback
-    if (this.props.drage1stHandler) {
-      this.props.drage1stHandler(this.firstColumnSize, this.secondColumnSize, this.thirdColumnSize);
-    }
-  };
-
-  // ignore
-  resize2ndLevel = (containerWidth, containerHeight, secondaryPaneSize) => {
-    // console.log('resize2ndLevel:', containerWidth, ';height:', containerHeight, ';size:', secondaryPaneSize);
-  };
-
   // secondaryPaneSize is this.secondaryPercentage
   setupNewSize = () => {
     this.firstColumnSize.height = this.firstContainerSize.height;
-
-    const secondBlockWidth = this.firstContainerSize.width * (this.secondaryPercentage / 100); // containerWidth - splitterWidth - this.firstColumnSize.width;
-    this.firstColumnSize.width = this.firstContainerSize.width - secondBlockWidth - splitterWidth;// (containerWidth - splitterWidth) * this.firstPercentage / 100;
+    const secondBlockWidth =
+    this.firstContainerSize.width * (this.secondaryPercentage / 100);
+    // containerWidth - splitterWidth - this.firstColumnSize.width;
+    this.firstColumnSize.width =
+    this.firstContainerSize.width - secondBlockWidth - splitterWidth;
+    // (containerWidth - splitterWidth) * this.firstPercentage / 100;
 
     // 這裡用記的的 !!!!!!!!!!!!!!!!!!!!!!!
-    // const thirdColumnPercentange = (100 - this.firstPercentage - this.secondPercentage) / (100 - this.firstPercentage);
-    this.thirdColumnSize.width = (secondBlockWidth) * this.subLevelSecondaryPercentage / 100;
+    // const thirdColumnPercentange = (100 - this.firstPercentage - this.secondPercentage) /
+    // (100 - this.firstPercentage);
+    this.thirdColumnSize.width = (secondBlockWidth) * (this.subLevelSecondaryPercentage / 100);
     this.thirdColumnSize.height = this.firstContainerSize.height;
 
     this.secondColumnSize.width = secondBlockWidth - splitterWidth - this.thirdColumnSize.width;
@@ -88,6 +64,30 @@ class LayoutWrapper extends React.Component {
     // TODO callback
     if (this.props.resizeHandler) {
       this.props.resizeHandler(this.firstColumnSize, this.secondColumnSize, this.thirdColumnSize);
+    }
+  };
+  // affect 2,3 column, current Container is not the 1st level SplitterLayout !!!
+  drage2ndSplitterHandler = (containerWidth, containerHeight, secondaryPaneSize) => {
+    console.log('drage2nd:', containerWidth, ';height:', containerHeight, ';size:', secondaryPaneSize);
+    this.subLevelSecondaryPercentage = secondaryPaneSize;
+    this.setupNewSize();
+
+    // TODO callback
+    if (this.props.drage2ndeHandler) {
+      this.props.drage2ndeHandler(this.firstColumnSize,
+        this.secondColumnSize, this.thirdColumnSize);
+    }
+  };
+  // affect 1,2, 3 column
+  drage1stSplitterHandler = (containerWidth, containerHeight, secondaryPaneSize) => {
+    console.log('drage1st:', containerWidth, ';height:', containerHeight, ';size:', secondaryPaneSize);
+
+    this.secondaryPercentage = secondaryPaneSize;
+    this.setupNewSize();
+
+    // TODO callback
+    if (this.props.drage1stHandler) {
+      this.props.drage1stHandler(this.firstColumnSize, this.secondColumnSize, this.thirdColumnSize);
     }
   };
 
@@ -142,20 +142,23 @@ class LayoutWrapper extends React.Component {
         } else {
           // only 2 columns: special case
           if (this.props.firstPercentage && this.props.secondPercentage) {
-            console.log('grimmer special case');
-
-            secondColumnPercentange = 100 * this.props.secondPercentage / (this.props.firstPercentage + this.props.secondPercentage);
+            secondColumnPercentange =
+            100 * (this.props.secondPercentage /
+              (this.props.firstPercentage + this.props.secondPercentage));
           }
         }
       }
     }
 
-    //! !! there may be some error due to the width of splitter !!!!!! 508.8: 508.8: 256.4=(2nd block*0.33), so at leate flex+33% is real_with/total_width;
+    // !!! there may be some error due to the width of splitter !!
+    // 508.8: 508.8: 256.4=(2nd block*0.33), so at leate flex+33% is real_with/total_width;
     // flex+percentage is only setupt for secondaryPane. Primary uses its remaining, flex: 1 1 auto;
     // flex seems not affect real width. style.widith does.
     // use this.subLevelSecondaryPercentage instead of the below
     if (this.props.firstPercentage && this.props.secondPercentage) {
-      thirdColumnPercentange = 100 * (100 - this.props.firstPercentage - this.props.secondPercentage) / (100 - this.props.firstPercentage);
+      thirdColumnPercentange = 100 *
+      ((100 - this.props.firstPercentage - this.props.secondPercentage) /
+      (100 - this.props.firstPercentage));
     }
 
     // 0個, 就空的
@@ -171,10 +174,19 @@ class LayoutWrapper extends React.Component {
     let secondContent = null;
     if (secondColumnPercentange && thirdColumnPercentange) {
       // console.log('grimmer 1 - use 3rd percentage');
-      secondContent = ({ thirdCihld } ? (<SplitterLayout percentage resizeHandler={this.resize2ndLevel} drageHandler={this.drage2ndSplitterHandler} secondaryInitialSize={thirdColumnPercentange}>{secondChild}{thirdCihld}</SplitterLayout>) : { secondChild });
+      secondContent = ({ thirdCihld } ? (<SplitterLayout
+        percentage
+        resizeHandler={this.resize2ndLevel}
+        drageHandler={this.drage2ndSplitterHandler}
+        secondaryInitialSize={thirdColumnPercentange}
+      >{secondChild}{thirdCihld}
+      </SplitterLayout>)
+        : { secondChild });
     } else {
       // console.log('grimmer 2');
-      secondContent = ({ thirdCihld } ? (<SplitterLayout percentage>{secondChild}{thirdCihld}</SplitterLayout>) : { secondChild });
+      secondContent = ({ thirdCihld } ? (<SplitterLayout
+        percentage
+      >{secondChild}{thirdCihld}</SplitterLayout>) : { secondChild });
     }
 
     // console.log('grimmer 2nd percentage,', secondColumnPercentange);

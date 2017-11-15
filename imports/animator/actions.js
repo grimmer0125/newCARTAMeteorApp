@@ -90,7 +90,7 @@ function receiveAllSelectionData(animatorTypeList, results, stack) {
   let imageAnimatorType = null; // false;
 
   for (const animatorType of animatorTypeList) {
-    if (animatorType.type == 'Image') {
+    if (animatorType.type === 'Image') {
       imageAnimatorType = animatorType;
       // imageTypeExist = true;
       break;
@@ -211,7 +211,7 @@ function updateAnimator(stack) {
     // issue2:
     // if people open A, B, C, then close C, the reamining stack-layers become unselected
 
-    if (!stack || !stack.layers || stack.layers.length == 0) {
+    if (!stack || !stack.layers || stack.layers.length === 0) {
       // console.log('no valid stack or empty stack, so force setup animator list empty !!');
       mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
 
@@ -272,6 +272,7 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
       //   receiveAllSelectionData(animatorTypeList, values),
       // )
       .catch((e) => {
+        throw e;
         // console.log('change Non-Image frame catch');
 
         // handleAnimatorError(animatorTypeList, fileName);

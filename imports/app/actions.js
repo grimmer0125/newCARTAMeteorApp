@@ -89,7 +89,8 @@ function setupResponseChannnelAndAllDB() {
 
       api.instance().subscribeAllDB();
 
-      const respObservationHandle = Responses.find().observe({
+      // const respObservationHandle =
+      Responses.find().observe({
         added(newDoc) {
           handleCommandResponse(newDoc);
 
@@ -99,7 +100,7 @@ function setupResponseChannnelAndAllDB() {
           });
         },
 
-        changed(newDoc, oldDoc) {
+        changed(newDoc) {
           handleCommandResponse(newDoc);
 
           process.nextTick(() => {

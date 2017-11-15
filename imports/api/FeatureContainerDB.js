@@ -8,3 +8,4 @@ if (Meteor.isServer) {
   console.log('publish FeatureContainerDB on server');
   Meteor.publish(FeatureContainerDB.cartaSet, sessionID => FeatureContainerDB.find({ sessionID }));
 }
+export default FeatureContainerDB;

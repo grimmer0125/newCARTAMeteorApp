@@ -8,3 +8,4 @@ if (Meteor.isServer) {
   console.log('publish regionDB on server');
   Meteor.publish(RegionDB.cartaSet, sessionID => RegionDB.find({ sessionID }));
 }
+export default RegionDB;

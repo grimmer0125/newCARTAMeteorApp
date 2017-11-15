@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
 import { mongoResumeSelfDB, setupMongoReduxListeners } from '../api/MongoHelper';
+import { parseImageToMongo } from '../imageViewer/actions';
 
 let instance = null;
 
-import { parseImageToMongo } from '../imageViewer/actions';
 
 export default class ApiService {
   constructor() {
@@ -50,7 +50,7 @@ export default class ApiService {
 
   setupViewSize(viewName, width, height) {
     Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
-      // console.log('get setupViewSize dummy result:', result);
+      console.log('get setupViewSize dummy result:', result);
     });
   }
 
@@ -135,7 +135,7 @@ export default class ApiService {
         console.log('get meteor command response err:', error);
       }
 
-      // console.log('send a command to meteor server ok:', result);
+      console.log('send a command to meteor server ok:', result);
     });
 
     return p1;

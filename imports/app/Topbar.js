@@ -4,12 +4,12 @@ import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import More from 'material-ui/svg-icons/navigation/more-horiz';
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
+import TextField from 'material-ui/TextField';
+import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 // import Dialog from 'material-ui/Dialog';
 import Popover from 'material-ui/Popover';
 import SessionUI from './SessionUI';
 
-import TextField from 'material-ui/TextField';
 
 export default class Topbar extends Component {
   constructor(props) {
@@ -22,9 +22,17 @@ export default class Topbar extends Component {
     };
   }
   componentDidMount = () => {
-    setTimeout(() => {
-      if (Meteor.user()) this.setState({ username: Meteor.user().username });
-    }, 200);
+    Meteor.autorun(() => {
+      if (Meteor.user()) {
+        let name = '';
+        if (Meteor.user().profile) name = Meteor.user().profile.name;
+        else name = Meteor.user().username;
+        this.setState({ username: name });
+      }
+    });
+    // setTimeout(() => {
+    //   if (Meteor.user()) this.setState({ username: Meteor.user().username });
+    // }, 200);
   }
   handleClose = () => {
     this.setState({ open: false });

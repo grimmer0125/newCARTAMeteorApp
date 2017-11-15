@@ -23,7 +23,7 @@ export function parseRegisterProfilerResp(resp) {
 }
 
 function setupProfiler() {
-  return (dispatch) => {
+  return () => {
     // api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
 
     const cmd = Commands.REGISTER_VIEWER;
@@ -59,13 +59,14 @@ export function setupProfilerDB() {
 }
 
 function onHover(data) {
-  return (dispatch, getState) => {
-    const val = { curveNumber: data.points[0].curveNumber, pointNumber: data.points[0].pointNumber };
+  return () => {
+    const val = { curveNumber: data.points[0].curveNumber,
+      pointNumber: data.points[0].pointNumber };
     mongoUpsert(ProfilerDB, { data: val }, SET_HOVER);
   };
 }
 function onZoomPan(data) {
-  return (dispatch, getState) => {
+  return () => {
     let val = null;
     val = {};
     if (data['xaxis.range[0]']) {

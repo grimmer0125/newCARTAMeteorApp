@@ -7,3 +7,4 @@ ImageViewerDB.cartaSet = 'imageviewerdb';
 if (Meteor.isServer) {
   Meteor.publish(ImageViewerDB.cartaSet, sessionID => ImageViewerDB.find({ sessionID }));
 }
+export default ImageViewerDB;

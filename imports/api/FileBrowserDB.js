@@ -8,3 +8,4 @@ if (Meteor.isServer) {
   console.log('publish FileBrowserDB on server');
   Meteor.publish(FileBrowserDB.cartaSet, sessionID => FileBrowserDB.find({ sessionID }));
 }
+export default FileBrowserDB;

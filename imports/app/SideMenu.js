@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Drawer from 'material-ui/Drawer';
 import MenuItemMUI from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import NavNext from 'material-ui/svg-icons/image/navigate-next';

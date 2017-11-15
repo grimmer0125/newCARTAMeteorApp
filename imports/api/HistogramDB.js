@@ -8,3 +8,4 @@ if (Meteor.isServer) {
   console.log('publish HistogramD on server');
   Meteor.publish(HistogramDB.cartaSet, sessionID => HistogramDB.find({ sessionID }));
 }
+export default HistogramDB;

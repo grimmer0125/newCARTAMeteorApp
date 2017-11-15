@@ -144,7 +144,7 @@ class Region extends Component {
     // const data = update(this.regionArray, { $splice: [[index, 1, newArray]] });
     process.nextTick(() => {
       // this.regionArray = data;
-      this.props.dispatch(actions.reshape(newW, newH, newX, newY, index, circles));
+      this.props.dispatch(actions.reshape(newW, newH, newX, newY, index));
     });
   }
   addAnchor = (item, index) => {
@@ -154,7 +154,7 @@ class Region extends Component {
 
     const circlesLen = item.circles.length;
     const circles = [];
-    for (let i = 0; i < circlesLen; i++) {
+    for (let i = 0; i < circlesLen; i += 1) {
       const element = item.circles[i];
       const circle = (
         <Circle
@@ -285,21 +285,25 @@ class Region extends Component {
       // const url = resizedCanvas.toDataURL('image/png', 1);
       const canvas = this.layer.getCanvas();
       const url = canvas.toDataURL('image/png', 1);
-      Meteor.call('convertPNGFile', url, this.state.value, (error, result) => {
-        let mime = '';
-        if (this.state.value === 'pdf') mime = 'application/pdf';
-        else if (this.state.value === 'eps') mime = 'text/eps';
-        else mime = 'text/ps';
-        const blob = new Blob([result], { type: mime });
-        const b64encoded = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.setAttribute('href', b64encoded);
-        a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        // window.URL.revokeObjectURL(b64encoded);
-      });
+      const a = document.createElement('a');
+      if (this.state.value === 'png') {
+        a.setAttribute('href', url);
+      } else {
+        Meteor.call('convertPNGFile', url, this.state.value, (error, result) => {
+          let mime = '';
+          if (this.state.value === 'pdf') mime = 'application/pdf';
+          else if (this.state.value === 'eps') mime = 'text/eps';
+          else mime = 'text/ps';
+          const blob = new Blob([result], { type: mime });
+          const b64encoded = window.URL.createObjectURL(blob);
+          a.setAttribute('href', b64encoded);
+          // window.URL.revokeObjectURL(b64encoded);
+        });
+      }
+      a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   }
   handleChange = (event, index, value) => {
@@ -357,7 +361,8 @@ class Region extends Component {
               <ImageViewer />
               {/* <ImageViewer2 /> */}
               {(this.props.mouseIsDown === 1) ? this.rect : false}
-              {this.props.regionArray ? this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
+              {this.props.regionArray ?
+                this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
             </Layer>
           </Stage>
           <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
@@ -396,6 +401,7 @@ class Region extends Component {
             <MenuItem value="pdf" primaryText="pdf" />
             <MenuItem value="eps" primaryText="eps" />
             <MenuItem value="ps" primaryText="ps" />
+            <MenuItem value="png" primaryText="png" />
           </SelectField>
           <br />
           <FlatButton

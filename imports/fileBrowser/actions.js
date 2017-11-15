@@ -1,14 +1,4 @@
-// const  moment = require('moment');
-
-import { Meteor } from 'meteor/meteor';
-// import { Tracker } from 'meteor/tracker';
-
-// import '../api/methods';
 import { FileBrowserDB } from '../api/FileBrowserDB';
-import { AnimatorDB } from '../api/AnimatorDB';
-import { ImageViewerDB } from '../api/ImageViewerDB';
-
-import SessionManager from '../api/SessionManager';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
@@ -27,13 +17,14 @@ export const ActionType = {
 
 // only for saving action history in mongo
 const SELECT_FILE = 'SELECT_FILE';
-const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
+// const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 
 
 // export const fileBrowserCloseAction = createAction(FILEBROWSER_CLOSE);
 
 // NOTE:
-// Normal Redux way: a action will affect 1 or more than 1 reducers. (compare previous and current diff/payload)logic are there.
+// Normal Redux way: a action will affect 1 or more than 1 reducers.
+// (compare previous and current diff/payload)logic are there.
 // Current way: logic are how to change mongodb, in AsyncActionCreator, **Action files.
 
 
@@ -67,7 +58,7 @@ function parseFileList(resp) {
 }
 
 function queryServerFileList(path) {
-  return (dispatch, getState) => {
+  return () => {
     // 1. send to mongodb to sync UI
     // updateFileBrowserToMongo(true);
 
@@ -78,14 +69,15 @@ function queryServerFileList(path) {
     const arg = `path:${path}`; // 'pluginId:ImageViewer,index:0';
 
     // 2. send command if it becomes true.
-    // TODO need to send Seesion id ? Server knows client's session. Do we need to check this on server side? (Seesion change case)
+    // TODO need to send Seesion id ? Server knows client's session.
+    // Do we need to check this on server side? (Seesion change case)
     api.instance().sendCommand(Commands.REQUEST_FILE_LIST, arg, (resp) => {
       parseFileList(resp);
     });
   };
 }
 function selectFile(index) {
-  return (dispatch, getState) => {
+  return () => {
     mongoUpsert(FileBrowserDB, { selectedFile: index }, SELECT_FILE);
   };
 }
@@ -134,10 +126,9 @@ function closeFile() {
 
         api.instance().sendCommand(cmd, arg)
           .then(resp =>
-            // console.log('close ok:', resp);
-
+            console.log('close ok:', resp),
             // updateAnimator(animatorID, '');
-            dispatch(imageViewer.updateStack()),
+          dispatch(imageViewer.updateStack()),
           )
           .then((resp) => {
             // update animatorType-Selections.
@@ -151,9 +142,9 @@ function closeFile() {
   };
 }
 
-function _calculateFitZoomLevel(view_width, view_height, layer) {
-  const zoomX = view_width / layer.pixelX;
-  const zoomY = view_height / layer.pixelY;
+function _calculateFitZoomLevel(viewWidth, viewHeight, layer) {
+  const zoomX = viewWidth / layer.pixelX;
+  const zoomY = viewHeight / layer.pixelY;
   let zoom = 1;
 
   if (zoomX < 1 || zoomY < 1) {
@@ -189,7 +180,7 @@ function selectFileToOpen(path) {
     // const animatorTypeList = [];
     api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, arg)
       .then((resp) => {
-        // console.log('response is SELECT_FILE_TO_OPEN:', resp);
+        console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
         // updateAnimator(animatorID, fileName);
         dispatch(profiler.getProfile());
@@ -207,9 +198,9 @@ function selectFileToOpen(path) {
             const lastLayer = stack.layers[len - 1];
             if (lastLayer.name === fileName) {
               // const zoomLevel = 3;
-              const view_width = 482,
-                view_height = 477;
-              const zoomLevel = _calculateFitZoomLevel(view_width, view_height, lastLayer);
+              const viewWidth = 482;
+              const viewHeight = 477;
+              const zoomLevel = _calculateFitZoomLevel(viewWidth, viewHeight, lastLayer);
               // console.log('setup zoomLevel to fit panel size:', zoomLevel);
               dispatch(imageViewer.setZoomLevel(zoomLevel, lastLayer.id));
             } else {

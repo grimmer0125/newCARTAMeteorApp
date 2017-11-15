@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { connect } from 'react-redux';
+import NotificationSystem from 'react-notification-system';
+// import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
@@ -14,7 +15,6 @@ import MainPage from './MainPage';
 import Login from './Login';
 import actions from './actions';
 // import Carousel from './Carousel';
-import NotificationSystem from 'react-notification-system';
 
 const store = configureStore();
 injectTapEventPlugin();
@@ -58,7 +58,7 @@ class App extends Component {
     Meteor.logout((err) => {
       if (err) {
         console.log(err);
-        this.refs.notificationSystem.addNotification({
+        this.notify.addNotification({
           title: 'Sign out Failure',
           message: 'Sign out failed. Try again.',
           level: 'error',
@@ -86,7 +86,7 @@ class App extends Component {
                 : <Login handleLogin={this.handleLogin} />
             }
             {/* <Carousel /> */}
-            <NotificationSystem ref="notificationSystem" />
+            <NotificationSystem ref={(node) => { this.notify = node; }} />
           </div>
         </MuiThemeProvider>
       </Provider>

@@ -1,5 +1,4 @@
 import { FeatureContainerDB } from '../api/FeatureContainerDB';
-import { ProfilerDB } from '../api/ProfilerDB';
 import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
 
@@ -15,9 +14,7 @@ const SET_DRAG = 'SET_DRAG';
 const _ = require('lodash');
 
 export function setupFeatureContainerDB() {
-  // return (dispatch) => {
   api.instance().setupMongoRedux(FeatureContainerDB, FEATURE_CHANGE);
-  // };
 }
 function onAddItemDB(data) {
   return (dispatch, getState) => {
@@ -56,7 +53,7 @@ function onRemoveItemDB(key) {
 function onDragStopDB(event) {
   return (dispatch, getState) => {
     const stateTree = getState().FeatureContainerDB;
-    for (let i = 0; i < event.length; i++) {
+    for (let i = 0; i < event.length; i += 1) {
       stateTree.items[i].y = event[i].y;
     }
     mongoUpsert(FeatureContainerDB, { items: stateTree.items }, SET_DRAG);

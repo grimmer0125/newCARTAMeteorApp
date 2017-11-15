@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 // import '../imports/api/methods';
-
 import { Responses } from '../imports/api/Responses';
 import '../imports/api/FileBrowserDB';
 import '../imports/api/ImageViewerDB';
@@ -11,7 +10,7 @@ import '../imports/api/HistogramDB';
 import '../imports/api/AnimatorDB';
 
 import ChannelClient from '../imports/api/ChannelClient';
-import Commands from '../imports/api/Commands';
+// import Commands from '../imports/api/Commands';
 
 
 // ref1: https://stackoverflow.com/questions/27769527/error-meteor-code-must-always-run-within-a-fiber
@@ -46,7 +45,7 @@ const { exec } = require('child_process');
 
 function handleCalculationServerImage(sessionID, viewName, buffer) {
   console.log('get image from WebSocket Server, len:', buffer.length);
-  if (buffer.length != 844) {
+  if (buffer.length !== 844) {
     insertResponse({ sessionID, pushedImage: true, buffer });
   } else {
     console.log('ignore histogram/profiler jpegs');
@@ -85,7 +84,6 @@ Meteor.startup(() => {
   client.registerImageHandler(handleCalculationServerImage);
 
   client.createConnection();
-
   // setInterval(() => {
   //   client.sendKeepAlive();
   // }, 200);`;

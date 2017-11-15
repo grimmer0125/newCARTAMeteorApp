@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
 // import Konva from 'konva';
 import { Image } from 'react-konva';
-
-import Paper from 'material-ui/Paper';
-
 import { connect } from 'react-redux';
 import actions from './actions';
 
-const browserStyle = {
-  width: 482,
-  height: 477,
-};
 let image = null;
 class ImageViewer extends Component {
   constructor(props) {

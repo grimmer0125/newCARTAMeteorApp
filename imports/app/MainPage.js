@@ -1,24 +1,11 @@
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
-import React, { Component } from 'react';
-import LayoutWrapper from '../splitterLayout/LayoutWrapper';
-import Paper from 'material-ui/Paper';
-import IconButton from 'material-ui/IconButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import NumericInput from 'react-numeric-input';
-import { Tabs, Tab } from 'material-ui/Tabs';
-import Slider from 'material-ui/Slider';
-import SkipPrev from 'material-ui/svg-icons/av/skip-previous';
-import SkipNext from 'material-ui/svg-icons/av/skip-next';
-import Stop from 'material-ui/svg-icons/av/stop';
-import PlayForward from 'material-ui/svg-icons/av/play-arrow';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItemMUI from 'material-ui/MenuItem';
-import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-contextmenu/public/styles.css';
-
+import React, { Component } from 'react';
+import RaisedButton from 'material-ui/RaisedButton';
+import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
+import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
-
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 // import { connect } from 'react-redux';
@@ -88,6 +75,7 @@ class MainPage extends Component {
       else if (setting === 'Histogram') return <HistogramSettings />;
       return 0;
     }
+    return '';
   }
   drage2ndeHandler = (first, second, third) => {
     console.log('drage2nd handler:', first, ';second:', second, ';third:', third);
@@ -117,16 +105,17 @@ class MainPage extends Component {
       <div>
         <div>
           <ContextMenuTrigger id="menu">
-            <FeatureContainer ref={(node) => { if (node) this.grid = node; }} width={this.state.secondColumnWidth} setSetting={this.setSetting} />
+            <FeatureContainer
+              ref={(node) => { if (node) this.grid = node; }}
+              width={this.state.secondColumnWidth}
+              setSetting={this.setSetting}
+            />
           </ContextMenuTrigger>
         </div>
         <ContextMenu id="menu">
           <SubMenu title="Layout" hoverDelay={100}>
             <MenuItem onClick={this.handleClick} data={{ type: 'Profiler' }}>Profiler</MenuItem>
             <MenuItem onClick={this.handleClick} data={{ type: 'Histogram' }}>Histogram</MenuItem>
-            {/* <MenuItem onClick={this.handleClick} data={{ type: 'FileBrowser' }}>File Browser</MenuItem> */}
-            {/* <MenuItem onClick={this.handleClick} data={{ type: 'Image Composite' }}>Image Composite Layout</MenuItem>
-            <MenuItem onClick={this.handleClick} data={{ type: 'Custom' }}>Custom Layout</MenuItem> */}
           </SubMenu>
         </ContextMenu>
       </div>

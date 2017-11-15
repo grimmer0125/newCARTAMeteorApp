@@ -164,6 +164,11 @@ class Login extends Component {
           label="sign in"
           backgroundColor="#1976D2"
           labelColor="#FFFFFF"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              this.handleSubmit();
+            }
+          }}
           style={{ marginLeft: '60%', marginBottom: '10px' }}
         /><br />
         <Divider />
@@ -222,6 +227,11 @@ class Login extends Component {
           label="sign up"
           backgroundColor="#1976D2"
           labelColor="#FFFFFF"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              this.handleSubmitSignup();
+            }
+          }}
           style={{ marginLeft: '45%' }}
         /><br />
       </form>

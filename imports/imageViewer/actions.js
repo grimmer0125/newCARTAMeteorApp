@@ -96,7 +96,51 @@ function zoom(zoomFactor) {
     });
   };
 }
+function panZoom(x, y, zoomFactor) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    // console.log('controllerID: ', controllerID);
+    const cmd = `${controllerID}:${Commands.PAN_ZOOM}`;
+    const arg = `${x} ${y} ${zoomFactor}`;
 
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      console.log('get set zoom result:', resp);
+    });
+  };
+}
+function zoomReset() {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const zoomLevel = getState().ImageViewerDB.zoomLevel;
+    const layerID = getState().ImageViewerDB.layerID;
+    const cmd = `${controllerID}:${Commands.SET_ZOOM_LEVEL}`;
+    const arg = `${zoomLevel} ${layerID}`;
+
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      console.log('get set zoom level result:', resp);
+    });
+  };
+}
+function panReset() {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.PAN_RESET}`;
+    const arg = '';
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      console.log('get set zoom result:', resp);
+    });
+  };
+}
+function setCursor(x, y) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.INPUT_EVENT}`;
+    const arg = `{\"type\":\"hover\",\"x\":${x},\"y\":${y}}`;
+    api.instance().sendCommand(cmd, arg).then((resp) => {
+      console.log('cursor result:', resp);
+    });
+  };
+}
 function updateStack() {
   return (dispatch, getState) => {
     // console.log('query new stack info');
@@ -119,6 +163,10 @@ const actions = {
   updateStack,
   zoom,
   setZoomLevel,
+  panZoom,
+  zoomReset,
+  panReset,
+  setCursor,
 };
 
 export default actions;

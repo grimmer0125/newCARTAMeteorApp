@@ -119,10 +119,10 @@ export default class ApiService {
         // self.callback = resolve;
 
         if (handler) {
-          // console.log('send command with handler');
+          console.log('send command with handler');
           self.callbacks.push({ id, callback: handler, resolve });
         } else {
-          // console.log('send command without handler');
+          console.log('send command without handler');
           self.callbacks.push({ id, callback: null, resolve });
         }
 

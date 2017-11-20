@@ -126,7 +126,7 @@ class FileBrowser extends Component {
           iconSrc = 'region_casa.png';
           break;
         default:
-          return null;
+          return '';
       }
 
 

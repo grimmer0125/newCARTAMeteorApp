@@ -62,12 +62,12 @@ export default class SideMenu extends Component {
         <MenuItemMUI style={{ overflowX: 'hidden' }} onClick={this.handleLogout} primaryText="Sign out" leftIcon={<Run />} />
         {
           this.state.expand ?
-            <IconButton style={buttonStyle2}>
-              <NavBefore onTouchTap={this.handleToggle} />
+            <IconButton style={buttonStyle2} onClick={this.handleToggle}>
+              <NavBefore />
             </IconButton>
             :
-            <IconButton style={buttonStyle1}>
-              <NavNext onTouchTap={this.handleToggle} />
+            <IconButton style={buttonStyle1} onClick={this.handleToggle}>
+              <NavNext />
             </IconButton>
         }
       </div>
@@ -88,10 +88,10 @@ export default class SideMenu extends Component {
         {
           this.state.openFiles ?
             <div>
-              <IconButton>
-                <Backspace onTouchTap={this.handleNavBack} />
+              <IconButton onClick={this.handleNavBack}>
+                <Backspace />
               </IconButton>
-              <FileBrowser openBrowser={this.state.openBrowser} />
+              <FileBrowser onClick={this.state.openBrowser} />
             </div>
             : menu
         }

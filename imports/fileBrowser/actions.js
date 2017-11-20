@@ -1,4 +1,5 @@
 import { FileBrowserDB } from '../api/FileBrowserDB';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
@@ -202,6 +203,7 @@ function selectFileToOpen(path) {
               const viewHeight = 477;
               const zoomLevel = _calculateFitZoomLevel(viewWidth, viewHeight, lastLayer);
               // console.log('setup zoomLevel to fit panel size:', zoomLevel);
+              mongoUpsert(ImageViewerDB, { zoomLevel, layerID: lastLayer.id }, 'ZOOM_RESET_PROPS');
               dispatch(imageViewer.setZoomLevel(zoomLevel, lastLayer.id));
             } else {
               console.log('something wrong');

@@ -62,8 +62,8 @@ class SessionUI extends Component {
     const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
     return (
       <div>
-        <IconButton>
-          <People onTouchTap={this.handleTouchTap} />
+        <IconButton onClick={this.handleTouchTap}>
+          <People />
         </IconButton>
         {this.state.watching ? 'watching' : false}
         <Popover

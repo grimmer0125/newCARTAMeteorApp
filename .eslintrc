@@ -32,5 +32,6 @@
   "globals": {
     "document": true,
     "window": true,
+    "Plotly": true,
   }
 }

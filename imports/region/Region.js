@@ -29,6 +29,7 @@ class Region extends Component {
   constructor(props) {
     super(props);
     // this.regions = [];
+    this.lastCall = 0;
     this.rect = null;
     this.flipY = false;
     this.flipX = false;
@@ -109,6 +110,8 @@ class Region extends Component {
 
     if (this.props.mouseIsDown === 0) {
       // this.setRegionArray(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h));
+      console.log(`dimensions: (${startX + offsetX}, ${startY + offsetY}) (${startX + offsetX + w}, ${startY + offsetY})
+      (${startX + offsetX}, ${startY + offsetY + h}) (${startX + offsetX + w}, ${startY + offsetY + h})`);
       this.props.dispatch(
         // actions.setShape(this.regionArray),
         actions.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
@@ -212,6 +215,12 @@ class Region extends Component {
             console.log('drag rect:', x, ';', y);
             this.moveRect(x, y, index);
           }}
+          onDragEnd={(e) => {
+            console.log(`dimensions: (${e.target.attrs.x}, ${e.target.attrs.y}),
+            (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y}),
+            (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
+            (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
+          }}
           onClick={() => {
             this.setState({
               toDelete: item.key,
@@ -285,9 +294,13 @@ class Region extends Component {
       // const url = resizedCanvas.toDataURL('image/png', 1);
       const canvas = this.layer.getCanvas();
       const url = canvas.toDataURL('image/png', 1);
-      const a = document.createElement('a');
       if (this.state.value === 'png') {
+        const a = document.createElement('a');
         a.setAttribute('href', url);
+        a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       } else {
         Meteor.call('convertPNGFile', url, this.state.value, (error, result) => {
           let mime = '';
@@ -296,18 +309,37 @@ class Region extends Component {
           else mime = 'text/ps';
           const blob = new Blob([result], { type: mime });
           const b64encoded = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
           a.setAttribute('href', b64encoded);
-          // window.URL.revokeObjectURL(b64encoded);
+          a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        // window.URL.revokeObjectURL(b64encoded);
         });
       }
-      a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
     }
   }
   handleChange = (event, index, value) => {
     this.setState({ value });
+  }
+  panZoom = (event) => {
+    const pos = this.getMousePos(this.div, event);
+    if (event.deltaY >= 0) {
+      this.props.dispatch(imageActions.panZoom(pos.x, pos.y, -2));
+    } else {
+      this.props.dispatch(imageActions.panZoom(pos.x, pos.y, 2));
+    }
+  }
+  zoomReset = () => {
+    this.props.dispatch(imageActions.zoomReset());
+  }
+  panReset = () => {
+    this.props.dispatch(imageActions.panReset());
+  }
+  panZoomReset = () => {
+    this.panReset();
+    this.zoomReset();
   }
   render() {
     const { x, y, width, height } = this.props;
@@ -324,7 +356,17 @@ class Region extends Component {
     );
     return (
       <div>
-        <div ref={(node) => { this.div = node; }} style={{ position: 'relative' }}>
+        <div
+          ref={(node) => { this.div = node; }}
+          style={{ position: 'relative', width: 482, height: 477 }}
+          // onWheel={(e) => { this.panZoom(e); }}
+          onWheel={(e) => {
+            if (this.lastCall + 200 < Date.now()) {
+              this.lastCall = Date.now();
+              this.panZoom(e);
+            }
+          }}
+        >
           <Stage
             id="stage"
             width={482}
@@ -357,6 +399,10 @@ class Region extends Component {
                 // canvas.setHeight(500);
                 // canvas.setSize(482, 477);
               }}
+              onMouseMove={(e) => {
+                console.log(e);
+                this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+              }}
             >
               <ImageViewer />
               {/* <ImageViewer2 /> */}
@@ -373,6 +419,19 @@ class Region extends Component {
             <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
             <button onClick={this.zoomOut} className="zoom" style={{ width: '24px' }}>-</button>
+          </Card>
+          <Card style={{ width: '24px', position: 'absolute', bottom: 0 }} >
+            <button onClick={this.panReset} className="zoom" style={{ width: '24px' }}>
+              <img style={{ width: '16px', height: '16px', margin: 0 }} src="/images/pan_reset.png" alt="" />
+            </button>
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <button onClick={this.zoomReset} className="zoom" style={{ width: '24px' }}>
+              <img style={{ width: '16px', height: '16px' }} src="/images/zoom_reset.png" alt="" />
+            </button>
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <button onClick={this.panZoomReset} className="zoom" style={{ width: '24px' }}>
+              <img style={{ width: '18px', height: '18px' }} src="/images/panzoom_reset.png" alt="" />
+            </button>
           </Card>
           <br />
         </div>

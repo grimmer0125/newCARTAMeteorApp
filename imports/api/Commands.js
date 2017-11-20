@@ -15,6 +15,9 @@ const QUERY_ANIMATOR_TYPES = 'queryAnimatorTypes';
 const GET_SELECTION_DATA = 'getSelecitonData';
 const NEW_ZOOM = 'newzoom';
 const GET_STACK_DATA = 'getStackData';
+const PAN_ZOOM = 'zoom';
+const PAN_RESET = 'resetPan';
+const INPUT_EVENT = 'inputEvent';
 
 // TODO some commands need parameters, wrap them as a function
 
@@ -30,6 +33,9 @@ const Commands = {
   SET_FRAME,
   GET_STACK_DATA,
   CLOSE_IMAGE,
+  PAN_ZOOM,
+  PAN_RESET,
+  INPUT_EVENT,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

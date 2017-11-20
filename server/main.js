@@ -130,15 +130,17 @@ Meteor.methods({
   },
   convertPNGFile(url, type) {
     if (Meteor.isServer) {
+      console.log('convertPNGFile');
       return new Promise(((resolve, reject) => {
         const buf = Buffer.from(url.replace(/^data:image\/(png|jpg);base64,/, ''), 'base64');
         gm(buf).toBuffer(type, (err, buffer) => {
           if (!err) {
             console.log('done');
             resolve(buffer);
+          } else {
+            console.log(err);
+            reject(err);
           }
-          console.log(err);
-          reject(err);
         });
       }));
     }
@@ -158,12 +160,13 @@ Meteor.methods({
             if (error) {
               console.log(error);
               reject(error);
+            } else {
+              console.log(`stdout: ${stdout}`);
+              console.log(`stderr: ${stderr}`);
+              const bitmap = fs.readFileSync(`chart${userID}.${type}`);
+              const bufString = Buffer.from(bitmap).toString('base64');
+              resolve(bufString);
             }
-            console.log(`stdout: ${stdout}`);
-            console.log(`stderr: ${stderr}`);
-            const bitmap = fs.readFileSync(`chart${userID}.${type}`);
-            const bufString = Buffer.from(bitmap).toString('base64');
-            resolve(bufString);
           });
       }));
     }

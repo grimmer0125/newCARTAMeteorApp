@@ -17,6 +17,7 @@ import PlayForward from 'material-ui/svg-icons/av/play-arrow';
 const Image = 'Image';
 const Channel = 'Channel';
 const Stokes = 'Stokes';
+const Region = 'Region';
 
 class Animator extends Component {
   constructor(props) {
@@ -70,6 +71,7 @@ class Animator extends Component {
     let imageLabel = Image;
     let channelLabel = Channel;
     let stokesLabel = Stokes;
+    const regionLabel = Region;
     if (animatorTypeList && animatorTypeList.length > 0) {
       for (const animatorType of animatorTypeList) {
         // console.log('render animatorTypeList');
@@ -136,6 +138,7 @@ class Animator extends Component {
             <Tab label={imageLabel} value={Image} />
             <Tab label={channelLabel} value={Channel} />
             <Tab label={stokesLabel} value={Stokes} />
+            <Tab label={regionLabel} value={Region} />
           </Tabs>
           <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
             <DropDownMenu

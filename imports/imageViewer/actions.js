@@ -135,10 +135,11 @@ function setCursor(x, y) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     const cmd = `${controllerID}:${Commands.INPUT_EVENT}`;
-    const arg = `{\"type\":\"hover\",\"x\":${x},\"y\":${y}}`;
-    api.instance().sendCommand(cmd, arg).then((resp) => {
-      console.log('cursor result:', resp);
-    });
+    const arg = `{"type":"hover","x":${x},"y":${y}}`;
+    return api.instance().sendCommand(cmd, arg).then(resp =>
+      // resp,
+      mongoUpsert(ImageViewerDB, { cursorInfo: resp.data.formattedCursorCoordinates }, 'CURSOR_INFO'),
+    );
   };
 }
 function updateStack() {

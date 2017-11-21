@@ -5,7 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
-import Card from 'material-ui/Card';
+import { Card, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -36,6 +36,7 @@ class Region extends Component {
     this.state = {
       open: false,
       saveAsInput: '',
+      cursorInfo: '',
     };
 
     // this.props.dispatch(actions.setupRegion());
@@ -341,6 +342,14 @@ class Region extends Component {
     this.panReset();
     this.zoomReset();
   }
+  showCursorInfo = () => {
+    const htmlObject = document.getElementById('cursorInfo');
+    if (this.props.cursorInfo) {
+      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>[0-9A-Za-z_.]+\.[A-Za-z]+/, '');
+    } else {
+      htmlObject.innerHTML = '';
+    }
+  }
   render() {
     const { x, y, width, height } = this.props;
     this.rect = (
@@ -400,8 +409,9 @@ class Region extends Component {
                 // canvas.setSize(482, 477);
               }}
               onMouseMove={(e) => {
-                console.log(e);
+                // console.log(e);
                 this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                this.showCursorInfo();
               }}
             >
               <ImageViewer />
@@ -435,6 +445,11 @@ class Region extends Component {
           </Card>
           <br />
         </div>
+        <Card style={{ width: 482 }}>
+          <CardText>
+            <div id="cursorInfo" />
+          </CardText>
+        </Card>
         <RaisedButton label="rectangle" onClick={this.init} />
         <RaisedButton label="delete" onClick={this.delete} />
         <RaisedButton label="save" onClick={this.handleTouchTap} />
@@ -482,5 +497,6 @@ const mapStateToProps = state => ({
   height: state.RegionDB.height,
   mouseIsDown: state.RegionDB.mouseIsDown,
   regionArray: state.RegionDB.regionArray,
+  cursorInfo: state.ImageViewerDB.cursorInfo,
 });
 export default connect(mapStateToProps)(Region);

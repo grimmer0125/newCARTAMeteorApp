@@ -126,12 +126,13 @@ function closeFile() {
         const arg = `image:${currentLayer.id}`;
 
         api.instance().sendCommand(cmd, arg)
-          .then(resp =>
-            console.log('close ok:', resp),
-            // updateAnimator(animatorID, '');
-          dispatch(imageViewer.updateStack()),
-          )
           .then((resp) => {
+            console.log('close ok:', resp);
+            // updateAnimator(animatorID, '');
+            return dispatch(imageViewer.updateStack());
+          })
+          .then((resp) => {
+            console.log('animator.updateAnimator !!!:', resp);
             // update animatorType-Selections.
             // may not need to update animatorType lists
             dispatch(animator.updateAnimator(resp));

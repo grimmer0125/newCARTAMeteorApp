@@ -327,9 +327,9 @@ class Region extends Component {
   panZoom = (event) => {
     const pos = this.getMousePos(this.div, event);
     if (event.deltaY >= 0) {
-      this.props.dispatch(imageActions.panZoom(pos.x, pos.y, -2));
-    } else {
       this.props.dispatch(imageActions.panZoom(pos.x, pos.y, 2));
+    } else {
+      this.props.dispatch(imageActions.panZoom(pos.x, pos.y, -2));
     }
   }
   zoomReset = () => {

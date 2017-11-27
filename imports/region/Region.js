@@ -331,9 +331,9 @@ class Region extends Component {
   panZoom = (event) => {
     const pos = this.getMousePos(this.div, event);
     if (event.deltaY >= 0) {
-      this.props.dispatch(imageActions.panZoom(pos.x, pos.y, -2));
-    } else {
       this.props.dispatch(imageActions.panZoom(pos.x, pos.y, 2));
+    } else {
+      this.props.dispatch(imageActions.panZoom(pos.x, pos.y, -2));
     }
   }
   zoomReset = () => {
@@ -426,9 +426,6 @@ class Region extends Component {
             </Layer>
           </Stage>
           <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
-            {/* <button className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '12px', height: '12px' }} src="/images/pan.png" alt="" />
-            </button> */}
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
             <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />

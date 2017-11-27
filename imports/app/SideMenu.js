@@ -91,7 +91,7 @@ export default class SideMenu extends Component {
               <IconButton onClick={this.handleNavBack}>
                 <Backspace />
               </IconButton>
-              <FileBrowser onClick={this.state.openBrowser} />
+              <FileBrowser openBrowser={this.state.openBrowser} />
             </div>
             : menu
         }

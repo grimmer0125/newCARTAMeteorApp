@@ -10,6 +10,8 @@ import imageViewer from '../imageViewer/actions';
 
 import profiler from '../profiler/actions';
 
+import colormap from '../colormap/actions';
+
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
 export const ActionType = {
@@ -186,6 +188,8 @@ function selectFileToOpen(path) {
 
         // updateAnimator(animatorID, fileName);
         dispatch(profiler.getProfile());
+
+        dispatch(colormap.updateColormap());
 
         return dispatch(imageViewer.updateStack());
       })

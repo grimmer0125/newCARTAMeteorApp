@@ -8,11 +8,17 @@ class Colormap extends Component {
     super(props);
     this.state = {
     };
+
+    this.props.dispatch(actions.setupColormap());
   }
 
   render() {
-    const { min, max, stops } = this.props;
-    const total = stops.length;
+    const { min, max, stops, colorMapName } = this.props;
+    const total = 0;
+    if (stops) {
+      total = stops.length;
+    }
+
     const newStops = [];
     for (let i = 0; i < total; i++) {
       newStops.push(i / total, stops[i]);
@@ -25,6 +31,8 @@ class Colormap extends Component {
         Min:{min}
         <br />
         Max:{max}
+        <br />
+        colorName:{colorMapName}
         <Stage width={300} height={50}>
           <Layer >
             <Rect
@@ -45,11 +53,12 @@ class Colormap extends Component {
 
 const mapStateToProps = (state) => {
   const { ColormapDB } = state;
-  const { min, max, stops } = ColormapDB;
+  const { min, max, stops, colorMapName } = ColormapDB;
   return {
     min,
     max,
     stops,
+    colorMapName,
   };
 };
 

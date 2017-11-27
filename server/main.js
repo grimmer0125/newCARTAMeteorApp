@@ -8,6 +8,7 @@ import '../imports/api/ProfilerDB';
 import '../imports/api/FeatureContainerDB';
 import '../imports/api/HistogramDB';
 import '../imports/api/AnimatorDB';
+import '../imports/api/ColormapDB';
 
 import ChannelClient from '../imports/api/ChannelClient';
 // import Commands from '../imports/api/Commands';

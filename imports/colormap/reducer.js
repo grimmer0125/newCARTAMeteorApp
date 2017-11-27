@@ -1,6 +1,9 @@
 import { ActionType } from './actions';
 
 const defaultState = {
+  min: 0.1,
+  stops: ['#FF0000', '#e5ff00'],
+  max: 1,
 };
 const ColormapDB = (state = defaultState, action) => {
   switch (action.type) {

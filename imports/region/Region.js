@@ -12,7 +12,7 @@ import MenuItem from 'material-ui/MenuItem';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
-
+import profilerActions from '../profiler/actions';
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
 
@@ -45,6 +45,7 @@ class Region extends Component {
     this.props.dispatch(actions.setMouseIsDown(1));
     // const pos = this.getMousePos(document.getElementById('canvas'), event);
     const pos = this.getMousePos(this.div, event);
+    this.props.dispatch(imageActions.regionCommand('start', pos.x, pos.y));
     endX = pos.x;
     endY = pos.y;
     startX = endX;
@@ -65,6 +66,8 @@ class Region extends Component {
       this.props.dispatch(actions.setMouseIsDown(0));
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
       const pos = this.getMousePos(this.div, event);
+      this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
+      this.props.dispatch(profilerActions.getProfile());
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
@@ -99,6 +102,7 @@ class Region extends Component {
     this.div.addEventListener('mousedown', this.onMouseDown);
     this.div.addEventListener('mousemove', this.onMouseMove);
     this.div.addEventListener('mouseup', this.onMouseUp);
+    this.props.dispatch(imageActions.setRegionType('Rectangle'));
     // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
     // document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
     // document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
@@ -111,8 +115,8 @@ class Region extends Component {
 
     if (this.props.mouseIsDown === 0) {
       // this.setRegionArray(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h));
-      console.log(`dimensions: (${startX + offsetX}, ${startY + offsetY}) (${startX + offsetX + w}, ${startY + offsetY})
-      (${startX + offsetX}, ${startY + offsetY + h}) (${startX + offsetX + w}, ${startY + offsetY + h})`);
+      // console.log(`dimensions: (${startX + offsetX}, ${startY + offsetY}) (${startX + offsetX + w}, ${startY + offsetY})
+      // (${startX + offsetX}, ${startY + offsetY + h}) (${startX + offsetX + w}, ${startY + offsetY + h})`);
       this.props.dispatch(
         // actions.setShape(this.regionArray),
         actions.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
@@ -216,12 +220,12 @@ class Region extends Component {
             console.log('drag rect:', x, ';', y);
             this.moveRect(x, y, index);
           }}
-          onDragEnd={(e) => {
-            console.log(`dimensions: (${e.target.attrs.x}, ${e.target.attrs.y}),
-            (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y}),
-            (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
-            (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
-          }}
+          // onDragEnd={(e) => {
+          //   console.log(`dimensions: (${e.target.attrs.x}, ${e.target.attrs.y}),
+          //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y}),
+          //   (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
+          //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
+          // }}
           onClick={() => {
             this.setState({
               toDelete: item.key,
@@ -345,7 +349,7 @@ class Region extends Component {
   showCursorInfo = () => {
     const htmlObject = document.getElementById('cursorInfo');
     if (this.props.cursorInfo) {
-      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>[0-9A-Za-z_.]+\.[A-Za-z]+/, '');
+      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
     } else {
       htmlObject.innerHTML = '';
     }
@@ -422,9 +426,9 @@ class Region extends Component {
             </Layer>
           </Stage>
           <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
-            <button className="zoom" style={{ width: '24px' }}>
+            {/* <button className="zoom" style={{ width: '24px' }}>
               <img style={{ width: '12px', height: '12px' }} src="/images/pan.png" alt="" />
-            </button>
+            </button> */}
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
             <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />

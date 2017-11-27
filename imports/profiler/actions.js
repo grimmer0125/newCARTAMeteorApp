@@ -49,6 +49,7 @@ function getProfile() {
 
     api.instance().sendCommand(cmd, params, (resp) => {
       // console.log('get response of profile:', resp);
+      console.log('PROFILE DATA: ', resp.data);
       mongoUpsert(ProfilerDB, { profileData: resp.data }, SET_PROFILEDATA);
     });
   };

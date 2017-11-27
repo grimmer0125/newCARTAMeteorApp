@@ -6,7 +6,6 @@ import { mongoUpsert } from '../api/MongoHelper';
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
 const GET_IMAGE = 'GET_IMAGE';
-
 // redux part
 const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
 export const ActionType = {
@@ -158,7 +157,28 @@ function updateStack() {
       });
   };
 }
-
+function setRegionType(type) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.SET_REGION_TYPE}`;
+    const arg = `type:${type}`;
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      // console.log('get register Profiler result:', resp);
+      console.log(resp);
+    });
+  };
+}
+function regionCommand(phase, x, y) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.INPUT_EVENT}`;
+    const arg = `{"type":"drag2","phase":"${phase}","x":${x},"y":${y}}`;
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      // console.log('get register Profiler result:', resp);
+      console.log(resp);
+    });
+  };
+}
 const actions = {
   setupImageViewer,
   updateStack,
@@ -168,6 +188,8 @@ const actions = {
   zoomReset,
   panReset,
   setCursor,
+  setRegionType,
+  regionCommand,
 };
 
 export default actions;

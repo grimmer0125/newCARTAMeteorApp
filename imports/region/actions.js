@@ -17,7 +17,6 @@ const SET_SHAPE = 'SET_SHAPE';
 const RESHAPE = 'RESHAPE';
 const MOVERECT = 'MOVERECT';
 const RESIZERECT = 'RESIZERECT';
-
 const DELETE = 'DELETE';
 
 export function setupRegionDB() {
@@ -181,7 +180,6 @@ function reshape(newW, newH, newX, newY, index) {
     mongoUpsert(RegionDB, { regionArray: data }, RESHAPE);
   };
 }
-
 const actions = {
   drawShape,
   setMouseIsDown,

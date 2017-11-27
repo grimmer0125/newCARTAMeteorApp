@@ -18,6 +18,7 @@ const GET_STACK_DATA = 'getStackData';
 const PAN_ZOOM = 'zoom';
 const PAN_RESET = 'resetPan';
 const INPUT_EVENT = 'inputEvent';
+const SET_REGION_TYPE = 'setRegionType';
 
 // TODO some commands need parameters, wrap them as a function
 
@@ -36,6 +37,7 @@ const Commands = {
   PAN_ZOOM,
   PAN_RESET,
   INPUT_EVENT,
+  SET_REGION_TYPE,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

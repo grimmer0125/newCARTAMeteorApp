@@ -167,6 +167,7 @@ function _calculateFitZoomLevel(viewWidth, viewHeight, layer) {
 }
 
 function selectFileToOpen(path) {
+  mongoUpsert(ImageViewerDB, { requestingFile: true }, 'REQUESTING_FILE');
   return (dispatch, getState) => {
     const state = getState();
 

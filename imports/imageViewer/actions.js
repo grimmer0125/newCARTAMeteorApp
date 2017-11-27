@@ -68,7 +68,6 @@ export function parseImageToMongo(buffer) {
     console.log('get dummy image response');
   }
 }
-
 function setZoomLevel(zoomLevel, layerID) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -143,7 +142,7 @@ function setCursor(x, y) {
 }
 function updateStack() {
   return (dispatch, getState) => {
-    // console.log('query new stack info');
+    mongoUpsert(ImageViewerDB, { requestingFile: false }, 'REQUESTING_FILE');
     const state = getState();
     const controllerID = state.ImageViewerDB.controllerID;
     // const controllerID = resp.data;

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import TextField from 'material-ui/TextField';
@@ -9,6 +10,7 @@ import { Card, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import LinearProgress from 'material-ui/LinearProgress';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
@@ -31,8 +33,6 @@ class Region extends Component {
     // this.regions = [];
     this.lastCall = 0;
     this.rect = null;
-    this.flipY = false;
-    this.flipX = false;
     this.state = {
       open: false,
       saveAsInput: '',
@@ -40,6 +40,13 @@ class Region extends Component {
     };
 
     // this.props.dispatch(actions.setupRegion());
+  }
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.stack) {
+      if (nextProps.stack.layers.length === 0) {
+        this.showCursorInfo(false);
+      }
+    }
   }
   onMouseDown = (event) => {
     this.props.dispatch(actions.setMouseIsDown(1));
@@ -99,10 +106,14 @@ class Region extends Component {
   //   });
   // }
   init = () => {
-    this.div.addEventListener('mousedown', this.onMouseDown);
-    this.div.addEventListener('mousemove', this.onMouseMove);
-    this.div.addEventListener('mouseup', this.onMouseUp);
-    this.props.dispatch(imageActions.setRegionType('Rectangle'));
+    if (this.props.stack) {
+      if (this.props.stack.layers.length > 0) {
+        this.div.addEventListener('mousedown', this.onMouseDown);
+        this.div.addEventListener('mousemove', this.onMouseMove);
+        this.div.addEventListener('mouseup', this.onMouseUp);
+        this.props.dispatch(imageActions.setRegionType('Rectangle'));
+      }
+    }
     // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
     // document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
     // document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
@@ -346,10 +357,12 @@ class Region extends Component {
     this.panReset();
     this.zoomReset();
   }
-  showCursorInfo = () => {
+  showCursorInfo = (show) => {
     const htmlObject = document.getElementById('cursorInfo');
-    if (this.props.cursorInfo) {
-      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
+    if (show) {
+      if (this.props.cursorInfo) {
+        htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
+      }
     } else {
       htmlObject.innerHTML = '';
     }
@@ -414,8 +427,12 @@ class Region extends Component {
               }}
               onMouseMove={(e) => {
                 // console.log(e);
-                this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-                this.showCursorInfo();
+                if (this.props.stack) {
+                  if (this.props.stack.layers.length > 0 && this.props.mouseIsDown === 0) {
+                    this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                    this.showCursorInfo(true);
+                  }
+                }
               }}
             >
               <ImageViewer />
@@ -446,6 +463,7 @@ class Region extends Component {
           </Card>
           <br />
         </div>
+        {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
         <Card style={{ width: 482 }}>
           <CardText>
             <div id="cursorInfo" />
@@ -499,5 +517,7 @@ const mapStateToProps = state => ({
   mouseIsDown: state.RegionDB.mouseIsDown,
   regionArray: state.RegionDB.regionArray,
   cursorInfo: state.ImageViewerDB.cursorInfo,
+  requestingFile: state.ImageViewerDB.requestingFile,
+  stack: state.ImageViewerDB.stack,
 });
 export default connect(mapStateToProps)(Region);

@@ -24,10 +24,12 @@ function updateColormap() {
 
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
-        console.log('colormap:resp:', resp);
-        const { stops, colorMapName } = resp.data;
-        const stopList = stops.split(",");        
-        mongoUpsert(ColormapDB, { stops:stopList, colorMapName }, `Resp_${cmd}`);
+        console.log('colormap:resp:', resp.data);
+        const { stops, colorMapName, intensity_data } = resp.data;
+        const stopList = stops.split(",");    
+        const min = intensity_data.intensityMin; 
+        const max = intensity_data.intensityMax;     
+        mongoUpsert(ColormapDB, { stops:stopList, colorMapName, min, max }, `Resp_${cmd}`);
       });
   };
 }

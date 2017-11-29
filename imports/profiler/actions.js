@@ -38,7 +38,12 @@ function setupProfiler() {
     });
   };
 }
-
+function clearProfile() {
+  return (dispatch) => {
+    const data = { x: [], y: [] };
+    mongoUpsert(ProfilerDB, { profileData: data }, SET_PROFILEDATA);
+  };
+}
 function getProfile() {
   return (dispatch, getState) => {
     const profilerID = getState().ProfilerDB.profilerID;
@@ -92,6 +97,7 @@ const actions = {
   onHover,
   onZoomPan,
   getProfile,
+  clearProfile,
 };
 
 export default actions;

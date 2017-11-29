@@ -19,6 +19,8 @@ const PAN_ZOOM = 'zoom';
 const PAN_RESET = 'resetPan';
 const INPUT_EVENT = 'inputEvent';
 const SET_REGION_TYPE = 'setRegionType';
+const REGISTER_REGION_CONTROLS = 'registerRegionControls';
+const CLOSE_REGION = 'closeRegion';
 
 // TODO some commands need parameters, wrap them as a function
 
@@ -38,6 +40,8 @@ const Commands = {
   PAN_RESET,
   INPUT_EVENT,
   SET_REGION_TYPE,
+  REGISTER_REGION_CONTROLS,
+  CLOSE_REGION,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

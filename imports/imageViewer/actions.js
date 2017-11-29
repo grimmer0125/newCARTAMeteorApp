@@ -1,4 +1,5 @@
 import { ImageViewerDB } from '../api/ImageViewerDB';
+import { RegionDB } from '../api/RegionDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
@@ -16,6 +17,10 @@ export const ActionType = {
 export function setupImageViewerDB() {
   api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
 }
+function setRegionControlsId(response) {
+  const { data } = response;
+  mongoUpsert(RegionDB, { regionControlsID: data }, 'SET_REGION_CONTROLS_ID');
+}
 function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
   // console.log('get register response:', resp.cmd, 'data:', resp.data);
@@ -25,15 +30,17 @@ function parseReigsterViewResp(resp) {
 
   // step1: save controllerID to mongodb
   mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
-
+  const command = `${controllerID}:${Commands.REGISTER_REGION_CONTROLS}`;
+  api.instance().sendCommand(command, '')
+    .then((response) => {
+      setRegionControlsId(response);
+    });
   // step2
   const viewName = `${controllerID}/view`;
   const width = 482; // TODO same as the experimental setting in ImageViewer, change later
   const height = 477;
-
   api.instance().setupViewSize(viewName, width, height);
 }
-
 function setupImageViewer() {
   return () => {
     // console.log('grimmer setupImageViewer');

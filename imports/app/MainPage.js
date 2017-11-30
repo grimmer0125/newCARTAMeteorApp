@@ -177,7 +177,7 @@ class MainPage extends Component {
                 </RaisedButton>
               </div>
               {/* experimental place for colormap */}
-              <Colormap />
+              {/* <Colormap /> */}
               {midPanel}
             </div>
             <div>

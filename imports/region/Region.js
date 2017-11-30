@@ -12,6 +12,7 @@ import MenuItem from 'material-ui/MenuItem';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
+import Colormap from '../colormap/Colormap';
 
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
@@ -378,7 +379,7 @@ class Region extends Component {
         >
           <Stage
             id="stage"
-            width={482}
+            width={532}
             height={477}
             ref={(node) => {
               this.stage = node;
@@ -415,6 +416,7 @@ class Region extends Component {
               }}
             >
               <ImageViewer />
+              <Colormap />
               {/* <ImageViewer2 /> */}
               {(this.props.mouseIsDown === 1) ? this.rect : false}
               {this.props.regionArray ?

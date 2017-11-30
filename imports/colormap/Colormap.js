@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import RaisedButton from 'material-ui/RaisedButton';
 import actions from './actions';
 import { connect } from 'react-redux';
-import { Layer, Stage, Rect } from 'react-konva';
+import { Layer, Stage, Rect, Group, Text } from 'react-konva';
 
 class Colormap extends Component {
   constructor(props) {
@@ -11,41 +12,52 @@ class Colormap extends Component {
 
     this.props.dispatch(actions.setupColormap());
   }
-
   render() {
     const { min, max, stops, colorMapName } = this.props;
-    const total = 0;
+    // const newStops = stops.map((value, index) => {
+    //   return
+    // });
+    let total = 0;
     if (stops) {
       total = stops.length;
     }
-
     const newStops = [];
     for (let i = 0; i < total; i++) {
       newStops.push(i / total, stops[i]);
     }
-    // const newStops = stops.map((value, index) => {
-    //   return
-    // });
     return (
-      <div>
-        Min:{min}
-        <br />
-        Max:{max}
-        <br />
-        colorName:{colorMapName}
-        <Stage width={300} height={50}>
-          <Layer >
-            <Rect
-              width={300}
-              height={50}
-              fillLinearGradientStartPoint={{ x: 0, y: 0 }}
-              fillLinearGradientEndPoint={{ x: 300, y: 0 }}
-              fillLinearGradientColorStops={newStops}
-            />
-          </Layer>
-        </Stage>
-
-      </div>
+      // <div>
+      //   Min:{min}
+      //   <br />
+      //   Max:{max}
+      //   <br />
+      //   colorName:{colorMapName}
+    /* <Stage width={50} height={300}>
+          <Layer> */
+      <Group>
+        <Text
+          x={482}
+          y={310}
+          text={min}
+        />
+        <Text
+          x={482}
+          y={0}
+          text={max}
+        />
+        <Rect
+          x={482}
+          y={10}
+          width={50}
+          height={300}
+          fillLinearGradientStartPoint={{ x: 0, y: 300 }}
+          fillLinearGradientEndPoint={{ x: 0, y: 20 }}
+          fillLinearGradientColorStops={newStops}
+        />
+      </Group>
+    /* </Layer>
+        </Stage> */
+      // </div>
     );
   }
 }

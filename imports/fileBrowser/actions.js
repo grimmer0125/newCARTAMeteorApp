@@ -137,6 +137,7 @@ function closeFile() {
             console.log('animator.updateAnimator !!!:', resp);
             // update animatorType-Selections.
             // may not need to update animatorType lists
+            dispatch(colormap.updateColormap());
             dispatch(animator.updateAnimator(resp));
           });
       } else {

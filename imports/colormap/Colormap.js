@@ -38,12 +38,20 @@ class Colormap extends Component {
         <Text
           x={482}
           y={310}
+          width={50}
           text={min}
         />
         <Text
           x={482}
           y={0}
+          width={50}
           text={max}
+        />
+        <Text
+          x={532}
+          y={0}
+          width={100}
+          text={`Color Name: ${colorMapName}`}
         />
         <Rect
           x={482}

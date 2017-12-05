@@ -379,7 +379,7 @@ class Region extends Component {
         >
           <Stage
             id="stage"
-            width={532}
+            width={632}
             height={477}
             ref={(node) => {
               this.stage = node;

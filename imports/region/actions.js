@@ -1,10 +1,12 @@
 import update from 'immutability-helper';
 // import { Meteor } from 'meteor/meteor';
 import { RegionDB } from '../api/RegionDB';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 // import SessionManager from '../api/SessionManager';
 import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
 import Commands from '../api/Commands';
+import profilerActions from '../profiler/actions';
 
 const REGION_CHANGE = 'REGION_CHANGE';
 
@@ -193,6 +195,17 @@ function reshape(newW, newH, newX, newY, index) {
     mongoUpsert(RegionDB, { regionArray: data }, RESHAPE);
   };
 }
+function selectRegion(x, y) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.INPUT_EVENT}`;
+    const arg = `{"type":"touch","x":${x},"y":${y}}`;
+    api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        console.log('SELECT REGION RESP: ', resp);
+      });
+  };
+}
 const actions = {
   drawShape,
   setMouseIsDown,
@@ -201,6 +214,7 @@ const actions = {
   remove,
   moveRect,
   resizeRect,
+  selectRegion,
 };
 
 export default actions;

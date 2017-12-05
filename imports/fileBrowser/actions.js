@@ -9,6 +9,7 @@ import animator from '../animator/actions';
 import imageViewer from '../imageViewer/actions';
 
 import profiler from '../profiler/actions';
+import histogramActions from '../histogram/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
@@ -187,7 +188,7 @@ function selectFileToOpen(path) {
 
         // updateAnimator(animatorID, fileName);
         dispatch(profiler.getProfile());
-
+        dispatch(histogramActions.getHistogramData());
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {

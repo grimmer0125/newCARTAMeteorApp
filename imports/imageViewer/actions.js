@@ -13,7 +13,6 @@ export const ActionType = {
   IMAGEVIEWER_CHANGE,
 };
 
-
 export function setupImageViewerDB() {
   api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
 }
@@ -43,21 +42,18 @@ function parseReigsterViewResp(resp) {
 }
 function setupImageViewer() {
   return () => {
-    // console.log('grimmer setupImageViewer');
+    // console.log('setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
-    // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
+    const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
     // var pathDict = skel.widgets.Path.getInstance();
     // var regCmd = pathDict.getCommandRegisterView();
-    // 'pluginId:ImageViewer,index:0';
-
-    const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
-    const arg = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
-    // api.instance().sendCommand(cmd, arg, (resp) => {
-    //   parseReigsterViewResp(resp);
-    // });
+
+    const arg = 'pluginId:ImageViewer,index:0';
+    // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
+
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         parseReigsterViewResp(resp);

@@ -11,6 +11,8 @@ import imageViewer from '../imageViewer/actions';
 import profiler from '../profiler/actions';
 import histogramActions from '../histogram/actions';
 
+import colormap from '../colormap/actions';
+
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
 export const ActionType = {
@@ -136,6 +138,7 @@ function closeFile() {
             console.log('animator.updateAnimator !!!:', resp);
             // update animatorType-Selections.
             // may not need to update animatorType lists
+            dispatch(colormap.updateColormap());
             dispatch(animator.updateAnimator(resp));
           });
       } else {
@@ -189,6 +192,9 @@ function selectFileToOpen(path) {
         // updateAnimator(animatorID, fileName);
         dispatch(profiler.getProfile());
         dispatch(histogramActions.getHistogramData());
+
+        dispatch(colormap.updateColormap());
+      
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {

@@ -8,6 +8,9 @@ const GET_ANIMATORTYPE_ID = 'registerAnimator';
 const SET_ZOOM_LEVEL = 'setZoomLevel';
 const CLOSE_IMAGE = 'closeImage';
 const SET_FRAME = 'setFrame';
+const PAN_ZOOM = 'zoom';
+const PAN_RESET = 'resetPan';
+const INPUT_EVENT = 'inputEvent';
 
 // New commands for new CARTA:
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
@@ -15,6 +18,7 @@ const QUERY_ANIMATOR_TYPES = 'queryAnimatorTypes';
 const GET_SELECTION_DATA = 'getSelecitonData';
 const NEW_ZOOM = 'newzoom';
 const GET_STACK_DATA = 'getStackData';
+const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
 const PAN_ZOOM = 'zoom';
 const PAN_RESET = 'resetPan';
 const INPUT_EVENT = 'inputEvent';
@@ -39,6 +43,7 @@ const Commands = {
   PAN_ZOOM,
   PAN_RESET,
   INPUT_EVENT,
+  GET_COLORMAP_All_DATA,
   SET_REGION_TYPE,
   REGISTER_REGION_CONTROLS,
   CLOSE_REGION,

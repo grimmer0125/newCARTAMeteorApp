@@ -6,6 +6,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
+import Colormap from '../colormap/Colormap';
+
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 // import { connect } from 'react-redux';
@@ -174,6 +176,8 @@ class MainPage extends Component {
                   <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
                 </RaisedButton>
               </div>
+              {/* experimental place for colormap */}
+              {/* <Colormap /> */}
               {midPanel}
             </div>
             <div>

@@ -8,6 +8,7 @@ import profilerReducer from './profiler/reducer';
 import histogramReducer from './histogram/reducer';
 import featureReducer from './featureContainer/reducer';
 import animatorReducer from './animator/reducer';
+import colormapReducer from './colormap/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   ...profilerReducer,
   ...featureReducer,
   ...animatorReducer,
+  ...colormapReducer,
 });
 
 export default rootReducer;

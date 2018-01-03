@@ -5,7 +5,7 @@ import Commands from '../api/Commands';
 import { mongoUpsert } from '../api/MongoHelper';
 
 import imageViewer from '../imageViewer/actions';
-
+import colormap from '../colormap/actions';
 // redux part
 const ANIMATOR_CHANGE = 'ANIMATOR_CHANGE';
 export const ActionType = {
@@ -291,7 +291,7 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         console.log('get changeFrame result:', resp);
-
+        dispatch(colormap.updateColormap());
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {

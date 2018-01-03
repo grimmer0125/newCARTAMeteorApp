@@ -4,6 +4,7 @@ import { RegionDB } from '../api/RegionDB';
 // import SessionManager from '../api/SessionManager';
 import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
+import Commands from '../api/Commands';
 
 const REGION_CHANGE = 'REGION_CHANGE';
 
@@ -17,7 +18,6 @@ const SET_SHAPE = 'SET_SHAPE';
 const RESHAPE = 'RESHAPE';
 const MOVERECT = 'MOVERECT';
 const RESIZERECT = 'RESIZERECT';
-
 const DELETE = 'DELETE';
 
 export function setupRegionDB() {
@@ -83,6 +83,18 @@ function setShape(x, y, width, height) {
 function remove(target) {
   return (dispatch, getState) => {
     const array = getState().RegionDB.regionArray;
+    const regionControlsID = getState().RegionDB.regionControlsID;
+    const cmd = `${regionControlsID}:${Commands.CLOSE_REGION}`;
+    for (let i = 0; i < array.length; i++) {
+      if (array[i].key === target) {
+        const arg = `region:${i}`;
+        api.instance().sendCommand(cmd, arg)
+          .then((resp) => {
+            console.log('CLOSE REGION RESP: ', resp);
+          });
+        break;
+      }
+    }
     mongoUpsert(RegionDB, { regionArray: array.filter(item => item.key !== target) }, DELETE);
   };
 }
@@ -181,7 +193,6 @@ function reshape(newW, newH, newX, newY, index) {
     mongoUpsert(RegionDB, { regionArray: data }, RESHAPE);
   };
 }
-
 const actions = {
   drawShape,
   setMouseIsDown,

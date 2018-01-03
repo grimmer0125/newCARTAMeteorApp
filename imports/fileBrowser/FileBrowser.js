@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 // import { bindActionCreators } from 'redux';
-
 import RaisedButton from 'material-ui/RaisedButton';
 // import FlatButton from 'material-ui/FlatButton';
 
@@ -60,7 +59,6 @@ class FileBrowser extends Component {
     if (this.props.selectedFile >= 0) {
       const file = this.props.files[this.props.selectedFile];
       // console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
-
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
     }
   }

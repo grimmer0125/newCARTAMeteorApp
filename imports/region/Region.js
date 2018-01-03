@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import TextField from 'material-ui/TextField';
@@ -9,11 +10,12 @@ import { Card, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import LinearProgress from 'material-ui/LinearProgress';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import Colormap from '../colormap/Colormap';
-
+import profilerActions from '../profiler/actions';
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
 
@@ -32,8 +34,6 @@ class Region extends Component {
     // this.regions = [];
     this.lastCall = 0;
     this.rect = null;
-    this.flipY = false;
-    this.flipX = false;
     this.state = {
       open: false,
       saveAsInput: '',
@@ -43,10 +43,18 @@ class Region extends Component {
 
     // this.props.dispatch(actions.setupRegion());
   }
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.stack) {
+      if (nextProps.stack.layers.length === 0) {
+        this.showCursorInfo(false);
+      }
+    }
+  }
   onMouseDown = (event) => {
     this.props.dispatch(actions.setMouseIsDown(1));
     // const pos = this.getMousePos(document.getElementById('canvas'), event);
     const pos = this.getMousePos(this.div, event);
+    this.props.dispatch(imageActions.regionCommand('start', pos.x, pos.y));
     endX = pos.x;
     endY = pos.y;
     startX = endX;
@@ -67,6 +75,8 @@ class Region extends Component {
       this.props.dispatch(actions.setMouseIsDown(0));
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
       const pos = this.getMousePos(this.div, event);
+      this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
+      this.props.dispatch(profilerActions.getProfile());
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
@@ -98,12 +108,20 @@ class Region extends Component {
   //   });
   // }
   init = () => {
-    this.setState({
-      regionListener: true,
-    });
     // this.div.addEventListener('mousedown', this.onMouseDown);
     // this.div.addEventListener('mousemove', this.onMouseMove);
     // this.div.addEventListener('mouseup', this.onMouseUp);
+    if (this.props.stack) {
+      if (this.props.stack.layers.length > 0) {
+        this.setState({
+          regionListener: true,
+        });
+        this.props.dispatch(imageActions.setRegionType('Rectangle'));
+      }
+    }
+    // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
+    // document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
+    // document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
   }
   drawRect = () => {
     const w = endX - startX;
@@ -113,8 +131,8 @@ class Region extends Component {
 
     if (this.props.mouseIsDown === 0) {
       // this.setRegionArray(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h));
-      console.log(`dimensions: (${startX + offsetX}, ${startY + offsetY}) (${startX + offsetX + w}, ${startY + offsetY})
-      (${startX + offsetX}, ${startY + offsetY + h}) (${startX + offsetX + w}, ${startY + offsetY + h})`);
+      // console.log(`dimensions: (${startX + offsetX}, ${startY + offsetY}) (${startX + offsetX + w}, ${startY + offsetY})
+      // (${startX + offsetX}, ${startY + offsetY + h}) (${startX + offsetX + w}, ${startY + offsetY + h})`);
       this.props.dispatch(
         // actions.setShape(this.regionArray),
         actions.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
@@ -218,12 +236,12 @@ class Region extends Component {
             console.log('drag rect:', x, ';', y);
             this.moveRect(x, y, index);
           }}
-          onDragEnd={(e) => {
-            console.log(`dimensions: (${e.target.attrs.x}, ${e.target.attrs.y}),
-            (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y}),
-            (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
-            (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
-          }}
+          // onDragEnd={(e) => {
+          //   console.log(`dimensions: (${e.target.attrs.x}, ${e.target.attrs.y}),
+          //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y}),
+          //   (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
+          //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
+          // }}
           onClick={() => {
             this.setState({
               toDelete: item.key,
@@ -344,10 +362,12 @@ class Region extends Component {
     this.panReset();
     this.zoomReset();
   }
-  showCursorInfo = () => {
+  showCursorInfo = (show) => {
     const htmlObject = document.getElementById('cursorInfo');
-    if (this.props.cursorInfo) {
-      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>[0-9A-Za-z_.]+\.[A-Za-z]+/, '');
+    if (show) {
+      if (this.props.cursorInfo) {
+        htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
+      }
     } else {
       htmlObject.innerHTML = '';
     }
@@ -409,10 +429,15 @@ class Region extends Component {
                 // canvas.setHeight(500);
                 // canvas.setSize(482, 477);
               }}
-              // onMouseMove={(e) => {
-              //   // this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-              //   // this.showCursorInfo();
-              // }}
+              onMouseMove={(e) => {
+                // console.log(e);
+                if (this.props.stack) {
+                  if (this.props.stack.layers.length > 0 && this.props.mouseIsDown === 0) {
+                    this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                    this.showCursorInfo(true);
+                  }
+                }
+              }}
             >
               <Group
                 onMouseDown={(e) => {
@@ -426,8 +451,12 @@ class Region extends Component {
                   if (this.state.regionListener) {
                     this.onMouseMove(e.evt);
                   }
-                  this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-                  this.showCursorInfo();
+                  if (this.props.stack) {
+                    if (this.props.stack.layers.length > 0 && !this.props.mouseIsDown) {
+                      this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                      this.showCursorInfo();
+                    }
+                  }
                 }}
                 onMouseUp={(e) => {
                   if (this.state.regionListener) {
@@ -472,6 +501,7 @@ class Region extends Component {
           </Card>
           <br />
         </div>
+        {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
         <Card style={{ width: 482 }}>
           <CardText>
             <div id="cursorInfo" />
@@ -525,5 +555,7 @@ const mapStateToProps = state => ({
   mouseIsDown: state.RegionDB.mouseIsDown,
   regionArray: state.RegionDB.regionArray,
   cursorInfo: state.ImageViewerDB.cursorInfo,
+  requestingFile: state.ImageViewerDB.requestingFile,
+  stack: state.ImageViewerDB.stack,
 });
 export default connect(mapStateToProps)(Region);

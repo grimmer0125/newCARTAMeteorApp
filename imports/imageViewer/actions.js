@@ -1,4 +1,5 @@
 import { ImageViewerDB } from '../api/ImageViewerDB';
+import { RegionDB } from '../api/RegionDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
@@ -6,7 +7,6 @@ import { mongoUpsert } from '../api/MongoHelper';
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
 const GET_IMAGE = 'GET_IMAGE';
-
 // redux part
 const IMAGEVIEWER_CHANGE = 'IMAGEVIEWER_CHANGE';
 export const ActionType = {
@@ -17,6 +17,10 @@ export const ActionType = {
 export function setupImageViewerDB() {
   api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
 }
+function setRegionControlsId(response) {
+  const { data } = response;
+  mongoUpsert(RegionDB, { regionControlsID: data }, 'SET_REGION_CONTROLS_ID');
+}
 function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
   // console.log('get register response:', resp.cmd, 'data:', resp.data);
@@ -26,15 +30,17 @@ function parseReigsterViewResp(resp) {
 
   // step1: save controllerID to mongodb
   mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
-
+  const command = `${controllerID}:${Commands.REGISTER_REGION_CONTROLS}`;
+  api.instance().sendCommand(command, '')
+    .then((response) => {
+      setRegionControlsId(response);
+    });
   // step2
   const viewName = `${controllerID}/view`;
   const width = 482; // TODO same as the experimental setting in ImageViewer, change later
   const height = 477;
-
   api.instance().setupViewSize(viewName, width, height);
 }
-
 function setupImageViewer() {
   return () => {
     // console.log('grimmer setupImageViewer');
@@ -69,7 +75,6 @@ export function parseImageToMongo(buffer) {
     console.log('get dummy image response');
   }
 }
-
 function setZoomLevel(zoomLevel, layerID) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -144,7 +149,7 @@ function setCursor(x, y) {
 }
 function updateStack() {
   return (dispatch, getState) => {
-    // console.log('query new stack info');
+    mongoUpsert(ImageViewerDB, { requestingFile: false }, 'REQUESTING_FILE');
     const state = getState();
     const controllerID = state.ImageViewerDB.controllerID;
     // const controllerID = resp.data;
@@ -158,7 +163,28 @@ function updateStack() {
       });
   };
 }
-
+function setRegionType(type) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.SET_REGION_TYPE}`;
+    const arg = `type:${type}`;
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      // console.log('get register Profiler result:', resp);
+      console.log(resp);
+    });
+  };
+}
+function regionCommand(phase, x, y) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.INPUT_EVENT}`;
+    const arg = `{"type":"drag2","phase":"${phase}","x":${x},"y":${y}}`;
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      // console.log('get register Profiler result:', resp);
+      console.log(resp);
+    });
+  };
+}
 const actions = {
   setupImageViewer,
   updateStack,
@@ -168,6 +194,8 @@ const actions = {
   zoomReset,
   panReset,
   setCursor,
+  setRegionType,
+  regionCommand,
 };
 
 export default actions;

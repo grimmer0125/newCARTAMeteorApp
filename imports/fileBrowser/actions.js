@@ -121,7 +121,6 @@ function closeFile() {
         currentLayer = stack.layers[count - 1];
         // console.log('close this file:', currentLayer.name);
       }
-
       if (currentLayer) {
         // console.log('start to close file');
         const cmd = `${controllerID}:${Commands.CLOSE_IMAGE}`;
@@ -131,6 +130,7 @@ function closeFile() {
           .then((resp) => {
             console.log('close ok:', resp);
             // updateAnimator(animatorID, '');
+            // empty profiler if closing first image
             return dispatch(imageViewer.updateStack());
           })
           .then((resp) => {
@@ -170,6 +170,7 @@ function _calculateFitZoomLevel(viewWidth, viewHeight, layer) {
 }
 
 function selectFileToOpen(path) {
+  mongoUpsert(ImageViewerDB, { requestingFile: true }, 'REQUESTING_FILE');
   return (dispatch, getState) => {
     const state = getState();
 

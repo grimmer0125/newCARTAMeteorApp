@@ -38,7 +38,12 @@ function setupProfiler() {
     });
   };
 }
-
+function clearProfile() {
+  return (dispatch) => {
+    const data = { x: [], y: [] };
+    mongoUpsert(ProfilerDB, { profileData: data }, SET_PROFILEDATA);
+  };
+}
 function getProfile() {
   return (dispatch, getState) => {
     const profilerID = getState().ProfilerDB.profilerID;
@@ -49,6 +54,7 @@ function getProfile() {
 
     api.instance().sendCommand(cmd, params, (resp) => {
       // console.log('get response of profile:', resp);
+      console.log('PROFILE DATA: ', resp.data);
       mongoUpsert(ProfilerDB, { profileData: resp.data }, SET_PROFILEDATA);
     });
   };
@@ -91,6 +97,7 @@ const actions = {
   onHover,
   onZoomPan,
   getProfile,
+  clearProfile,
 };
 
 export default actions;

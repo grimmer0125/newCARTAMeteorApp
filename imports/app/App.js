@@ -31,18 +31,18 @@ injectTapEventPlugin();
 // secondaryColor: palette.accent1Color,
 
 // these primary and accent colosr are from https://grommet.github.io
-const muiTheme = getMuiTheme({
-  palette: {
-    primary1Color: '#865CD6', // grey400,
-    accent1Color: '#DC2878', // ~ its meaning is the same as secondary and the following secondary*Color do not take effect
-    // secondaryColor: '#DC2878',
-    //     secondaryTextColor: '#DC2878',
-    //     secondaryIconColor: '#DC2878',
-  },
-  // appBar: {
-  //   height: 50,
-  // },
-});
+// const muiTheme = getMuiTheme({
+//   palette: {
+//     primary1Color: '#865CD6', // grey400,
+//     accent1Color: '#DC2878', // ~ its meaning is the same as secondary and the following secondary*Color do not take effect
+//     // secondaryColor: '#DC2878',
+//     //     secondaryTextColor: '#DC2878',
+//     //     secondaryIconColor: '#DC2878',
+//   },
+//   // appBar: {
+//   //   height: 50,
+//   // },
+// });
 
 class App extends Component {
   constructor(props) {
@@ -78,7 +78,7 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <MuiThemeProvider muiTheme={muiTheme}>
+        <MuiThemeProvider>
           <div>
             {
               (this.state.loggedIn || Meteor.user() !== null) ?

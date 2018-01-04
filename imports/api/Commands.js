@@ -1,9 +1,11 @@
+// !!continue to use these previous commands which is used by old CARTA. !!
 // global-like
 const REGISTER_VIEWER = '/CartaObjects/ViewManager:registerView';
 const REQUEST_FILE_LIST = '/CartaObjects/DataLoader:getData';
 const SELECT_FILE_TO_OPEN = '/CartaObjects/ViewManager:dataLoaded';
 
-// non-global, need object id
+// non-global
+//need object id
 const GET_ANIMATORTYPE_ID = 'registerAnimator';
 const SET_ZOOM_LEVEL = 'setZoomLevel';
 const CLOSE_IMAGE = 'closeImage';
@@ -12,16 +14,13 @@ const PAN_ZOOM = 'zoom';
 const PAN_RESET = 'resetPan';
 const INPUT_EVENT = 'inputEvent';
 
-// New commands for new CARTA:
+// !!!! Add New commands for new CARTA, add previous commands above !!!
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
 const QUERY_ANIMATOR_TYPES = 'queryAnimatorTypes';
 const GET_SELECTION_DATA = 'getSelecitonData';
 const NEW_ZOOM = 'newzoom';
 const GET_STACK_DATA = 'getStackData';
 const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
-const PAN_ZOOM = 'zoom';
-const PAN_RESET = 'resetPan';
-const INPUT_EVENT = 'inputEvent';
 const SET_REGION_TYPE = 'setRegionType';
 const REGISTER_REGION_CONTROLS = 'registerRegionControls';
 const CLOSE_REGION = 'closeRegion';
@@ -47,7 +46,6 @@ const Commands = {
   SET_REGION_TYPE,
   REGISTER_REGION_CONTROLS,
   CLOSE_REGION,
-  // GET_DEFAULT_HISTOGRAM_ID,
 };
 
 export default Commands;

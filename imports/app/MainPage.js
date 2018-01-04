@@ -1,6 +1,7 @@
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
-import 'react-contextmenu/public/styles.css';
+// import 'react-contextmenu/public/styles.css';
+import '../styles/react-contextmenu.css';
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';

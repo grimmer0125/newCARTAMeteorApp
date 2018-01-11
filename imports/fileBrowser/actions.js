@@ -9,6 +9,7 @@ import animator from '../animator/actions';
 import imageViewer from '../imageViewer/actions';
 
 import profiler from '../profiler/actions';
+import histogramActions from '../histogram/actions';
 
 import colormap from '../colormap/actions';
 
@@ -190,9 +191,10 @@ function selectFileToOpen(path) {
 
         // updateAnimator(animatorID, fileName);
         dispatch(profiler.getProfile());
+        dispatch(histogramActions.getHistogramData());
 
         dispatch(colormap.updateColormap());
-
+      
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {

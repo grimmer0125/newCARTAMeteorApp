@@ -37,7 +37,7 @@ class FeatureContainer extends Component {
   addGraph = (type) => {
     // console.log(`TYPE: ${type}`);
     if (type === 'Histogram') {
-      return <Histogram />;
+      return <Histogram width={this.props.width} />;
     } else if (type === 'Profiler') {
       return <Profiler width={this.props.width} />;
     }

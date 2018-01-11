@@ -242,10 +242,15 @@ class Region extends Component {
           //   (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
           //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
           // }}
+          onMouseOver={() => {
+            const pos = this.getMousePos(this.div, event);
+            this.props.dispatch(actions.selectRegion(pos.x, pos.y));
+          }}
           onClick={() => {
             this.setState({
               toDelete: item.key,
             });
+            this.props.dispatch(profilerActions.getProfile());
           }}
           // ref={(node) => {
           //   if (node && !this.regions[item.key].hasOwnProperty('shape')) {
@@ -557,5 +562,6 @@ const mapStateToProps = state => ({
   cursorInfo: state.ImageViewerDB.cursorInfo,
   requestingFile: state.ImageViewerDB.requestingFile,
   stack: state.ImageViewerDB.stack,
+  profileReady: state.RegionDB.profileReady,
 });
 export default connect(mapStateToProps)(Region);

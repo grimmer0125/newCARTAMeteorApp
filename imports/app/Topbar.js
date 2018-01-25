@@ -75,14 +75,14 @@ export default class Topbar extends Component {
               <SessionUI />
             </div>
           </ToolbarGroup>
-          <ToolbarGroup lastChild>
+          {/* <ToolbarGroup lastChild>
             <RaisedButton label="Local" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleLocal} disabled={this.state.localDisabled} />
             <ToolbarSeparator style={{ margin: 0 }} />
             <RaisedButton label="Remote" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleRemote} disabled={this.state.remoteDisabled} />
             <IconButton onClick={this.handleConfig}>
               <More />
             </IconButton>
-          </ToolbarGroup>
+          </ToolbarGroup> */}
         </Toolbar>
         <Popover
           open={this.state.open}
